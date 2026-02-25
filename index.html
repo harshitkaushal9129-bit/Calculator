@@ -131,16 +131,18 @@
     </div>
 
     <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
+<script>
 
-    <script>
+    if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+</script>    <script>
         const resDisplay = document.getElementById('res');
         let pass = localStorage.getItem('vPass') || "1234";
         let db;
 
         // Service Worker Registration for PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        
 
         // IndexedDB
         const req = indexedDB.open("KaushalProDB", 2);
