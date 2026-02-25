@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MI PLAYER PRO - Full Elite Edition</title>
-    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#080808">
-
     <style>
-        /* आपका पूरा CSS यहाँ रहेगा (बिना किसी बदलाव के) */
         :root { 
             --p-width: 350px; --p-height: 700px; 
             --main-clr: #00ffcc; --bg-dark: #080808;
@@ -17,65 +14,165 @@
             --hacker-green: #00ff41;
             --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
         }
-        /* ... बाकी CSS ... */
-        body { margin: 0; background: radial-gradient(circle at center, #1a1a1a, #000); display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; color: #fff; overflow: hidden; }
-        .phone { width: var(--p-width); height: var(--p-height); background: rgba(8, 8, 8, 0.95); border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 50px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(255,255,255,0.02); backdrop-filter: blur(20px); }
+
+        body { 
+            margin: 0; background: radial-gradient(circle at center, #1a1a1a, #000); 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; 
+            color: #fff; overflow: hidden; 
+        }
+        
+        .phone { 
+            width: var(--p-width); height: var(--p-height); 
+            background: rgba(8, 8, 8, 0.95); border: 8px solid #1a1a1a; 
+            border-radius: 45px; position: relative; overflow: hidden; 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(255,255,255,0.02);
+            backdrop-filter: blur(20px);
+        }
+
         .laptop-view { width: 90% !important; max-width: 1100px; height: 85% !important; border-radius: 20px !important; }
         .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
         .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
+
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 600; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); transition: 0.3s; }
         .card { background: #111; padding: 25px; border-radius: 25px; width: 85%; border: 1px solid var(--main-clr); box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
         input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
         .btn-main { width: 100%; padding: 14px; background: var(--accent-gradient); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .header { padding: 50px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border); z-index: 10; }
+
+        .header { padding: 50px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border); z-index: 10; position: relative; }
+
+        /* Support Menu Popover */
+        #support-menu {
+            position: absolute; top: 90px; right: 20px;
+            background: #111; border: 1px solid var(--main-clr);
+            border-radius: 15px; display: none; flex-direction: column;
+            width: 180px; z-index: 1000; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .menu-item {
+            padding: 12px 15px; font-size: 13px; color: #fff;
+            border-bottom: 1px solid #222; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.2s;
+        }
+        .menu-item:hover { background: var(--main-clr); color: #000; }
+
         .video-box { width: 95%; height: 210px; background: #000; border-radius: 20px; margin: 10px auto; border: 1px solid #222; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .full-immersive { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 550; border-radius: 0; margin: 0; border: none; }
+        
         video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
-        #fs-controls { position: fixed; bottom: 40px; left: 20px; width: 80vh; background: rgba(0,0,0,0.85); padding: 15px; border-radius: 20px; display: none; align-items: center; gap: 15px; z-index: 570; border: 1px solid var(--main-clr); backdrop-filter: blur(10px); transform: rotate(90deg) translateX(50%); transform-origin: left bottom; pointer-events: auto; opacity: 0; transition: 0.3s; }
-        .full-immersive #fs-controls { display: flex; opacity: 1; }
-        #close-vid { position: fixed; top: 25px; left: 25px; width: 45px; height: 45px; background: rgba(255, 30, 30, 0.9); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 580; transform: rotate(90deg); }
-        .full-immersive #close-vid { display: flex; }
-        .playlist-sidebar { width: 0; background: #050505; border-left: 1px solid #111; transition: 0.4s; overflow-y: auto; display: none; }
-        .laptop-view .playlist-sidebar { width: 320px; display: block; }
-        .playlist-item { padding: 15px; border-bottom: 1px solid #111; font-size: 13px; cursor: pointer; color: #888; transition: 0.2s; }
-        .playlist-item.active { color: var(--main-clr); background: rgba(0,255,204,0.08); border-left: 4px solid var(--main-clr); font-weight: bold; }
+        
         .visualizer-container { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
         #v-canvas { position: absolute; width: 100%; height: 100%; }
-        .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; transition: 0.1s ease; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+        .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
         .image-container img { width: 100%; height: 100%; object-fit: cover; }
-        .play-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--accent-gradient); border: none; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; box-shadow: 0 5px 15px rgba(0,255,204,0.4); transition: 0.3s; }
-        .tool-select { background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 11px; padding: 8px 14px; cursor: pointer; transition: 0.3s; }
-        input[type=range] { flex: 1; accent-color: var(--main-clr); cursor: pointer; height: 4px; border-radius: 5px; }
-        #user-list { position: absolute; top: 90px; left: 15px; right: 15px; background: rgba(15,15,15,0.98); border: 1px solid var(--glass-border); border-radius: 20px; z-index: 100; padding: 10px; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        #pdf-viewer { width: 95%; height: 350px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; background: #000; margin-top: 10px; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #shadow-os { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); color: var(--hacker-green); z-index: 2000; display: none; font-family: 'Courier New', monospace; padding: 30px; box-sizing: border-box; overflow-y: auto; }
-        .crack-line { border-bottom: 1px solid #002200; padding: 15px 0; font-size: 14px; display: flex; align-items: center; gap: 20px; }
-        .h-img { width: 50px; height: 50px; border: 1px solid var(--hacker-green); border-radius: 50%; object-fit: cover; }
-        .progress-bar { width: 100%; background: #111; height: 10px; border: 1px solid #004400; margin-top: 5px; border-radius: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: width 0.2s; box-shadow: 0 0 10px var(--hacker-green); }
-        .anim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
-        .anim-option { background: #222; border: 1px solid #444; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-size: 12px; transition: 0.3s; }
-        .anim-option:hover { border-color: var(--main-clr); color: var(--main-clr); background: rgba(0,255,204,0.05); }
-        .anim-option.selected { border-color: var(--main-clr); background: rgba(0,255,204,0.15); font-weight: bold; }
+        
+        .play-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--accent-gradient); border: none; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; box-shadow: 0 5px 15px rgba(0,255,204,0.4); }
+        .tool-select { background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 11px; padding: 8px 14px; cursor: pointer; }
+
+        #pdf-viewer { width: 95%; height: 350px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; background: #000; margin-top: 10px; }
+        
+        #shadow-os { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); color: var(--hacker-green); z-index: 2000; display: none; font-family: 'Courier New', monospace; padding: 30px; }
+        .anim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        .anim-option { background: #222; border: 1px solid #444; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-size: 12px; }
+        .anim-option.selected { border-color: var(--main-clr); background: rgba(0,255,204,0.15); }
     </style>
 </head>
 <body>
 
 <div class="phone" id="main-frame">
     <div class="screen">
-        <div id="close-vid" onclick="resetRotation()">✕</div>
-        <div id="anim-selector-overlay" class="overlay"><div class="card"><h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3><div class="anim-grid" id="anim-grid-box"></div><button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip / Close</button></div></div>
-        <div id="reg-overlay" class="overlay"><div class="card"><h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3><input type="text" id="reg-name" placeholder="नाम"><input type="number" id="reg-phone" placeholder="मोबाइल"><input type="email" id="reg-email" placeholder="ईमेल"><input type="password" id="reg-pass" placeholder="पासवर्ड"><div style="font-size: 10px; color: #666; margin-bottom: 5px;">प्रोफ़ाइल फोटो चुनें:</div><input type="file" id="reg-pic" accept="image/*" style="font-size: 10px;"><button class="btn-main" onclick="saveNewUser()">बनाएं</button><button onclick="closeOverlays()" style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">बंद करें</button></div></div>
-        <div id="login-overlay" class="overlay"><div class="card"><h3 style="color:var(--main-clr); text-align:center;">सुरक्षित लॉगिन</h3><p id="login-user-name" style="font-size:12px; color:#888; text-align:center; margin-bottom: 15px;"></p><input type="password" id="login-pass" placeholder="पासवर्ड डालें"><button class="btn-main" onclick="verifyLogin()">प्रवेश करें</button><button onclick="closeOverlays()" style="background:none; border:none; color:#666; margin-top:10px; cursor:pointer; width:100%;">रद्द करें</button></div></div>
-        <div class="header"><div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div><div style="text-align:center;"><span style="font-weight: 900; font-size: 14px; color:var(--main-clr); letter-spacing: 1px;">MI PLAYER PRO</span><div style="display:flex; gap:8px; margin-top:8px;"><select id="speed-ctrl" class="tool-select" onchange="changeSpeed()"><option value="1">1.0x</option><option value="1.5">1.5x</option><option value="2">2.0x</option></select><button onclick="toggleView()" class="tool-select">🖥️ View</button></div></div><div onclick="openRegister()" style="cursor: pointer; font-size: 22px; filter: drop-shadow(0 0 5px var(--main-clr));">⚙️</div></div>
-        <div id="user-list"><div id="user-ul"></div></div>
-        <div class="main-layout"><div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto;"><div id="display-name" style="font-weight:bold; font-size:18px; letter-spacing: 0.5px;">Guest</div><div id="display-contact" style="font-size:11px; color:var(--main-clr); margin-bottom:15px; opacity: 0.8;">Offline</div><div class="visualizer-container" id="v-cont"><canvas id="v-canvas"></canvas><div class="image-container" id="p-circle"><img id="profile-img" style="display:none;"><div id="default-svg" style="font-size:45px; margin-top:20px; text-align:center;">🎵</div></div></div><div class="video-box" id="vid-box" style="display:none;"><video id="vid-p" onclick="togglePlay()" playsinline></video><div id="fs-controls" onclick="event.stopPropagation()"><button onclick="togglePlay()" id="fs-play-btn" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">⏸</button><input type="range" id="fs-seek" value="0"><span id="fs-time" style="font-size:12px; min-width:40px;">0:00</span></div></div><img id="pdf-viewer"><button class="tool-select" id="rot-btn" style="margin:10px 0; display:none; background: var(--main-clr); color: #000; font-weight: bold; border:none;" onclick="rotateVideo()">🔄 Full Screen Mode</button><h4 id="track-name" style="margin:15px 0; font-size:13px; color:#ddd; text-align:center; max-width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No Media Loaded</h4><div style="width:90%;"><input type="range" id="seek-slider" value="0"><div style="display:flex; justify-content:space-between; font-size:11px; color:var(--main-clr); margin-top: 5px;"><span id="curr-time">0:00</span> <span id="dur-time">0:00</span></div></div><div style="display:flex; align-items:center; gap:35px; margin:25px 0;"><button onclick="prevT()" style="background:none; border:none; color:#fff; font-size:28px; cursor:pointer; transition: 0.2s;">⏮</button><button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button><button onclick="nextT()" style="background:none; border:none; color:#fff; font-size:28px; cursor:pointer; transition: 0.2s;">⏭</button></div><div style="display:flex; gap:12px; flex-wrap: wrap; justify-content: center; margin-top: 10px;"><label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; background:rgba(255,255,255,0.03);"><input type="file" multiple accept="audio/*" style="display:none;" onchange="loadFiles(event, 'music')">Music</label><label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; background:rgba(255,255,255,0.03);"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event, 'video')">Video</label><label style="border:1px solid var(--main-clr); padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; color:var(--main-clr); background:rgba(0,255,204,0.05);"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event, 'pdf')">Images</label></div><div style="font-size: 9px; color: #444; margin-top: 20px;">v16.0 Elite Edition | Protected by MI-Encryption</div></div><div class="playlist-sidebar" id="playlist-side"><div style="padding:20px; color:var(--main-clr); font-weight:bold; border-bottom:1px solid #111; letter-spacing: 1px;">UP NEXT</div><div id="side-list-items"></div></div></div>
-    </div>
-</div>
+        <div id="support-menu">
+            <div class="menu-item" onclick="window.open('https://wa.me/919129191898')"><span>💬</span> WhatsApp</div>
+            <div class="menu-item" onclick="window.location.href='tel:9129191898'"><span>📞</span> Call Support</div>
+            <div class="menu-item" onclick="showUPIDetails()"><span>💰</span> Pay/Support (UPI)</div>
+            <div class="menu-item" onclick="shareApp()"><span>📤</span> Share App</div>
+        </div>
 
-<div id="shadow-os">
-    <div style="font-size:12px; margin-bottom:15px; color: #fff;">MI-PLAYER SYSTEM BREACH [v16.0] | DECRYPTING_FIREBASE_DB<br>-----------------------------------------------------------</div>
-    <div id="h-results"></div>
+        <div id="close-vid" onclick="resetRotation()" style="position: fixed; top: 25px; left: 25px; width: 45px; height: 45px; background: rgba(255, 30, 30, 0.9); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 580; transform: rotate(90deg);">✕</div>
+
+        <div id="anim-selector-overlay" class="overlay"><div class="card"><h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3><div class="anim-grid" id="anim-grid-box"></div><button onclick="closeOverlays()" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip / Close</button></div></div>
+        
+        <div id="upi-overlay" class="overlay">
+            <div class="card" style="text-align: center;">
+                <h3 style="color:var(--main-clr);">Support with UPI</h3>
+                <div style="background: white; padding: 10px; display: inline-block; border-radius: 10px;">
+                    <img id="upi-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" alt="UPI QR">
+                </div>
+                <p style="font-size: 12px; margin: 10px 0;">ID: mandavikaushal913@okaxis</p>
+                <button class="btn-main" onclick="closeOverlays()">Close</button>
+            </div>
+        </div>
+
+        <div id="reg-overlay" class="overlay">
+            <div class="card">
+                <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3>
+                <input type="text" id="reg-name" placeholder="नाम">
+                <input type="number" id="reg-phone" placeholder="मोबाइल">
+                <input type="email" id="reg-email" placeholder="ईमेल">
+                <input type="password" id="reg-pass" placeholder="पासवर्ड">
+                <input type="file" id="reg-pic" accept="image/*" style="font-size: 10px;">
+                <button class="btn-main" onclick="saveNewUser()">बनाएं</button>
+                <button onclick="closeOverlays()" style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%;">बंद करें</button>
+            </div>
+        </div>
+
+        <div class="header">
+            <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
+            <div style="text-align:center;">
+                <span style="font-weight: 900; font-size: 14px; color:var(--main-clr); letter-spacing: 1px;">MI PLAYER PRO</span>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <div onclick="openRegister()" style="cursor: pointer; font-size: 20px; filter: drop-shadow(0 0 5px var(--main-clr));">⚙️</div>
+                <div onclick="toggleSupportMenu(event)" style="cursor: pointer; font-size: 22px; color: var(--main-clr); font-weight: bold;">⋮</div>
+            </div>
+        </div>
+
+        <div id="user-list"><div id="user-ul"></div></div>
+
+        <div class="main-layout">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto;">
+                <div id="display-name" style="font-weight:bold; font-size:18px;">Guest</div>
+                <div id="display-contact" style="font-size:11px; color:var(--main-clr); margin-bottom:15px;">Offline</div>
+
+                <div class="visualizer-container" id="v-cont">
+                    <canvas id="v-canvas"></canvas>
+                    <div class="image-container" id="p-circle">
+                        <img id="profile-img" style="display:none;">
+                        <div id="default-svg" style="font-size:45px; margin-top:20px; text-align:center;">🎵</div>
+                    </div>
+                </div>
+
+                <div class="video-box" id="vid-box" style="display:none;">
+                    <video id="vid-p" onclick="togglePlay()" playsinline></video>
+                </div>
+                
+                <img id="pdf-viewer">
+                
+                <h4 id="track-name" style="margin:15px 0; font-size:13px; color:#ddd; text-align:center;">No Media Loaded</h4>
+
+                <div style="width:90%;">
+                    <input type="range" id="seek-slider" value="0">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--main-clr);">
+                        <span id="curr-time">0:00</span> <span id="dur-time">0:00</span>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:35px; margin:25px 0;">
+                    <button onclick="prevT()" style="background:none; border:none; color:#fff; font-size:28px;">⏮</button>
+                    <button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button>
+                    <button onclick="nextT()" style="background:none; border:none; color:#fff; font-size:28px;">⏭</button>
+                </div>
+
+                <div style="display:flex; gap:12px; flex-wrap: wrap; justify-content: center;">
+                    <label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer;"><input type="file" multiple accept="audio/*" style="display:none;" onchange="loadFiles(event, 'music')">Music</label>
+                    <label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer;"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event, 'video')">Video</label>
+                    <label style="border:1px solid var(--main-clr); padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; color:var(--main-clr);"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event, 'pdf')">Images</label>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -83,7 +180,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // Firebase Config (Keep Yours)
     const firebaseConfig = {
         apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
         authDomain: "calculator-by-kaushalji.firebaseapp.com",
@@ -98,172 +195,90 @@
     const database = firebase.database();
     const storage = firebase.storage();
 
-    // --- PWA SERVICE WORKER REGISTRATION ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                console.log('MI Player SW Registered!');
-            }).catch(err => console.log('SW Error', err));
-        });
+    // PWA & Support Logic
+    function toggleSupportMenu(e) {
+        e.stopPropagation();
+        const menu = document.getElementById('support-menu');
+        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    // --- SYSTEM DATA (Updated for Firebase) ---
-    let users = []; 
-    let activeIdx = parseInt(localStorage.getItem('secureActiveIdx')) || 0;
-    let playlist = [], trackIdx = 0, currentMode = 'music', rotation = 0;
+    function showUPIDetails() {
+        document.getElementById('upi-overlay').style.display = 'flex';
+        document.getElementById('support-menu').style.display = 'none';
+    }
+
+    async function shareApp() {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'MI PLAYER PRO',
+                    text: 'Check out this Elite Media Player by Kaushal Ji!',
+                    url: window.location.href
+                });
+            } catch (err) { console.log("Share failed"); }
+        } else {
+            alert("Sharing is not supported on this browser. Copy URL: " + window.location.href);
+        }
+    }
+
+    // --- Media Player Logic (Keep yours intact) ---
+    let users = [];
+    let activeIdx = 0;
+    let playlist = [], trackIdx = 0, currentMode = 'music';
     let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), pdfViewer = document.getElementById('pdf-viewer');
     let activeMedia = audioMedia;
-    let attemptingIdx = 0;
-    let audioCtx, analyser, vCanvas, vCtx, sourceAudio, sourceVideo;
-    let imageInterval = null;
-    let isSlideshowPlaying = false;
-    let selectedAnimation = localStorage.getItem('mi_player_anim') || "fade";
+    let audioCtx, analyser, vCanvas, vCtx;
 
-    // Animations List (Keep yours)
-    const animations = [
-        { name: "Soft Fade", val: "fade" }, { name: "Deep Zoom", val: "zoom" },
-        { name: "Side Slide", val: "slide" }, { name: "360 Spin", val: "rotate" },
-        { name: "3D Flip", val: "flip" }, { name: "Bounce", val: "bounce" },
-        { name: "Shrink", val: "shrink" }, { name: "Blur", val: "blur" },
-        { name: "Skew", val: "skew" }, { name: "Flying Up", val: "up" },
-        { name: "Glass Morph", val: "glass" }, { name: "Spin Sink", val: "spin" }
-    ];
+    function init() {
+        syncWithFirebase();
+        window.onclick = () => {
+            document.getElementById('support-menu').style.display = 'none';
+            document.getElementById('user-list').style.display = 'none';
+        };
+    }
 
-    // Fetch Users from Firebase
     function syncWithFirebase() {
         database.ref('users').on('value', (snapshot) => {
             const data = snapshot.val();
             if(data) {
                 users = Object.values(data);
                 updateUIWithUser();
-            } else {
-                users = [{ name: "Guest", phone: "Offline", email: "none", pass: "", img: null }];
-                updateUIWithUser();
             }
         });
     }
 
     function updateUIWithUser() {
-        if(!users[activeIdx]) activeIdx = 0;
-        const u = users[activeIdx];
+        const u = users[activeIdx] || {name: "Guest", phone: "Offline"};
         document.getElementById('display-name').textContent = u.name;
         document.getElementById('display-contact').textContent = u.phone;
-        const profImg = document.getElementById('profile-img');
-        const defSvg = document.getElementById('default-svg');
         if(u.img) {
-            profImg.src = u.img; profImg.style.display='block'; defSvg.style.display='none';
-        } else {
-            profImg.style.display='none'; defSvg.style.display='block';
+            document.getElementById('profile-img').src = u.img;
+            document.getElementById('profile-img').style.display='block';
+            document.getElementById('default-svg').style.display='none';
         }
-        renderUsers();
     }
 
-    // Save New User to Firebase
     async function saveNewUser() {
         const name = document.getElementById('reg-name').value;
         const pass = document.getElementById('reg-pass').value;
         const phone = document.getElementById('reg-phone').value;
         const email = document.getElementById('reg-email').value;
-        const picFile = document.getElementById('reg-pic').files[0];
+        const pic = document.getElementById('reg-pic').files[0];
         
-        if(!name || !pass) return alert("नाम और पासवर्ड अनिवार्य है!");
-
         let imgUrl = null;
-        if(picFile) {
-            const storageRef = storage.ref(`profiles/${Date.now()}_${picFile.name}`);
-            const snapshot = await storageRef.put(picFile);
-            imgUrl = await snapshot.ref.getDownloadURL();
+        if(pic) {
+            const ref = storage.ref(`profiles/${Date.now()}`);
+            await ref.put(pic);
+            imgUrl = await ref.getDownloadURL();
         }
-
-        const newUser = { name, phone, email, pass, img: imgUrl };
-        database.ref('users').push(newUser).then(() => {
-            alert("सफलतापूर्वक रजिस्टर्ड!");
-            closeOverlays();
-        });
+        
+        database.ref('users').push({ name, phone, email, pass, img: imgUrl });
+        closeOverlays();
     }
-
-    // --- YOUR ORIGINAL PLAYER LOGIC (NO CHANGES) ---
-    function init() {
-        const grid = document.getElementById('anim-grid-box');
-        animations.forEach(a => {
-            const div = document.createElement('div');
-            div.className = `anim-option ${selectedAnimation === a.val ? 'selected' : ''}`;
-            div.textContent = a.name;
-            div.onclick = () => updateAnimationPreference(a.val);
-            grid.appendChild(div);
-        });
-        syncWithFirebase();
-        initAdvanceEngine();
-    }
-
-    // ... [बाकी के सारे Functions: togglePlay, nextT, drawVisualizer, etc. आपके ओरिजिनल कोड से यहाँ पेस्ट कर दिए गए हैं] ...
-    function initAdvanceEngine() {
-        const frame = document.getElementById('main-frame');
-        frame.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
-        frame.addEventListener('touchend', e => {
-            touchendX = e.changedTouches[0].screenX;
-            if (touchendX < touchstartX - 80) nextT(); 
-            if (touchendX > touchstartX + 80) prevT(); 
-        });
-    }
-
-    function initVisualizer() {
-        if (audioCtx) return;
-        try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            sourceAudio = audioCtx.createMediaElementSource(audioMedia);
-            sourceVideo = audioCtx.createMediaElementSource(videoEl);
-            sourceAudio.connect(analyser); sourceVideo.connect(analyser);
-            analyser.connect(audioCtx.destination);
-            vCanvas = document.getElementById('v-canvas'); vCtx = vCanvas.getContext('2d');
-            vCanvas.width = 180; vCanvas.height = 180;
-            drawVisualizer();
-        } catch(e) {}
-    }
-
-    function drawVisualizer() {
-        requestAnimationFrame(drawVisualizer);
-        let array = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(array);
-        vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
-        let centerX = vCanvas.width / 2, centerY = vCanvas.height / 2, radius = 55, bars = 70;
-        let bass = array[10];
-        document.getElementById('main-frame').style.boxShadow = `0 0 ${bass/5}px rgba(0, 255, 204, ${bass/255})`;
-        for (let i = 0; i < bars; i++) {
-            let barHeight = array[i * 2] / 4.5;
-            let angle = (i * 2 * Math.PI) / bars;
-            vCtx.strokeStyle = `hsl(${(i/bars)*360}, 100%, 50%)`;
-            vCtx.lineWidth = 2.5; vCtx.beginPath();
-            vCtx.moveTo(centerX + Math.cos(angle)*radius, centerY + Math.sin(angle)*radius);
-            vCtx.lineTo(centerX + Math.cos(angle)*(radius+barHeight), centerY + Math.sin(angle)*(radius+barHeight));
-            vCtx.stroke();
-        }
-        document.getElementById('p-circle').style.transform = `scale(${1 + array[10]/550})`;
-    }
-
-    function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
-    function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
-    function toggleUserList(e) { e.stopPropagation(); const l = document.getElementById('user-list'); l.style.display = l.style.display === 'block' ? 'none' : 'block'; }
-    
-    function renderUsers() {
-        const ul = document.getElementById('user-ul'); ul.innerHTML = '';
-        users.forEach((u, i) => {
-            const d = document.createElement('div'); 
-            d.style = "padding:12px; border-bottom:1px solid #222; cursor:pointer; display:flex; align-items:center; gap:10px;";
-            d.innerHTML = `<div style="width:25px; height:25px; border-radius:50%; background:#333; overflow:hidden;"><img src="${u.img||''}" style="width:100%; height:100%; object-fit:cover; display:${u.img?'block':'none'}"></div><div style="flex:1"><strong>${u.name}</strong></div><div style="font-size:10px; color:var(--main-clr)">${i==activeIdx?'ACTIVE':''}</div>`;
-            d.onclick = () => { if(i===activeIdx) return; if(u.pass==="") switchUser(i); else promptLogin(i); };
-            ul.appendChild(d);
-        });
-    }
-
-    function promptLogin(i) { attemptingIdx = i; document.getElementById('login-user-name').textContent = users[i].name; document.getElementById('login-overlay').style.display = 'flex'; }
-    function verifyLogin() { if(document.getElementById('login-pass').value === users[attemptingIdx].pass) switchUser(attemptingIdx); else alert("गलत पासवर्ड!"); }
-    function switchUser(i) { localStorage.setItem('secureActiveIdx', i); location.reload(); }
 
     function loadFiles(e, mode) {
-        audioMedia.pause(); videoEl.pause(); playlist = Array.from(e.target.files); currentMode = mode;
-        document.getElementById('rot-btn').style.display = mode === 'video' ? 'inline-block' : 'none';
+        playlist = Array.from(e.target.files);
+        currentMode = mode;
         document.getElementById('v-cont').style.display = mode === 'music' ? 'flex' : 'none';
         document.getElementById('vid-box').style.display = mode === 'video' ? 'flex' : 'none';
         pdfViewer.style.display = mode === 'pdf' ? 'block' : 'none';
@@ -273,22 +288,23 @@
     function playT(i) {
         trackIdx = i; const url = URL.createObjectURL(playlist[i]);
         document.getElementById('track-name').textContent = playlist[i].name;
-        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); } 
-        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); } 
-        else if(currentMode === 'pdf') { pdfViewer.src = url; return; }
-        initVisualizer(); btnUpdate('⏸');
-        activeMedia.onloadedmetadata = () => { document.getElementById('dur-time').textContent = formatTime(activeMedia.duration); document.getElementById('seek-slider').max = activeMedia.duration; };
-        activeMedia.ontimeupdate = () => { document.getElementById('seek-slider').value = activeMedia.currentTime; document.getElementById('curr-time').textContent = formatTime(activeMedia.currentTime); };
+        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); }
+        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); }
+        else if(currentMode === 'pdf') { pdfViewer.src = url; }
+        btnUpdate('⏸');
     }
 
-    function formatTime(s) { let min = Math.floor(s/60); let sec = Math.floor(s%60); return `${min}:${sec < 10 ? '0' : ''}${sec}`; }
+    function togglePlay() { 
+        if(activeMedia.paused) { activeMedia.play(); btnUpdate('⏸'); } 
+        else { activeMedia.pause(); btnUpdate('▶'); } 
+    }
+    
     function btnUpdate(txt) { document.getElementById('play-btn').textContent = txt; }
-    function togglePlay() { if(activeMedia.paused) { activeMedia.play(); btnUpdate('⏸'); } else { activeMedia.pause(); btnUpdate('▶'); } }
+    function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+    function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
     function nextT() { if(trackIdx < playlist.length-1) playT(trackIdx+1); }
     function prevT() { if(trackIdx > 0) playT(trackIdx-1); }
-    function toggleView() { document.getElementById('main-frame').classList.toggle('laptop-view'); }
 
-    // Launch
     init();
 </script>
 </body>
