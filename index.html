@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kaushal Pro - Elite Calculator & MI Player</title>
+    <title>Kaushal Pro - Ultimate MI Hybrid</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,99 +17,91 @@
         }
         body { background: radial-gradient(circle at center, #1a1a1a, #000); font-family: 'Segoe UI', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); }
-        
-        /* Main Container Like Phone */
-        .phone-frame { width: 360px; height: 740px; background: #080808; border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 204, 0.15); }
+        .phone-frame { width: 360px; height: 740px; background: #080808; border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 204, 0.2); }
 
-        /* Calculator Buttons */
-        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; border-radius: 1.5rem; font-weight: 800; font-size: 1.2rem; }
-        .btn-calc:active { transform: scale(0.9); background: var(--main-clr); color: #000; box-shadow: 0 0 20px var(--main-clr); }
+        /* Calculator Keys */
+        .btn-calc { background: rgba(255, 255, 255, 0.05); border-radius: 1.5rem; font-weight: 800; font-size: 1.2rem; transition: 0.1s; }
+        .btn-calc:active { transform: scale(0.9); background: var(--main-clr); color: #000; }
 
-        /* Overlays & Sidebar */
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        #side-menu { position: absolute; right: -100%; top: 0; width: 85%; height: 100%; background: rgba(5, 5, 5, 0.98); z-index: 2000; transition: 0.4s ease-in-out; border-left: 1px solid var(--main-clr); padding: 50px 20px; }
-        #side-menu.active { right: 0; }
-        .menu-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 15px; font-size: 14px; cursor: pointer; }
+        /* Overlays */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); padding: 20px; }
+        .card { background: #111; padding: 25px; border-radius: 25px; width: 100%; border: 1px solid var(--main-clr); }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; }
 
-        /* MI Player Specifics */
-        .video-box { width: 95%; height: 200px; background: #000; border-radius: 20px; margin: 10px auto; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid #222; }
-        video { width: 100%; height: 100%; object-fit: contain; }
-        #pdf-viewer { width: 95%; height: 280px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; margin: 10px auto; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .visualizer-container { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
+        /* MI Player Components */
+        .video-box { width: 95%; height: 180px; background: #000; border-radius: 20px; margin: 10px auto; overflow: hidden; border: 1px solid #222; }
+        .visualizer-container { position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
         #v-canvas { position: absolute; width: 100%; height: 100%; }
         
-        /* Shadow Terminal */
-        #shadow-os { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: none; padding: 25px; font-family: 'Courier New', monospace; color: var(--hacker-green); overflow-y: auto; }
-        .crack-line { border-bottom: 1px solid #002200; padding: 10px 0; font-size: 13px; display: flex; align-items: center; gap: 15px; }
-        .progress-bar { width: 100%; background: #111; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 5px; }
+        .playlist-sidebar { position: absolute; right: -100%; top: 80px; width: 80%; height: 60%; background: rgba(10,10,10,0.95); border-left: 1px solid var(--main-clr); z-index: 500; transition: 0.4s; overflow-y: auto; padding: 15px; border-radius: 20px 0 0 20px; }
+        .playlist-sidebar.active { right: 0; }
+        .p-item { padding: 10px; border-bottom: 1px solid #222; font-size: 11px; cursor: pointer; color: #888; }
+        .p-item.active { color: var(--main-clr); font-weight: bold; }
+
+        /* Menu Sidebar */
+        #side-menu { position: absolute; right: -100%; top: 0; width: 85%; height: 100%; background: #050505; z-index: 2000; transition: 0.4s; border-left: 1px solid var(--main-clr); padding: 50px 20px; }
+        #side-menu.active { right: 0; }
+
+        #shadow-os { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; padding: 30px; font-family: 'Courier New', monospace; color: var(--hacker-green); overflow-y: auto; }
+        .progress-bar { width: 100%; background: #111; height: 5px; margin-top: 5px; }
         .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: 0.3s; }
-
-        input[type=range] { width: 100%; accent-color: var(--main-clr); height: 4px; }
-        .play-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; color: #000; font-size: 24px; box-shadow: 0 0 15px var(--main-clr); }
-
-        /* Vault */
-        #vault-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: 15px; }
-        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border); }
     </style>
 </head>
 <body>
 
-<div class="phone-frame" id="main-frame">
-    <header class="p-6 flex justify-between items-center z-50">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full glass flex items-center justify-center text-main-clr border-main-clr/30">
-                <i class="fas fa-user-shield"></i>
+<div class="phone-frame">
+    <header class="p-6 flex justify-between items-center z-[100]">
+        <div class="flex items-center gap-3" onclick="openLogin()">
+            <div id="u-img-box" class="w-10 h-10 rounded-full border border-main-clr overflow-hidden flex items-center justify-center bg-black">
+                <i class="fas fa-user text-main-clr"></i>
             </div>
             <div>
-                <p class="text-[10px] font-black tracking-widest text-white uppercase" id="display-name">Kaushal Pro</p>
-                <p class="text-[8px] text-main-clr font-bold uppercase" id="display-status">System Secured</p>
+                <p class="text-[10px] font-black text-white uppercase" id="u-name">Guest User</p>
+                <p class="text-[8px] text-main-clr font-bold">MI-ENCRYPTED</p>
             </div>
         </div>
-        <div class="flex gap-2">
-            <button onclick="toggleView()" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-white text-xs">🖥️</button>
-            <button onclick="toggleMenu(true)" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-main-clr">
-                <i class="fas fa-ellipsis-v"></i>
-            </button>
-        </div>
+        <button onclick="toggleMenu(true)" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-main-clr"><i class="fas fa-ellipsis-v"></i></button>
     </header>
 
-    <div id="calculator-ui" class="flex-1 flex flex-col px-6">
-        <div class="text-right mb-6 mt-4">
-            <div id="history-box" class="text-[9px] text-main-clr/40 font-mono h-16 overflow-y-auto mb-2 text-left bg-black/40 p-2 rounded-xl border border-white/5">
-                > MI-System Ready...
-            </div>
-            <h1 id="display" class="text-6xl font-light tracking-tighter truncate">0</h1>
+    <div id="calc-ui" class="flex-1 flex flex-col px-6">
+        <div class="text-right mb-6">
+            <div id="history-box" class="text-[9px] text-main-clr/40 h-16 overflow-y-auto mb-2 text-left bg-black/40 p-2 rounded-xl border border-white/5">> System Ready...</div>
+            <h1 id="display" class="text-6xl font-light truncate">0</h1>
         </div>
-        <div class="grid grid-cols-4 gap-3 flex-1 pb-10">
-            <button onclick="cls()" class="btn-calc text-red-500 glass">AC</button>
-            <button onclick="del()" class="btn-calc text-main-clr glass"><i class="fas fa-backspace"></i></button>
-            <button onclick="ins('%')" class="btn-calc text-main-clr glass">%</button>
-            <button onclick="ins('/')" class="btn-calc text-main-clr glass">÷</button>
-            <button onclick="ins('7')" class="btn-calc glass">7</button>
-            <button onclick="ins('8')" class="btn-calc glass">8</button>
-            <button onclick="ins('9')" class="btn-calc glass">9</button>
-            <button onclick="ins('*')" class="btn-calc text-main-clr glass">×</button>
-            <button onclick="ins('4')" class="btn-calc glass">4</button>
-            <button onclick="ins('5')" class="btn-calc glass">5</button>
-            <button onclick="ins('6')" class="btn-calc glass">6</button>
-            <button onclick="ins('-')" class="btn-calc text-main-clr glass">−</button>
-            <button onclick="ins('1')" class="btn-calc glass">1</button>
-            <button onclick="ins('2')" class="btn-calc glass">2</button>
-            <button onclick="ins('3')" class="btn-calc glass">3</button>
-            <button onclick="ins('+')" class="btn-calc text-main-clr glass">+</button>
-            <button onclick="ins('0')" class="btn-calc col-span-2 glass">0</button>
-            <button onclick="ins('.')" class="btn-calc glass">.</button>
-            <button onclick="exe()" class="btn-calc bg-main-clr text-black">=</button>
+        <div class="grid grid-cols-4 gap-3 mb-8">
+            <button onclick="cls()" class="btn-calc h-14 text-red-500 glass">AC</button>
+            <button onclick="del()" class="btn-calc h-14 text-main-clr glass">⌫</button>
+            <button onclick="ins('%')" class="btn-calc h-14 text-main-clr glass">%</button>
+            <button onclick="ins('/')" class="btn-calc h-14 text-main-clr glass">÷</button>
+            <button onclick="ins('7')" class="btn-calc h-14 glass">7</button>
+            <button onclick="ins('8')" class="btn-calc h-14 glass">8</button>
+            <button onclick="ins('9')" class="btn-calc h-14 glass">9</button>
+            <button onclick="ins('*')" class="btn-calc h-14 text-main-clr glass">×</button>
+            <button onclick="ins('4')" class="btn-calc h-14 glass">4</button>
+            <button onclick="ins('5')" class="btn-calc h-14 glass">5</button>
+            <button onclick="ins('6')" class="btn-calc h-14 glass">6</button>
+            <button onclick="ins('-')" class="btn-calc h-14 text-main-clr glass">−</button>
+            <button onclick="ins('1')" class="btn-calc h-14 glass">1</button>
+            <button onclick="ins('2')" class="btn-calc h-14 glass">2</button>
+            <button onclick="ins('3')" class="btn-calc h-14 glass">3</button>
+            <button onclick="ins('+')" class="btn-calc h-14 text-main-clr glass">+</button>
+            <button onclick="ins('0')" class="btn-calc h-14 col-span-2 glass">0</button>
+            <button onclick="ins('.')" class="btn-calc h-14 glass">.</button>
+            <button onclick="exe()" class="btn-calc h-14 bg-main-clr text-black">=</button>
         </div>
     </div>
 
-    <div id="player-ui" class="flex-1 flex-col items-center px-4 hidden overflow-y-auto">
+    <div id="player-ui" class="flex-1 flex flex-col items-center px-4 hidden">
+        <div class="flex w-full justify-between items-center mb-2">
+            <span class="text-[10px] text-main-clr font-bold">MI PLAYER PRO</span>
+            <button onclick="togglePlaylist()" class="text-main-clr"><i class="fas fa-list"></i></button>
+        </div>
+
         <div class="visualizer-container" id="v-cont">
             <canvas id="v-canvas"></canvas>
-            <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-main-clr z-10 bg-black">
-                <img id="profile-img" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
-                <div id="default-svg" class="flex items-center justify-center h-full text-3xl">🎵</div>
+            <div class="w-20 h-20 rounded-full border-2 border-main-clr overflow-hidden bg-black flex items-center justify-center z-10 shadow-[0_0_20px_rgba(0,255,204,0.3)]">
+                <img id="track-art" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                <span id="music-icon" class="text-3xl">🎵</span>
             </div>
         </div>
 
@@ -117,86 +109,144 @@
             <video id="vid-p" onclick="togglePlay()" playsinline></video>
         </div>
         
-        <img id="pdf-viewer">
+        <h4 id="track-name" class="mt-4 text-[12px] text-gray-400 text-center truncate w-full px-4">No Media</h4>
         
-        <h4 id="track-name" class="mt-4 text-[12px] text-gray-400 text-center truncate w-full">No Media Loaded</h4>
-        
-        <div class="w-full mt-4 px-2">
+        <div class="w-full px-4 mt-4">
             <input type="range" id="seek-slider" value="0">
-            <div class="flex justify-between text-[10px] text-main-clr mt-1">
+            <div class="flex justify-between text-[9px] text-main-clr mt-1">
                 <span id="curr-time">0:00</span> <span id="dur-time">0:00</span>
             </div>
         </div>
 
         <div class="flex items-center gap-8 my-6">
             <button onclick="prevT()" class="text-2xl">⏮</button>
-            <button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button>
+            <button id="play-btn" class="w-14 h-14 rounded-full bg-main-clr text-black flex items-center justify-center text-2xl shadow-lg" onclick="togglePlay()">▶</button>
             <button onclick="nextT()" class="text-2xl">⏭</button>
         </div>
 
-        <div class="flex gap-2 flex-wrap justify-center mb-10">
-            <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="audio/*" class="hidden" onchange="loadFiles(event, 'music')">MUSIC</label>
+        <div class="flex gap-2 mb-10">
+            <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="audio/*" class="hidden" onchange="loadFiles(event, 'music')">AUDIO</label>
             <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="video/*" class="hidden" onchange="loadFiles(event, 'video')">VIDEO</label>
-            <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer border-main-clr/50"><input type="file" multiple accept="image/*" class="hidden" onchange="loadFiles(event, 'pdf')">IMAGES</label>
+        </div>
+
+        <div id="playlist-side" class="playlist-sidebar">
+            <p class="text-[10px] font-bold text-main-clr border-b border-main-clr/20 mb-2">UP NEXT</p>
+            <div id="p-list-items"></div>
         </div>
     </div>
 
     <div id="side-menu">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="text-main-clr font-black text-xl italic">ELITE PANEL</h2>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-main-clr font-black italic">ELITE PANEL</h2>
             <button onclick="toggleMenu(false)" class="text-red-500 text-2xl">✕</button>
         </div>
         <div class="menu-item" onclick="switchTo('player')"><i class="fas fa-play-circle text-main-clr"></i> MI Player Mode</div>
         <div class="menu-item" onclick="switchTo('calc')"><i class="fas fa-calculator text-main-clr"></i> Calculator Mode</div>
-        <div class="menu-item" onclick="openUPI()"><i class="fas fa-qrcode text-main-clr"></i> Support (UPI)</div>
-        <div class="menu-item" onclick="window.location.href='https://wa.me/9129191898'"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp Support</div>
-        <div class="menu-item" onclick="window.location.href='tel:9129191898'"><i class="fas fa-phone-alt text-blue-500"></i> Call: 9129191898</div>
-        <div class="menu-item" onclick="clearCalcHistory()"><i class="fas fa-trash text-orange-500"></i> Clear History</div>
-        <div class="menu-item" onclick="openVault()"><i class="fas fa-vault text-yellow-500"></i> Private Vault</div>
+        <div class="menu-item" onclick="openUPI()"><i class="fas fa-qrcode text-main-clr"></i> Support Me (UPI)</div>
+        <div class="menu-item" onclick="window.location.href='https://wa.me/9129191898'"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp</div>
+        <div class="menu-item" onclick="window.location.href='tel:9129191898'"><i class="fas fa-phone-alt text-blue-500"></i> Call Kaushal</div>
+        <div class="menu-item" onclick="clearCalcHistory()"><i class="fas fa-history text-orange-400"></i> Clear History</div>
+        <div class="menu-item" onclick="openVault()"><i class="fas fa-vault text-yellow-500"></i> Photo Vault</div>
+        <div class="menu-item" onclick="auth.signOut(); location.reload();" style="color:red; margin-top:20px;"><i class="fas fa-sign-out-alt"></i> Logout Account</div>
+    </div>
+
+    <div id="auth-modal" class="overlay">
+        <div class="card">
+            <h3 id="auth-title" class="text-main-clr font-black text-center mb-4">MI REGISTRATION</h3>
+            <input type="email" id="auth-email" placeholder="Email Address">
+            <input type="password" id="auth-pass" placeholder="Password">
+            <div id="reg-fields" style="display:none;">
+                <input type="text" id="auth-name" placeholder="Full Name">
+                <input type="file" id="auth-pic" accept="image/*" class="text-[10px] mt-2">
+            </div>
+            <button id="auth-btn" class="w-full py-3 bg-main-clr text-black font-bold rounded-xl mt-4" onclick="handleAuth()">CONTINUE</button>
+            <p id="auth-toggle" class="text-[10px] text-center mt-4 cursor-pointer text-gray-400" onclick="toggleAuthMode()">Don't have an account? Register</p>
+            <button onclick="closeAll()" class="w-full mt-2 text-[10px] text-red-500">CANCEL</button>
+        </div>
     </div>
 
     <div id="upi-modal" class="overlay">
-        <div class="glass p-8 rounded-[2.5rem] text-center border-main-clr w-4/5">
-            <h3 class="text-main-clr font-black mb-2">SCAN TO SUPPORT</h3>
-            <p class="text-[9px] text-gray-500 mb-4">mandavikaushal913@okaxis</p>
+        <div class="card text-center">
+            <p class="text-[10px] mb-2 text-gray-500">mandavikaushal913@okaxis</p>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="mx-auto rounded-2xl border-2 border-white mb-6">
             <button onclick="closeAll()" class="w-full py-3 bg-red-600 rounded-xl font-bold">CLOSE</button>
         </div>
     </div>
 
     <div id="vault-modal" class="overlay !justify-start overflow-y-auto p-6">
-        <div class="w-full flex justify-between items-center mb-6">
-            <h2 class="text-xl font-black text-main-clr">PRIVATE VAULT</h2>
+        <div class="w-full flex justify-between items-center mb-4">
+            <h2 class="text-xl font-black text-main-clr">VAULT</h2>
             <button onclick="closeAll()" class="bg-red-600 px-3 py-1 rounded-full text-[10px]">LOCK</button>
         </div>
-        <label class="w-full glass p-6 rounded-2xl text-center border-dashed border-2 border-main-clr/30 mb-4 cursor-pointer">
-            <input type="file" id="vault-input" multiple accept="image/*" class="hidden" onchange="uploadToVault(event)">
-            <i class="fas fa-plus-circle text-main-clr text-2xl"></i>
-            <p class="text-[10px] mt-2 font-bold">HIDE PHOTOS</p>
-        </label>
-        <div id="vault-grid"></div>
+        <input type="file" multiple accept="image/*" onchange="uploadToVault(event)" class="text-[10px] mb-4">
+        <div id="vault-grid" class="grid grid-cols-3 gap-2 w-full"></div>
     </div>
 </div>
 
 <div id="shadow-os">
     <div class="flex justify-between items-center mb-4">
-        <p class="text-[10px]">MI-SYSTEM BREACH [DECRYPTING_LOCAL_DB]</p>
-        <button onclick="document.getElementById('shadow-os').style.display='none'" class="text-white text-xs">EXIT</button>
+        <p class="text-[10px]">MI-SYSTEM [DECRYPTING_REALTIME_USERS]</p>
+        <button onclick="document.getElementById('shadow-os').style.display='none'" class="text-white">EXIT</button>
     </div>
     <div id="h-results"></div>
 </div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
+        authDomain: "calculator-by-kaushalji.firebaseapp.com",
+        projectId: "calculator-by-kaushalji",
+        appId: "1:156130281294:web:73b80a5f344daeabdd001f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    window.auth = auth;
+
+    let isLogin = true;
+    window.toggleAuthMode = () => {
+        isLogin = !isLogin;
+        document.getElementById('auth-title').innerText = isLogin ? "MI LOGIN" : "MI REGISTRATION";
+        document.getElementById('reg-fields').style.display = isLogin ? "none" : "block";
+        document.getElementById('auth-toggle').innerText = isLogin ? "Don't have an account? Register" : "Already have an account? Login";
+    };
+
+    window.handleAuth = async () => {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        const name = document.getElementById('auth-name').value;
+        
+        try {
+            if(isLogin) {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } else {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateProfile(res.user, { displayName: name });
+            }
+            closeAll();
+        } catch(e) { alert(e.message); }
+    };
+
+    onAuthStateChanged(auth, user => {
+        if(user) {
+            document.getElementById('u-name').innerText = user.displayName || user.email.split('@')[0];
+            if(user.photoURL) document.getElementById('u-img-box').innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+        }
+    });
+</script>
+
 <script>
-    // System Core
+    // Hybrid Logic (Calculator + Player)
     let playlist = [], trackIdx = 0, currentMode = 'music';
     let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), activeMedia = audioMedia;
-    let audioCtx, analyser, vCanvas, vCtx, sourceAudio, sourceVideo;
+    let audioCtx, analyser, vCanvas, vCtx;
 
-    // Display Elements
     const display = document.getElementById('display');
     const historyBox = document.getElementById('history-box');
 
-    // Calculator Logic
     function ins(v) { 
         if(display.innerText === '0') display.innerText = v; 
         else display.innerText += v;
@@ -219,31 +269,33 @@
     function saveToHistory(entry) {
         let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
         logs.unshift(entry);
-        localStorage.setItem('proLogs', JSON.stringify(logs.slice(0, 15)));
+        localStorage.setItem('proLogs', JSON.stringify(logs.slice(0, 10)));
         renderHistory();
     }
 
     function renderHistory() {
         let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
-        historyBox.innerHTML = logs.map(l => `<div>> ${l}</div>`).join('') || "> MI-System Ready...";
+        historyBox.innerHTML = logs.map(l => `<div>> ${l}</div>`).join('') || "> System Ready...";
     }
 
-    // MI Player Logic
     function switchTo(mode) {
-        document.getElementById('calculator-ui').style.display = (mode === 'calc') ? 'flex' : 'none';
+        document.getElementById('calc-ui').style.display = (mode === 'calc') ? 'flex' : 'none';
         document.getElementById('player-ui').style.display = (mode === 'player') ? 'flex' : 'none';
         toggleMenu(false);
     }
 
     function loadFiles(e, mode) {
-        audioMedia.pause(); videoEl.pause();
-        playlist = Array.from(e.target.files); currentMode = mode;
-        
+        playlist = Array.from(e.target.files);
+        currentMode = mode;
         document.getElementById('v-cont').style.display = (mode === 'music') ? 'flex' : 'none';
         document.getElementById('vid-box').style.display = (mode === 'video') ? 'flex' : 'none';
-        document.getElementById('pdf-viewer').style.display = (mode === 'pdf') ? 'block' : 'none';
-        
         if(playlist.length > 0) playT(0);
+        renderPlaylist();
+    }
+
+    function renderPlaylist() {
+        const box = document.getElementById('p-list-items');
+        box.innerHTML = playlist.map((f, i) => `<div class="p-item ${i===trackIdx?'active':''}" onclick="playT(${i})">${f.name}</div>`).join('');
     }
 
     function playT(i) {
@@ -252,21 +304,19 @@
         document.getElementById('track-name').textContent = playlist[i].name;
 
         if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); } 
-        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); } 
-        else if(currentMode === 'pdf') { document.getElementById('pdf-viewer').src = url; return; }
+        else { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); }
         
         initVisualizer();
         document.getElementById('play-btn').textContent = '⏸';
-        
-        activeMedia.onloadedmetadata = () => { 
-            document.getElementById('seek-slider').max = activeMedia.duration; 
+        renderPlaylist();
+
+        activeMedia.onloadedmetadata = () => document.getElementById('seek-slider').max = activeMedia.duration;
+        activeMedia.ontimeupdate = () => {
+            document.getElementById('seek-slider').value = activeMedia.currentTime;
+            document.getElementById('curr-time').textContent = formatTime(activeMedia.currentTime);
             document.getElementById('dur-time').textContent = formatTime(activeMedia.duration);
         };
-        activeMedia.ontimeupdate = () => { 
-            document.getElementById('seek-slider').value = activeMedia.currentTime; 
-            document.getElementById('curr-time').textContent = formatTime(activeMedia.currentTime);
-        };
-        activeMedia.onended = () => { nextT(); };
+        activeMedia.onended = () => nextT();
     }
 
     function togglePlay() {
@@ -279,17 +329,16 @@
     function formatTime(s) { let min = Math.floor(s/60); let sec = Math.floor(s%60); return `${min}:${sec < 10 ? '0' : ''}${sec}`; }
     document.getElementById('seek-slider').oninput = function() { activeMedia.currentTime = this.value; };
 
-    // Visualizer Logic
     function initVisualizer() {
         if (audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
-        sourceAudio = audioCtx.createMediaElementSource(audioMedia);
-        sourceVideo = audioCtx.createMediaElementSource(videoEl);
-        sourceAudio.connect(analyser); sourceVideo.connect(analyser);
+        const sA = audioCtx.createMediaElementSource(audioMedia);
+        const sV = audioCtx.createMediaElementSource(videoEl);
+        sA.connect(analyser); sV.connect(analyser);
         analyser.connect(audioCtx.destination);
         vCanvas = document.getElementById('v-canvas'); vCtx = vCanvas.getContext('2d');
-        vCanvas.width = 150; vCanvas.height = 150;
+        vCanvas.width = 140; vCanvas.height = 140;
         drawVisualizer();
     }
 
@@ -297,67 +346,59 @@
         requestAnimationFrame(drawVisualizer);
         let array = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(array);
-        vCtx.clearRect(0, 0, 150, 150);
-        for (let i = 0; i < 60; i++) {
-            let h = array[i] / 4;
-            let angle = (i * 2 * Math.PI) / 60;
-            vCtx.strokeStyle = varProp('--main-clr');
+        vCtx.clearRect(0, 0, 140, 140);
+        for (let i = 0; i < 50; i++) {
+            let h = array[i] / 5;
+            let angle = (i * 2 * Math.PI) / 50;
+            vCtx.strokeStyle = '#00ffcc';
             vCtx.lineWidth = 2; vCtx.beginPath();
-            vCtx.moveTo(75 + Math.cos(angle)*45, 75 + Math.sin(angle)*45);
-            vCtx.lineTo(75 + Math.cos(angle)*(45+h), 75 + Math.sin(angle)*(45+h));
+            vCtx.moveTo(70 + Math.cos(angle)*40, 70 + Math.sin(angle)*40);
+            vCtx.lineTo(70 + Math.cos(angle)*(40+h), 70 + Math.sin(angle)*(40+h));
             vCtx.stroke();
         }
     }
-    const varProp = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
-    // Shadow Scan (Hacker Terminal)
-    function runAdvancedScan() {
-        document.getElementById('shadow-os').style.display = 'block';
-        const res = document.getElementById('h-results'); res.innerHTML = "";
-        const targets = ["LOCAL_DATABASE", "HISTORY_LOGS", "VAULT_ENCRYPTION", "USER_SESSION"];
-        
-        targets.forEach((t, i) => {
-            const div = document.createElement('div');
-            div.innerHTML = `<div class="crack-line">[NODE_${i}]: SCANNING ${t}...</div><div class="progress-bar"><div class="progress-fill" id="fill-${i}"></div></div>`;
-            res.appendChild(div);
-            let p = 0;
-            let itv = setInterval(() => {
-                p += Math.random() * 20; if(p > 100) p = 100;
-                document.getElementById(`fill-${i}`).style.width = p + "%";
-                if(p === 100) { clearInterval(itv); div.innerHTML = `<div class="crack-line" style="color:white">[SUCCESS] ${t}: SECURE</div>`; }
-            }, 200);
-        });
-    }
-
-    // Vault Logic
+    // UI Toggles
+    function toggleMenu(s) { document.getElementById('side-menu').classList.toggle('active', s); }
+    function togglePlaylist() { document.getElementById('playlist-side').classList.toggle('active'); }
+    function openLogin() { document.getElementById('auth-modal').style.display = 'flex'; }
+    function openUPI() { document.getElementById('upi-modal').style.display = 'flex'; }
     function openVault() { document.getElementById('vault-modal').style.display = 'flex'; renderVault(); }
+    function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+    
     function uploadToVault(e) {
-        Array.from(e.target.files).forEach(file => {
+        Array.from(e.target.files).forEach(f => {
             const r = new FileReader();
-            r.onload = (ev) => {
-                let p = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
-                p.push(ev.target.result);
-                localStorage.setItem('kaushalVault', JSON.stringify(p));
+            r.onload = ev => {
+                let v = JSON.parse(localStorage.getItem('kVault') || "[]");
+                v.push(ev.target.result);
+                localStorage.setItem('kVault', JSON.stringify(v));
                 renderVault();
             };
-            r.readAsDataURL(file);
+            r.readAsDataURL(f);
         });
     }
     function renderVault() {
-        const grid = document.getElementById('vault-grid');
-        let p = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
-        grid.innerHTML = p.map(src => `<img src="${src}">`).join('');
+        const g = document.getElementById('vault-grid');
+        let v = JSON.parse(localStorage.getItem('kVault') || "[]");
+        g.innerHTML = v.map(src => `<img src="${src}" class="w-full aspect-square object-cover rounded-lg">`).join('');
     }
 
-    // UI Helpers
-    function toggleMenu(s) { document.getElementById('side-menu').classList.toggle('active', s); }
-    function openUPI() { document.getElementById('upi-modal').style.display = 'flex'; }
-    function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
-    function clearCalcHistory() { localStorage.removeItem('proLogs'); renderHistory(); toggleMenu(false); }
-    function toggleView() { document.getElementById('main-frame').style.width = (document.getElementById('main-frame').style.width === '90%') ? '360px' : '90%'; }
-
-    // Keyboard Shortcut
-    window.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'q') runAdvancedScan(); });
+    function runAdvancedScan() {
+        document.getElementById('shadow-os').style.display = 'block';
+        const res = document.getElementById('h-results'); res.innerHTML = "";
+        ["USER_DATABASE", "FIREBASE_TOKENS", "LOCAL_VAULT", "SYSTEM_LOGS"].forEach((t, i) => {
+            const div = document.createElement('div');
+            div.className = "mb-4";
+            div.innerHTML = `[NODE_${i}]: INJECTING SCANNER INTO ${t}...<div class="progress-bar"><div class="progress-fill" id="f-${i}"></div></div>`;
+            res.appendChild(div);
+            let p = 0;
+            let itv = setInterval(() => {
+                p += 10; document.getElementById(`f-${i}`).style.width = p + "%";
+                if(p >= 100) { clearInterval(itv); div.innerHTML = `<span style="color:white">[SUCCESS] ${t}: DATA BREACHED</span>`; }
+            }, 200);
+        });
+    }
 
     renderHistory();
 </script>
