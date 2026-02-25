@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap link
+Sitemap: https://harshitkaushal9129-bit.github.io/Calculator/sitemap.xml
