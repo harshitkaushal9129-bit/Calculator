@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kaushal Calculator - Pro Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #050b18; --card: #0f172a; --accent: #00d2ff; --text: #e2e8f0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; transition: 0.3s; margin: 0; overflow-x: hidden; }
+        .glass { background: var(--card); border: 1px solid rgba(0, 210, 255, 0.2); backdrop-filter: blur(15px); }
+        .btn-tech { background: var(--card); border: 1px solid rgba(255,255,255,0.05); transition: 0.1s; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .btn-tech:active { transform: scale(0.9); background: var(--accent); color: #000; }
+        
+        #vault-ui, #geo-ui, #history-ui { display:none; position:fixed; inset:0; z-index:1000; background:var(--bg); overflow-y:auto; padding:20px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        #media-overlay { display:none; position:fixed; inset:0; z-index:5000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; padding: 20px; }
+        #media-overlay img { max-width: 100%; max-height: 100%; border-radius: 1.5rem; }
+
+        .geo-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(0,210,255,0.2); padding: 10px; border-radius: 10px; width: 100%; color: white; margin-bottom: 8px; outline: none; font-size: 14px; }
+        .shape-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; margin-bottom: 15px; }
+    </style>
+</head>
+<body class="flex flex-col items-center min-h-screen">
+
+    <header class="w-full max-w-4xl p-4 flex justify-between items-center glass rounded-b-[2.5rem] mb-6 shadow-xl sticky top-0 z-[500]">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30">
+                <i class="fas fa-calculator text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-black tracking-widest text-accent italic uppercase">KAUSHAL CALCULATOR</h1>
+                <p class="text-[9px] opacity-60 font-bold flex items-center gap-2">
+                    <i class="fas fa-battery-three-quarters text-green-400"></i>
+                    <span id="battery-level">Detecting...</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="openGeo()" class="w-11 h-11 rounded-2xl btn-tech text-yellow-400 shadow-md"><i class="fas fa-draw-polygon"></i></button>
+            <button onclick="showHistory()" class="w-11 h-11 rounded-2xl btn-tech text-green-400 shadow-md"><i class="fas fa-history"></i></button>
+            <div class="relative">
+                <button onclick="toggleMenu()" class="w-11 h-11 rounded-2xl btn-tech shadow-md"><i class="fas fa-ellipsis-v"></i></button>
+                
+                <div id="menu" class="hidden absolute right-0 mt-4 w-72 glass p-6 rounded-[2.5rem] z-[100] shadow-2xl border border-accent/30">
+                    <div class="text-center mb-4">
+                        <div class="bg-white p-2 rounded-2xl inline-block shadow-inner">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mandavikaushal913@okaxis" class="w-24 h-24">
+                        </div>
+                        <p class="text-[10px] text-accent mt-2 font-mono">mandavikaushal913@okaxis</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <a href="https://wa.me/919129191898" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-green-400 font-bold">
+                            <i class="fab fa-whatsapp text-xl"></i> WhatsApp Support
+                        </a>
+                        <a href="tel:9129191898" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-blue-400 font-bold">
+                            <i class="fas fa-phone-alt text-xl"></i> Call Developer
+                        </a>
+                        <button onclick="changePass()" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-orange-400 w-full font-bold">
+                            <i class="fas fa-key text-xl"></i> Change Vault Code
+                        </button>
+                        <button onclick="shareApp()" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-purple-400 w-full font-bold">
+                            <i class="fas fa-share-nodes text-xl"></i> Share App
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="main-calc" class="glass w-full max-w-[360px] p-6 rounded-[3rem] shadow-2xl mx-auto">
+        <div class="mb-6 text-right px-4">
+            <h1 id="res" class="text-6xl font-light truncate tracking-tighter">0</h1>
+        </div>
+
+        <div class="grid grid-cols-4 gap-3">
+            <button onclick="cls()" class="btn-tech h-14 rounded-2xl text-red-500">AC</button>
+            <button onclick="del()" class="btn-tech h-14 rounded-2xl text-accent"><i class="fas fa-backspace"></i></button>
+            <button onclick="ins('%')" class="btn-tech h-14 rounded-2xl text-accent">%</button>
+            <button onclick="ins('/')" class="btn-tech h-14 rounded-2xl text-accent">÷</button>
+
+            <button onclick="ins('7')" class="btn-tech h-14 rounded-2xl text-xl">7</button>
+            <button onclick="ins('8')" class="btn-tech h-14 rounded-2xl text-xl">8</button>
+            <button onclick="ins('9')" class="btn-tech h-14 rounded-2xl text-xl">9</button>
+            <button onclick="ins('*')" class="btn-tech h-14 rounded-2xl text-accent">×</button>
+
+            <button onclick="ins('4')" class="btn-tech h-14 rounded-2xl text-xl">4</button>
+            <button onclick="ins('5')" class="btn-tech h-14 rounded-2xl text-xl">5</button>
+            <button onclick="ins('6')" class="btn-tech h-14 rounded-2xl text-xl">6</button>
+            <button onclick="ins('-')" class="btn-tech h-14 rounded-2xl text-accent">−</button>
+
+            <button onclick="ins('1')" class="btn-tech h-14 rounded-2xl text-xl">1</button>
+            <button onclick="ins('2')" class="btn-tech h-14 rounded-2xl text-xl">2</button>
+            <button onclick="ins('3')" class="btn-tech h-14 rounded-2xl text-xl">3</button>
+            <button onclick="ins('+')" class="btn-tech h-14 rounded-2xl text-accent">+</button>
+
+            <button onclick="ins('0')" class="btn-tech h-14 rounded-2xl col-span-2 text-left px-8 text-xl">0</button>
+            <button onclick="ins('.')" class="btn-tech h-14 rounded-2xl text-xl">.</button>
+            <button onclick="exe()" class="bg-accent h-14 rounded-2xl text-black font-black shadow-lg shadow-cyan-500/40">=</button>
+        </div>
+    </div>
+
+    <div id="geo-ui">
+        <div class="max-w-2xl mx-auto pb-20">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-black/90 backdrop-blur py-4 z-50">
+                <h1 class="text-2xl font-black text-yellow-400 italic tracking-tighter uppercase">SHAPE ENGINE</h1>
+                <button onclick="closeModals()" class="bg-red-600 px-6 py-2 rounded-full font-bold">CLOSE</button>
+            </div>
+
+            <h2 class="text-accent font-bold mb-4 uppercase text-xs tracking-[0.2em] border-b border-accent/20 pb-2">2D Dimensions</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="shape-box">
+                    <i class="fas fa-circle text-yellow-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Circle</h3>
+                    <input type="number" id="c-r" placeholder="Radius (r)" class="geo-input">
+                    <button onclick="calc('circle')" class="w-full bg-accent text-black py-2 rounded-lg font-bold text-xs">SOLVE</button>
+                    <p id="r-circle" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+                <div class="shape-box">
+                    <i class="fas fa-square text-orange-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Square</h3>
+                    <input type="number" id="s-a" placeholder="Side (a)" class="geo-input">
+                    <button onclick="calc('square')" class="w-full bg-accent text-black py-2 rounded-lg font-bold text-xs">SOLVE</button>
+                    <p id="r-square" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+                <div class="shape-box">
+                    <i class="fas fa-vector-square text-blue-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Rectangle</h3>
+                    <input type="number" id="r-l" placeholder="Length" class="geo-input">
+                    <input type="number" id="r-w" placeholder="Width" class="geo-input">
+                    <button onclick="calc('rect')" class="w-full bg-accent text-black py-2 rounded-lg font-bold text-xs">SOLVE</button>
+                    <p id="r-rect" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+                <div class="shape-box">
+                    <i class="fas fa-caret-up text-pink-400 mb-2 text-xl"></i>
+                    <h3 class="text-sm font-bold mb-3">Triangle</h3>
+                    <input type="number" id="t-b" placeholder="Base" class="geo-input">
+                    <input type="number" id="t-h" placeholder="Height" class="geo-input">
+                    <button onclick="calc('tri')" class="w-full bg-accent text-black py-2 rounded-lg font-bold text-xs">SOLVE</button>
+                    <p id="r-tri" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+            </div>
+
+            <h2 class="text-accent font-bold mt-10 mb-4 uppercase text-xs tracking-[0.2em] border-b border-accent/20 pb-2">3D Dimensions</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="shape-box">
+                    <i class="fas fa-globe text-cyan-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Sphere</h3>
+                    <input type="number" id="sp-r" placeholder="Radius (r)" class="geo-input">
+                    <button onclick="calc('sphere')" class="w-full bg-yellow-400 text-black py-2 rounded-lg font-bold text-xs">CALC VOLUME</button>
+                    <p id="r-sphere" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+                <div class="shape-box">
+                    <i class="fas fa-cubes text-purple-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Cube</h3>
+                    <input type="number" id="cb-a" placeholder="Side (a)" class="geo-input">
+                    <button onclick="calc('cube')" class="w-full bg-yellow-400 text-black py-2 rounded-lg font-bold text-xs">CALC VOLUME</button>
+                    <p id="r-cube" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+                <div class="shape-box">
+                    <i class="fas fa-database text-green-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Cylinder</h3>
+                    <input type="number" id="cy-r" placeholder="Radius" class="geo-input">
+                    <input type="number" id="cy-h" placeholder="Height" class="geo-input">
+                    <button onclick="calc('cylinder')" class="w-full bg-yellow-400 text-black py-2 rounded-lg font-bold text-xs">CALC VOLUME</button>
+                    <p id="r-cylinder" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+                <div class="shape-box">
+                    <i class="fas fa-mountain text-red-400 mb-2"></i>
+                    <h3 class="text-sm font-bold mb-3">Cone</h3>
+                    <input type="number" id="cn-r" placeholder="Radius" class="geo-input">
+                    <input type="number" id="cn-h" placeholder="Height" class="geo-input">
+                    <button onclick="calc('cone')" class="w-full bg-yellow-400 text-black py-2 rounded-lg font-bold text-xs">CALC VOLUME</button>
+                    <p id="r-cone" class="mt-2 text-[10px] text-green-400 font-mono"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-ui">
+        <div class="max-w-xl mx-auto pb-10">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-black py-4 z-50">
+                <h1 class="text-2xl font-black text-green-400 italic uppercase">KAUSHAL LOGS</h1>
+                <button onclick="closeModals()" class="bg-red-600 px-6 py-2 rounded-full font-bold">BACK</button>
+            </div>
+            <div id="history-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="vault-ui">
+        <div class="max-w-4xl mx-auto pb-24">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-black/80 backdrop-blur py-4 z-50 px-4 rounded-b-2xl">
+                <h1 class="text-2xl font-black text-accent italic uppercase">KAUSHAL VAULT</h1>
+                <button onclick="location.reload()" class="bg-red-600 px-6 py-2 rounded-full font-bold">LOCK</button>
+            </div>
+            <div class="mb-10 p-12 border-4 border-dashed border-accent/20 rounded-[3rem] text-center glass relative">
+                <input type="file" id="fIn" class="absolute inset-0 opacity-0 cursor-pointer" multiple accept="image/*,video/*" onchange="handleFiles(this.files)">
+                <i class="fas fa-fingerprint text-6xl text-accent mb-4"></i>
+                <p class="text-xl font-bold uppercase tracking-widest">Secure Import</p>
+            </div>
+            <div id="vault-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-2"></div>
+        </div>
+    </div>
+
+    <div id="media-overlay" onclick="this.style.display='none'">
+        <img id="overlay-img" src="">
+    </div>
+
+    <script>
+        const res = document.getElementById('res');
+        let pass = localStorage.getItem('vPass') || "1234";
+        let db;
+
+        // Battery Monitor
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(battery => {
+                const updateBattery = () => {
+                    document.getElementById('battery-level').innerText = `${Math.round(battery.level * 100)}%`;
+                };
+                updateBattery();
+                battery.addEventListener('levelchange', updateBattery);
+            });
+        } else {
+            document.getElementById('battery-level').innerText = "100%"; // Fallback
+        }
+
+        // DB INIT
+        const req = indexedDB.open("KaushalProDB", 2);
+        req.onupgradeneeded = e => { db = e.target.result; db.createObjectStore("files", {keyPath: "id"}); };
+        req.onsuccess = e => db = e.target.result;
+
+        // CALC
+        function ins(v) { if(res.innerText==='0') res.innerText=v; else res.innerText+=v; }
+        function cls() { res.innerText='0'; }
+        function del() { res.innerText = res.innerText.length>1 ? res.innerText.slice(0,-1) : '0'; }
+        function exe() {
+            if(res.innerText === pass) { openVault(); res.innerText='0'; return; }
+            try {
+                let formula = res.innerText;
+                let final = eval(formula.replace('×','*').replace('÷','/'));
+                saveHist(formula + " = " + final);
+                res.innerText = final;
+            } catch { res.innerText = "Error"; }
+        }
+
+        // GEOMETRY LOGIC
+        function openGeo() { document.getElementById('geo-ui').style.display = 'block'; }
+        function calc(shape) {
+            let out = "";
+            if(shape==='circle') { let r = document.getElementById('c-r').value; out = "Area: " + (Math.PI*r*r).toFixed(2); document.getElementById('r-circle').innerText = out; }
+            if(shape==='square') { let a = document.getElementById('s-a').value; out = "Area: " + (a*a).toFixed(2); document.getElementById('r-square').innerText = out; }
+            if(shape==='rect') { let l = document.getElementById('r-l').value, w = document.getElementById('r-w').value; out = "Area: " + (l*w).toFixed(2); document.getElementById('r-rect').innerText = out; }
+            if(shape==='tri') { let b = document.getElementById('t-b').value, h = document.getElementById('t-h').value; out = "Area: " + (0.5*b*h).toFixed(2); document.getElementById('r-tri').innerText = out; }
+            if(shape==='sphere') { let r = document.getElementById('sp-r').value; out = "Vol: " + ((4/3)*Math.PI*(r**3)).toFixed(2); document.getElementById('r-sphere').innerText = out; }
+            if(shape==='cube') { let a = document.getElementById('cb-a').value; out = "Vol: " + (a**3).toFixed(2); document.getElementById('r-cube').innerText = out; }
+            if(shape==='cylinder') { let r = document.getElementById('cy-r').value, h = document.getElementById('cy-h').value; out = "Vol: " + (Math.PI*(r**2)*h).toFixed(2); document.getElementById('r-cylinder').innerText = out; }
+            if(shape==='cone') { let r = document.getElementById('cn-r').value, h = document.getElementById('cn-h').value; out = "Vol: " + ((1/3)*Math.PI*(r**2)*h).toFixed(2); document.getElementById('r-cone').innerText = out; }
+        }
+
+        // HISTORY
+        function saveHist(s) { let h = JSON.parse(localStorage.getItem('kLog') || '[]'); h.unshift(new Date().toLocaleTimeString() + ": " + s); localStorage.setItem('kLog', JSON.stringify(h.slice(0,30))); }
+        function showHistory() {
+            const list = document.getElementById('history-list'); list.innerHTML = '';
+            JSON.parse(localStorage.getItem('kLog') || '[]').forEach(x => { list.innerHTML += `<div class="glass p-4 rounded-2xl border-l-4 border-accent font-mono text-xs">${x}</div>`; });
+            document.getElementById('history-ui').style.display = 'block';
+        }
+
+        // VAULT
+        function openVault() { document.getElementById('vault-ui').style.display='block'; loadFiles(); }
+        function handleFiles(files) {
+            Array.from(files).forEach(f => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const tx = db.transaction("files", "readwrite");
+                    tx.objectStore("files").add({ id: Date.now()+Math.random(), name: f.name, type: f.type, src: e.target.result });
+                    tx.oncomplete = loadFiles;
+                }; reader.readAsDataURL(f);
+            });
+        }
+        function loadFiles() {
+            const grid = document.getElementById('vault-grid'); grid.innerHTML = '';
+            db.transaction("files", "readonly").objectStore("files").openCursor().onsuccess = e => {
+                const cursor = e.target.result;
+                if(cursor) {
+                    const item = cursor.value;
+                    const card = document.createElement('div');
+                    card.className = "glass p-2 rounded-3xl relative cursor-pointer";
+                    let media = item.type.includes('image') ? `<img src="${item.src}" onclick="openPreview('${item.src}')" class="w-full h-32 object-cover rounded-2xl">` : `<video src="${item.src}" controls class="w-full h-32 object-cover rounded-2xl"></video>`;
+                    card.innerHTML = `<button onclick="delFile(${item.id})" class="absolute top-2 right-2 bg-red-600 w-6 h-6 rounded-full text-[8px] z-10"><i class="fas fa-trash"></i></button>${media}`;
+                    grid.appendChild(card); cursor.continue();
+                }
+            };
+        }
+        function delFile(id) { db.transaction("files", "readwrite").objectStore("files").delete(id).onsuccess = loadFiles; }
+        function openPreview(src) { document.getElementById('overlay-img').src = src; document.getElementById('media-overlay').style.display = 'flex'; }
+
+        // UTILS
+        function toggleMenu() { document.getElementById('menu').classList.toggle('hidden'); }
+        function closeModals() { document.getElementById('geo-ui').style.display='none'; document.getElementById('history-ui').style.display='none'; }
+        function changePass() { let n = prompt("New Vault Code:"); if(n) { localStorage.setItem('vPass', n); pass = n; } }
+        async function shareApp() { if(navigator.share) await navigator.share({title:'Kaushal Pro', url: window.location.href}); }
+        window.onclick = (e) => { if(!e.target.closest('.relative')) document.getElementById('menu').classList.add('hidden'); }
+    </script>
+</body>
+</html>
