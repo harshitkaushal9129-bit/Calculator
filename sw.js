@@ -1,16 +1,15 @@
-const CACHE_NAME = 'kaushal-pro-v2';
+const CACHE_NAME = 'kaushal-pro-v3';
 const assets = [
   './',
   './index.html',
   './manifest.json',
-  './kaushalji.jpg',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  './kaushalji.jpg'
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
+      console.log('Caching essential assets...');
       return cache.addAll(assets);
     })
   );
