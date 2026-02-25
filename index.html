@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaushal Calculator - Pro Edition</title>
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#050b18">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -136,7 +137,7 @@
     <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
 
     <script>
-        // 1. PWA Setup
+        // PWA LOGIC
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
 
@@ -145,13 +146,16 @@
             deferredPrompt = e;
             installBtn.classList.remove('hidden');
             installBtn.classList.add('flex');
+            console.log('PWA Prompt is ready to show.');
         });
 
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.classList.add('hidden');
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
                 deferredPrompt = null;
             }
         });
@@ -164,7 +168,7 @@
             });
         }
 
-        // 2. Battery Logic
+        // BATTERY LOGIC
         if (navigator.getBattery) {
             navigator.getBattery().then(battery => {
                 const update = () => document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + "%";
@@ -173,7 +177,7 @@
             });
         }
 
-        // 3. Calculator & Vault Logic
+        // CALCULATOR & VAULT LOGIC
         const resDisplay = document.getElementById('res');
         let pass = localStorage.getItem('vPass') || "1234";
         let db;
