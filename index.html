@@ -8,38 +8,67 @@
     <meta name="theme-color" content="#050b18">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
+            authDomain: "calculator-by-kaushalji.firebaseapp.com",
+            projectId: "calculator-by-kaushalji",
+            storageBucket: "calculator-by-kaushalji.firebasestorage.app",
+            messagingSenderId: "156130281294",
+            appId: "1:156130281294:web:73b80a5f344daeabdd001f",
+            measurementId: "G-TKRF2YK924"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.handleAuth = async (type) => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            try {
+                if(type === 'login') await signInWithEmailAndPassword(auth, email, pass);
+                else await createUserWithEmailAndPassword(auth, email, pass);
+                alert("Success!");
+                document.getElementById('auth-ui').style.display = 'none';
+            } catch (e) { alert(e.message); }
+        };
+
+        window.verifyForPassChange = () => {
+            if (!auth.currentUser) { alert("Pehle Login kijiye!"); openAuth('login'); return; }
+            let n = prompt("Naya Vault Code daalein:");
+            if(n && n.length >= 4) { localStorage.setItem('vPass', n); alert("Vault Code Updated!"); }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('user-status').innerHTML = user ? `<i class="fas fa-check-circle text-green-400"></i> ${user.email.split('@')[0]}` : `<i class="fas fa-user-circle"></i> Login`;
+        });
+    </script>
+
     <style>
         :root { --bg: #050b18; --card: #0f172a; --accent: #00d2ff; --text: #e2e8f0; }
         body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; }
         .glass { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); backdrop-filter: blur(15px); }
         .btn-tech { background: var(--card); border: 1px solid rgba(255,255,255,0.05); transition: 0.1s; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .btn-tech:active { transform: scale(0.95); background: var(--accent); color: #000; }
-        
         #vault-ui, #geo-ui, #history-ui, #auth-ui { display:none; position:fixed; inset:0; z-index:1000; background:var(--bg); overflow-y:auto; padding:20px; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
-        #media-overlay { display:none; position:fixed; inset:0; z-index:5000; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; padding: 20px; }
-        #media-overlay img { max-width: 90%; max-height: 80%; border-radius: 1.5rem; object-fit: contain; }
-
-        .geo-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(0,210,255,0.2); padding: 12px; border-radius: 12px; width: 100%; color: white; margin-bottom: 12px; outline: none; }
+        #media-overlay { display:none; position:fixed; inset:0; z-index:5000; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; }
+        .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(0,210,255,0.2); padding: 12px; border-radius: 12px; width: 100%; color: white; margin-bottom: 12px; outline: none; }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen">
 
     <header class="w-full max-w-4xl p-4 flex justify-between items-center glass rounded-b-[2.5rem] mb-6 shadow-xl sticky top-0 z-[500]">
-        <button onclick="alert('Login feature coming soon!')" class="w-10 h-10 rounded-full btn-tech text-accent">
-            <i class="fas fa-user-circle text-xl"></i>
+        <button onclick="openAuth('login')" class="flex items-center gap-2 px-3 py-1 rounded-full btn-tech text-accent text-xs">
+            <span id="user-status"><i class="fas fa-user-circle"></i> Login</span>
         </button>
-
-        <div class="flex items-center gap-2">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white">
-                <i class="fas fa-calculator"></i>
-            </div>
-            <h1 class="text-xs font-black tracking-widest text-accent uppercase">KAUSHAL PRO</h1>
-        </div>
-
-        <button onclick="alert('Registration feature coming soon!')" class="w-10 h-10 rounded-full btn-tech text-green-400">
-            <i class="fas fa-user-plus text-lg"></i>
+        <h1 class="text-xs font-black tracking-widest text-accent uppercase">KAUSHAL PRO</h1>
+        <button onclick="openAuth('register')" class="w-10 h-10 rounded-full btn-tech text-green-400">
+            <i class="fas fa-user-plus"></i>
         </button>
     </header>
 
@@ -47,39 +76,21 @@
         <button onclick="openGeo()" class="w-12 h-12 rounded-2xl btn-tech text-yellow-400 shadow-md"><i class="fas fa-draw-polygon"></i></button>
         <button onclick="showHistory()" class="w-12 h-12 rounded-2xl btn-tech text-green-400 shadow-md"><i class="fas fa-history"></i></button>
         <div class="relative">
-            <button onclick="toggleMenu()" class="w-12 h-12 rounded-2xl btn-tech shadow-md text-accent"><i class="fas fa-ellipsis-v"></i></button>
-            
-            <div id="menu" class="hidden absolute right-0 mt-4 w-80 glass p-6 rounded-[2.5rem] z-[100] shadow-2xl border border-accent/30">
-                <div class="text-center mb-6">
-                    <p class="text-[10px] text-accent mb-2 font-bold uppercase tracking-widest">Support Payment</p>
-                    <div class="bg-white p-3 rounded-3xl inline-block shadow-lg">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="w-40 h-40" alt="UPI QR">
+            <button onclick="toggleMenu()" class="w-12 h-12 rounded-2xl btn-tech text-accent shadow-md"><i class="fas fa-ellipsis-v"></i></button>
+            <div id="menu" class="hidden absolute right-0 mt-4 w-72 glass p-6 rounded-[2.5rem] z-[100] border border-accent/30 shadow-2xl">
+                <div class="text-center mb-4">
+                    <div class="bg-white p-2 rounded-2xl inline-block shadow-lg">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=mandavikaushal913@okaxis" class="w-32 h-32" alt="QR">
                     </div>
-                    <p class="text-xs text-white mt-3 font-mono font-bold">mandavikaushal913@okaxis</p>
                 </div>
-
-                <div class="grid grid-cols-1 gap-2">
-                    <button onclick="shareApp()" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-blue-400 font-bold">
-                        <i class="fas fa-share-alt text-xl"></i> Share App
-                    </button>
-                    <a href="https://wa.me/919129191898" target="_blank" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-green-400 font-bold">
-                        <i class="fab fa-whatsapp text-xl"></i> WhatsApp Support
-                    </a>
-                    <button id="installBtn" class="hidden items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-cyan-400 font-bold">
-                        <i class="fas fa-download text-xl"></i> Install App
-                    </button>
-                    <button onclick="verifyForPassChange()" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-orange-400 font-bold">
-                        <i class="fas fa-key text-xl"></i> New Vault Code
-                    </button>
-                </div>
+                <button onclick="shareApp()" class="w-full text-left p-3 flex items-center gap-3 text-blue-400 font-bold"><i class="fas fa-share-alt"></i> Share App</button>
+                <button onclick="verifyForPassChange()" class="w-full text-left p-3 flex items-center gap-3 text-orange-400 font-bold"><i class="fas fa-key"></i> New Vault Code</button>
             </div>
         </div>
     </div>
 
-    <main id="main-calc" class="glass w-full max-w-[350px] p-6 rounded-[3rem] shadow-2xl mx-auto">
-        <div class="mb-6 text-right px-4">
-            <h1 id="res" class="text-6xl font-light truncate tracking-tighter">0</h1>
-        </div>
+    <main id="main-calc" class="glass w-full max-w-[340px] p-6 rounded-[3rem] shadow-2xl mx-auto">
+        <div class="mb-6 text-right px-4"><h1 id="res" class="text-6xl font-light truncate tracking-tighter">0</h1></div>
         <div class="grid grid-cols-4 gap-3">
             <button onclick="cls()" class="btn-tech h-14 rounded-2xl text-red-500">AC</button>
             <button onclick="del()" class="btn-tech h-14 rounded-2xl text-accent"><i class="fas fa-backspace"></i></button>
@@ -99,120 +110,96 @@
             <button onclick="ins('+')" class="btn-tech h-14 rounded-2xl text-accent">+</button>
             <button onclick="ins('0')" class="btn-tech h-14 rounded-2xl col-span-2 text-xl">0</button>
             <button onclick="ins('.')" class="btn-tech h-14 rounded-2xl text-xl">.</button>
-            <button onclick="exe()" class="bg-accent h-14 rounded-2xl text-black font-black shadow-lg shadow-cyan-500/40">=</button>
+            <button onclick="exe()" class="bg-accent h-14 rounded-2xl text-black font-black">=</button>
         </div>
     </main>
 
-    <div id="auth-ui" class="glass">
-        <div class="max-w-sm mx-auto mt-20 p-8 glass rounded-[2.5rem] border border-accent/30 text-center">
-            <h2 class="text-xl font-bold mb-6 text-accent">Identity Verification</h2>
-            <input type="text" id="auth-id" placeholder="Login ID" class="geo-input">
-            <input type="password" id="auth-pass" placeholder="Password" class="geo-input">
-            <div class="flex gap-3 mt-4">
-                <button onclick="document.getElementById('auth-ui').style.display='none'" class="flex-1 bg-gray-700 py-3 rounded-xl font-bold">Cancel</button>
-                <button onclick="checkAuth()" class="flex-1 bg-accent text-black py-3 rounded-xl font-bold">Verify</button>
-            </div>
+    <div id="auth-ui" class="flex flex-col items-center justify-center">
+        <div class="glass w-full max-w-sm p-8 rounded-[2.5rem] border border-accent/20">
+            <h2 id="auth-title" class="text-2xl font-bold text-center mb-6 text-accent">Login</h2>
+            <input type="email" id="auth-email" placeholder="Email" class="input-field">
+            <input type="password" id="auth-pass" placeholder="Password" class="input-field">
+            <button id="auth-btn" class="w-full bg-accent text-black py-3 rounded-xl font-bold">Continue</button>
+            <button onclick="document.getElementById('auth-ui').style.display='none'" class="w-full mt-3 text-gray-400 text-sm">Cancel</button>
         </div>
     </div>
 
-    <div id="geo-ui">
-        <div class="max-w-2xl mx-auto pb-20">
-            <div class="flex justify-between items-center mb-8 py-4">
-                <h1 class="text-2xl font-black text-yellow-400 uppercase">Shape Engine</h1>
-                <button onclick="closeModals()" class="bg-red-600 px-6 py-2 rounded-full font-bold">CLOSE</button>
+    <div id="vault-ui">
+        <div class="max-w-4xl mx-auto pb-24">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-black/80 py-4 px-4 z-50 rounded-b-2xl">
+                <h1 class="text-2xl font-black text-accent uppercase">Kaushal Vault</h1>
+                <button onclick="location.reload()" class="bg-red-600 px-6 py-2 rounded-full font-bold">LOCK</button>
             </div>
-            <div class="shape-box glass p-6 rounded-3xl">
-                <h3 class="font-bold mb-3">Circle Area</h3>
-                <input type="number" id="c-r" placeholder="Radius" class="geo-input">
-                <button onclick="calcShape('circle')" class="w-full bg-accent text-black py-3 rounded-xl font-bold">SOLVE</button>
-                <p id="r-circle" class="mt-4 text-green-400 font-mono text-center text-xl"></p>
+            <div class="mb-10 p-12 border-4 border-dashed border-accent/20 rounded-[3rem] text-center glass relative">
+                <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" multiple accept="image/*" onchange="handleFiles(this.files)">
+                <i class="fas fa-fingerprint text-6xl text-accent mb-4"></i>
+                <p class="font-bold">SECURE IMPORT</p>
             </div>
+            <div id="vault-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6 px-2"></div>
         </div>
     </div>
+
+    <div id="history-ui">
+        <div class="max-w-xl mx-auto">
+            <div class="flex justify-between items-center mb-8 py-4"><h1 class="text-2xl font-black text-green-400">LOGS</h1><button onclick="closeModals()" class="bg-red-600 px-6 py-2 rounded-full font-bold">BACK</button></div>
+            <div id="history-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" class="max-w-[90%] max-h-[80%] rounded-3xl"></div>
 
     <script>
-        // AUTH SYSTEM (Simple for now, can be connected to Firebase/Backend)
-        const MASTER_ID = "admin"; 
-        const MASTER_PW = "123456";
-
-        function verifyForPassChange() {
-            document.getElementById('menu').classList.add('hidden');
-            document.getElementById('auth-ui').style.display = 'block';
-        }
-
-        function checkAuth() {
-            const id = document.getElementById('auth-id').value;
-            const pw = document.getElementById('auth-pass').value;
-            
-            if(id === MASTER_ID && pw === MASTER_PW) {
-                document.getElementById('auth-ui').style.display = 'none';
-                changePass();
-            } else {
-                alert("Invalid Credentials!");
-            }
-        }
-
-        function shareApp() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Kaushal Pro Calculator',
-                    text: 'Check out this awesome Calculator with Vault!',
-                    url: window.location.href
-                });
-            } else {
-                alert("Sharing link: " + window.location.href);
-            }
-        }
-
-        // PWA & Calculator Logic (Rest stays as per previous versions)
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.classList.remove('hidden');
-            installBtn.classList.add('flex');
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.classList.add('hidden');
-                deferredPrompt = null;
-            }
-        });
-
-        // Basic Calc Functions
         const resDisplay = document.getElementById('res');
-        let vaultPass = localStorage.getItem('vPass') || "1234";
+        let db;
+        const req = indexedDB.open("KaushalProDB", 2);
+        req.onsuccess = e => db = e.target.result;
+        req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains("files")) e.target.result.createObjectStore("files", {keyPath: "id"}); };
 
         function ins(v) { if(resDisplay.innerText==='0') resDisplay.innerText=v; else resDisplay.innerText+=v; }
         function cls() { resDisplay.innerText='0'; }
         function del() { resDisplay.innerText = resDisplay.innerText.length>1 ? resDisplay.innerText.slice(0,-1) : '0'; }
-        
+        function toggleMenu() { document.getElementById('menu').classList.toggle('hidden'); }
+        function closeModals() { document.querySelectorAll('#geo-ui, #history-ui, #vault-ui, #auth-ui').forEach(el => el.style.display='none'); }
+        function openGeo() { alert("Geo-Engine feature!"); }
+        function openAuth(mode) { document.getElementById('auth-ui').style.display='flex'; document.getElementById('auth-title').innerText = mode==='login'?'Login':'Register'; document.getElementById('auth-btn').onclick = () => window.handleAuth(mode); }
+
         function exe() {
-            if(resDisplay.innerText === vaultPass) { alert("Vault Opened! (Logic connected)"); resDisplay.innerText='0'; return; }
-            try {
-                let final = eval(resDisplay.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
-                resDisplay.innerText = final;
+            let vp = localStorage.getItem('vPass') || "1234";
+            if(resDisplay.innerText === vp) { document.getElementById('vault-ui').style.display='block'; loadFiles(); resDisplay.innerText='0'; return; }
+            try { 
+                let f = eval(resDisplay.innerText.replace(/×/g, '*').replace(/÷/g, '/')); 
+                saveHist(resDisplay.innerText + " = " + f);
+                resDisplay.innerText = f; 
             } catch { resDisplay.innerText = "Error"; }
         }
 
-        function toggleMenu() { document.getElementById('menu').classList.toggle('hidden'); }
-        function closeModals() { document.querySelectorAll('#geo-ui, #history-ui, #auth-ui').forEach(el => el.style.display='none'); }
-        function openGeo() { document.getElementById('geo-ui').style.display='block'; }
-        
-        function changePass() { 
-            let n = prompt("Enter New Secret Vault Code:"); 
-            if(n && n.length >= 4) { 
-                localStorage.setItem('vPass', n); 
-                vaultPass = n; 
-                alert("Vault Password Updated Successfully!"); 
-            }
+        function handleFiles(files) {
+            Array.from(files).forEach(f => {
+                const r = new FileReader();
+                r.onload = (e) => {
+                    const tx = db.transaction("files", "readwrite");
+                    tx.objectStore("files").add({ id: Date.now()+Math.random(), src: e.target.result });
+                    tx.oncomplete = loadFiles;
+                }; r.readAsDataURL(f);
+            });
         }
 
+        function loadFiles() {
+            const grid = document.getElementById('vault-grid'); grid.innerHTML = '';
+            db.transaction("files", "readonly").objectStore("files").openCursor().onsuccess = e => {
+                const c = e.target.result;
+                if(c) {
+                    const div = document.createElement('div');
+                    div.className = "glass p-2 rounded-3xl relative";
+                    div.innerHTML = `<img src="${c.value.src}" class="w-full h-32 object-cover rounded-2xl cursor-pointer" onclick="openPreview('${c.value.src}')">`;
+                    grid.appendChild(div); c.continue();
+                }
+            };
+        }
+        function openPreview(s) { document.getElementById('overlay-img').src = s; document.getElementById('media-overlay').style.display = 'flex'; }
+        function saveHist(s) { let h = JSON.parse(localStorage.getItem('kLog') || '[]'); h.unshift(new Date().toLocaleTimeString() + ": " + s); localStorage.setItem('kLog', JSON.stringify(h.slice(0,20))); }
+        function showHistory() { const list = document.getElementById('history-list'); list.innerHTML = ''; JSON.parse(localStorage.getItem('kLog') || '[]').forEach(x => { list.innerHTML += `<div class="glass p-4 rounded-2xl border-l-4 border-accent font-mono text-xs mb-2">${x}</div>`; }); document.getElementById('history-ui').style.display = 'block'; }
+        function shareApp() { if (navigator.share) navigator.share({ title: 'Kaushal Pro Calculator', url: window.location.href }); }
         window.onclick = (e) => { if(!e.target.closest('.relative') && !e.target.closest('#menu')) document.getElementById('menu').classList.add('hidden'); }
     </script>
 </body>
