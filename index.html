@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MI PLAYER PRO - Elite Hybrid</title>
+    <title>MI PLAYER PRO - Firebase Elite</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#080808">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -14,6 +12,7 @@
         :root { 
             --p-width: 350px; --p-height: 700px; 
             --main-clr: #00ffcc; --bg-dark: #080808;
+            --glass-border: rgba(255, 255, 255, 0.1);
             --hacker-green: #00ff41;
             --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
         }
@@ -21,7 +20,7 @@
         body { 
             margin: 0; background: radial-gradient(circle at center, #1a1a1a, #000); 
             display: flex; justify-content: center; align-items: center; 
-            height: 100vh; font-family: 'Segoe UI', sans-serif; 
+            height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; 
             color: #fff; overflow: hidden; 
         }
         
@@ -33,124 +32,127 @@
             backdrop-filter: blur(20px);
         }
 
-        /* Calculator Keys */
-        .btn-calc { background: rgba(255, 255, 255, 0.05); border-radius: 1.2rem; font-weight: 800; font-size: 1.2rem; transition: 0.1s; color: white;}
-        .btn-calc:active { transform: scale(0.9); background: var(--main-clr); color: #000; }
-
-        /* Existing MI Player Styles */
+        /* Original Visualizer */
         .visualizer-container { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
         #v-canvas { position: absolute; width: 100%; height: 100%; }
-        .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; }
+        .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; transition: 0.1s ease; }
         
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
+        /* Dropdown Menu */
+        .menu-dots { position: absolute; top: 60px; right: 20px; background: #111; border: 1px solid var(--main-clr); border-radius: 15px; display: none; z-index: 1000; overflow: hidden; width: 150px; }
+        .menu-dots button { width: 100%; padding: 12px; text-align: left; font-size: 12px; color: white; border-bottom: 1px solid #222; }
+        .menu-dots button:hover { background: var(--main-clr); color: black; }
+
+        /* Calculator Layer */
+        #calc-layer { position: absolute; inset: 0; background: #080808; z-index: 800; display: none; flex-direction: column; padding: 30px 20px; }
+        .btn-calc { background: rgba(255,255,255,0.05); border-radius: 15px; height: 55px; font-weight: bold; font-size: 1.2rem; }
+        .btn-calc:active { background: var(--main-clr); color: black; }
+
+        /* Overlays */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 1500; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
         .card { background: #111; padding: 25px; border-radius: 25px; width: 100%; border: 1px solid var(--main-clr); }
         
         input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; outline: none; }
-        .playlist-sidebar { position: absolute; right: -100%; top: 0; width: 80%; height: 100%; background: #050505; z-index: 500; transition: 0.4s; border-left: 1px solid var(--main-clr); overflow-y: auto; }
-        .playlist-sidebar.active { right: 0; }
-        
-        #shadow-os { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; padding: 30px; font-family: 'Courier New', monospace; color: var(--hacker-green); }
+        .btn-main { width: 100%; padding: 14px; background: var(--accent-gradient); border: none; border-radius: 12px; font-weight: bold; color: #000; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="phone" id="main-frame">
-    <header class="pt-12 px-6 flex justify-between items-center">
+    <header class="pt-12 px-6 flex justify-between items-center z-50">
         <div class="flex items-center gap-3" onclick="openAuth()">
-            <div id="u-img" class="w-10 h-10 rounded-full border border-main-clr overflow-hidden flex items-center justify-center bg-black">
-                <i class="fas fa-user-circle text-main-clr"></i>
+            <div id="user-pic-box" class="w-10 h-10 rounded-full border border-main-clr overflow-hidden bg-black flex items-center justify-center">
+                <i class="fas fa-user text-main-clr"></i>
             </div>
             <div>
-                <p class="text-[10px] font-bold" id="u-name-display">Guest User</p>
-                <p class="text-[8px] text-main-clr">MI-ENCRYPTED</p>
+                <p class="text-[10px] font-bold uppercase" id="u-name">Guest User</p>
+                <p class="text-[8px] text-main-clr">ELITE EDITION</p>
             </div>
         </div>
-        <button onclick="toggleSidebar()" class="text-main-clr text-xl"><i class="fas fa-bars"></i></button>
+        <div class="relative">
+            <button onclick="toggleDots()" class="text-white text-xl p-2"><i class="fas fa-ellipsis-v"></i></button>
+            <div id="dots-menu" class="menu-dots">
+                <button onclick="showUI('calc')"><i class="fas fa-calculator mr-2"></i> Calculator</button>
+                <button onclick="showUI('player')"><i class="fas fa-play mr-2"></i> Player Mode</button>
+                <button onclick="openAuth()"><i class="fas fa-user-shield mr-2"></i> Firebase Account</button>
+            </div>
+        </div>
     </header>
 
-    <div id="calc-ui" class="flex-1 flex flex-col p-6 mt-4">
-        <div class="text-right mb-6">
-            <div id="history" class="text-[9px] text-main-clr/40 h-12 overflow-hidden text-left">> System Ready...</div>
-            <h1 id="display" class="text-6xl font-light truncate">0</h1>
-        </div>
-        <div class="grid grid-cols-4 gap-3">
-            <button onclick="cls()" class="btn-calc h-14 text-red-500">AC</button>
-            <button onclick="del()" class="btn-calc h-14">⌫</button>
-            <button onclick="ins('/')" class="btn-calc h-14">÷</button>
-            <button onclick="ins('*')" class="btn-calc h-14">×</button>
-            <button onclick="ins('7')" class="btn-calc h-14">7</button>
-            <button onclick="ins('8')" class="btn-calc h-14">8</button>
-            <button onclick="ins('9')" class="btn-calc h-14">9</button>
-            <button onclick="ins('-')" class="btn-calc h-14">−</button>
-            <button onclick="ins('4')" class="btn-calc h-14">4</button>
-            <button onclick="ins('5')" class="btn-calc h-14">5</button>
-            <button onclick="ins('6')" class="btn-calc h-14">6</button>
-            <button onclick="ins('+')" class="btn-calc h-14">+</button>
-            <button onclick="ins('1')" class="btn-calc h-14">1</button>
-            <button onclick="ins('2')" class="btn-calc h-14">2</button>
-            <button onclick="ins('3')" class="btn-calc h-14">3</button>
-            <button onclick="exe()" class="btn-calc h-14 bg-main-clr text-black">=</button>
-            <button onclick="ins('0')" class="btn-calc h-14 col-span-2">0</button>
-            <button onclick="ins('.')" class="btn-calc h-14">.</button>
-        </div>
-    </div>
-
-    <div id="player-ui" class="flex-1 flex flex-col items-center px-4 hidden">
+    <div id="player-ui" class="flex-1 flex flex-col items-center p-4">
         <div class="visualizer-container">
             <canvas id="v-canvas"></canvas>
             <div class="image-container" id="p-circle">
-                <img id="profile-img" style="display:none; width:100%; height:100%; object-fit:cover;">
-                <div id="default-icon" class="text-4xl mt-6 text-center">🎵</div>
+                <img id="track-art" style="display:none; width:100%; height:100%; object-fit:cover;">
+                <div class="text-4xl mt-6">🎵</div>
             </div>
         </div>
 
-        <div id="vid-box" class="w-full h-40 bg-black rounded-2xl overflow-hidden border border-white/10 hidden">
+        <div id="vid-box" class="w-full h-44 bg-black rounded-2xl border border-white/10 mb-4 hidden overflow-hidden">
             <video id="vid-p" playsinline></video>
         </div>
 
-        <h4 id="track-name" class="mt-4 text-[12px] text-gray-400 text-center truncate w-full px-6">No Media</h4>
+        <h4 id="track-name" class="text-sm font-bold text-gray-400 text-center truncate w-64 mb-6">No Media Loaded</h4>
         
-        <input type="range" id="seek-slider" class="w-full mt-4 accent-main-clr" value="0">
-        
-        <div class="flex items-center gap-8 my-6">
-            <button onclick="prevT()" class="text-2xl">⏮</button>
-            <button id="play-btn" class="w-14 h-14 rounded-full bg-main-clr text-black flex items-center justify-center text-xl" onclick="togglePlay()">▶</button>
-            <button onclick="nextT()" class="text-2xl">⏭</button>
+        <input type="range" id="seek-slider" class="w-[85%] accent-main-clr mb-2" value="0">
+        <div class="flex justify-between w-[85%] text-[10px] text-main-clr font-mono">
+            <span id="curr-time">0:00</span> <span id="dur-time">0:00</span>
         </div>
 
-        <div class="flex gap-2">
-            <label class="bg-white/5 p-3 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="audio/*" class="hidden" onchange="loadFiles(event, 'music')">AUDIO</label>
-            <label class="bg-white/5 p-3 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="video/*" class="hidden" onchange="loadFiles(event, 'video')">VIDEO</label>
-            <button onclick="switchMode('calc')" class="bg-red-900/20 p-3 rounded-xl text-[10px] text-red-500">LOCK</button>
+        <div class="flex items-center gap-10 my-8">
+            <button onclick="prevT()" class="text-2xl"><i class="fas fa-step-backward"></i></button>
+            <button id="play-btn" onclick="togglePlay()" class="w-16 h-16 rounded-full bg-main-clr text-black flex items-center justify-center text-2xl shadow-lg">
+                <i class="fas fa-play"></i>
+            </button>
+            <button onclick="nextT()" class="text-2xl"><i class="fas fa-step-forward"></i></button>
+        </div>
+
+        <div class="flex gap-4">
+            <label class="bg-white/5 px-6 py-3 rounded-2xl text-[10px] font-bold cursor-pointer border border-white/10"><input type="file" multiple accept="audio/*" class="hidden" onchange="loadFiles(event, 'music')">AUDIO</label>
+            <label class="bg-white/5 px-6 py-3 rounded-2xl text-[10px] font-bold cursor-pointer border border-white/10"><input type="file" multiple accept="video/*" class="hidden" onchange="loadFiles(event, 'video')">VIDEO</label>
         </div>
     </div>
 
-    <div id="sidebar" class="playlist-sidebar">
-        <div class="p-6">
-            <h3 class="text-main-clr font-bold mb-4">PLAYLIST</h3>
-            <div id="playlist-items" class="text-xs space-y-2"></div>
-            <hr class="my-4 border-white/10">
-            <button onclick="auth.signOut(); location.reload();" class="text-red-500 text-xs">Logout</button>
+    <div id="calc-layer">
+        <div class="text-right mb-6 mt-4">
+            <p id="calc-history" class="text-[10px] text-main-clr/30 font-mono h-4">> Secure Mode</p>
+            <h1 id="calc-display" class="text-6xl font-light truncate">0</h1>
         </div>
+        <div class="grid grid-cols-4 gap-3">
+            <button onclick="cls()" class="btn-calc text-red-500">C</button>
+            <button onclick="del()" class="btn-calc"><i class="fas fa-backspace"></i></button>
+            <button onclick="ins('/')" class="btn-calc text-main-clr">÷</button>
+            <button onclick="ins('*')" class="btn-calc text-main-clr">×</button>
+            <button onclick="ins('7')" class="btn-calc">7</button>
+            <button onclick="ins('8')" class="btn-calc">8</button>
+            <button onclick="ins('9')" class="btn-calc">9</button>
+            <button onclick="ins('-')" class="btn-calc text-main-clr">−</button>
+            <button onclick="ins('4')" class="btn-calc">4</button>
+            <button onclick="ins('5')" class="btn-calc">5</button>
+            <button onclick="ins('6')" class="btn-calc">6</button>
+            <button onclick="ins('+')" class="btn-calc text-main-clr">+</button>
+            <button onclick="ins('1')" class="btn-calc">1</button>
+            <button onclick="ins('2')" class="btn-calc">2</button>
+            <button onclick="ins('3')" class="btn-calc">3</button>
+            <button onclick="exe()" class="btn-calc bg-main-clr text-black">=</button>
+            <button onclick="ins('0')" class="btn-calc col-span-2">0</button>
+            <button onclick="ins('.')" class="btn-calc">.</button>
+        </div>
+        <button onclick="showUI('player')" class="mt-8 text-[10px] text-gray-600 uppercase tracking-widest">Back to Player</button>
     </div>
 
     <div id="auth-modal" class="overlay">
         <div class="card">
-            <h3 id="auth-title" class="text-main-clr font-black text-center mb-4">MI LOGIN</h3>
-            <input type="email" id="auth-email" placeholder="Email">
+            <h3 id="auth-title" class="text-main-clr font-black text-center mb-4">MI AUTH</h3>
+            <input type="email" id="auth-email" placeholder="Email Address">
             <input type="password" id="auth-pass" placeholder="Password">
-            <div id="reg-box" class="hidden">
+            <div id="reg-fields" class="hidden">
                 <input type="text" id="auth-name" placeholder="Full Name">
             </div>
-            <button class="w-full bg-main-clr text-black p-3 rounded-xl font-bold mt-4" onclick="handleAuth()">CONTINUE</button>
-            <p class="text-[10px] text-center mt-4 text-gray-500 cursor-pointer" onclick="toggleAuth()">New account? Register</p>
-            <button onclick="document.getElementById('auth-modal').style.display='none'" class="w-full text-[10px] mt-2 text-red-500">Cancel</button>
+            <button class="btn-main" onclick="handleAuth()">PROCEED</button>
+            <p class="text-[10px] text-center mt-4 text-gray-500 cursor-pointer" onclick="toggleAuth()">Toggle Login / Register</p>
+            <button onclick="document.getElementById('auth-modal').style.display='none'" class="w-full text-[10px] mt-4 text-red-500">Close</button>
         </div>
     </div>
-</div>
-
-<div id="shadow-os">
-    <div id="h-results"></div>
 </div>
 
 <script type="module">
@@ -171,8 +173,8 @@
     let isLogin = true;
     window.toggleAuth = () => {
         isLogin = !isLogin;
-        document.getElementById('auth-title').innerText = isLogin ? "MI LOGIN" : "MI REGISTER";
-        document.getElementById('reg-box').classList.toggle('hidden');
+        document.getElementById('auth-title').innerText = isLogin ? "MI LOGIN" : "MI REGISTRATION";
+        document.getElementById('reg-fields').classList.toggle('hidden');
     };
 
     window.handleAuth = async () => {
@@ -192,68 +194,68 @@
 
     onAuthStateChanged(auth, user => {
         if(user) {
-            document.getElementById('u-name-display').innerText = user.displayName || user.email.split('@')[0];
+            document.getElementById('u-name').innerText = user.displayName || user.email.split('@')[0];
         }
     });
 </script>
 
 <script>
-    // Hybrid System Logic
+    // System Variables
     let playlist = [], trackIdx = 0, currentMode = 'music';
     let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), activeMedia = audioMedia;
     let audioCtx, analyser, vCanvas, vCtx;
 
-    // Calculator Functions
-    const display = document.getElementById('display');
-    function ins(v) { if(display.innerText === '0') display.innerText = v; else display.innerText += v; }
-    function cls() { display.innerText = '0'; }
-    function del() { display.innerText = display.innerText.length > 1 ? display.innerText.slice(0, -1) : '0'; }
+    // UI Logic
+    function toggleDots() { 
+        const m = document.getElementById('dots-menu');
+        m.style.display = m.style.display === 'block' ? 'none' : 'block'; 
+    }
     
+    function showUI(mode) {
+        document.getElementById('dots-menu').style.display = 'none';
+        document.getElementById('player-ui').style.display = (mode === 'player') ? 'flex' : 'none';
+        document.getElementById('calc-layer').style.display = (mode === 'calc') ? 'flex' : 'none';
+    }
+
+    function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
+
+    // Calculator Logic
+    const cDisp = document.getElementById('calc-display');
+    function ins(v) { if(cDisp.innerText === '0') cDisp.innerText = v; else cDisp.innerText += v; }
+    function cls() { cDisp.innerText = '0'; }
+    function del() { cDisp.innerText = cDisp.innerText.length > 1 ? cDisp.innerText.slice(0, -1) : '0'; }
     function exe() {
-        if(display.innerText === "1234") { switchMode('player'); display.innerText = "0"; return; }
-        if(display.innerText === "9999") { runHacker(); display.innerText = "0"; return; }
-        try { display.innerText = eval(display.innerText.replace(/×/g, '*').replace(/÷/g, '/')); } 
-        catch { display.innerText = "Error"; }
+        try { cDisp.innerText = eval(cDisp.innerText.replace(/×/g, '*').replace(/÷/g, '/')); } 
+        catch { cDisp.innerText = "Error"; }
     }
 
-    function switchMode(mode) {
-        document.getElementById('calc-ui').classList.toggle('hidden', mode === 'player');
-        document.getElementById('player-ui').classList.toggle('hidden', mode === 'calc');
-    }
-
-    // Player Logic
+    // Player Logic (From VLC Player File)
     function loadFiles(e, mode) {
         playlist = Array.from(e.target.files);
         currentMode = mode;
         document.getElementById('vid-box').style.display = mode === 'video' ? 'block' : 'none';
+        document.getElementById('v-canvas').parentElement.style.display = mode === 'music' ? 'flex' : 'none';
         if(playlist.length > 0) playT(0);
-        renderPlaylist();
     }
 
     function playT(i) {
         trackIdx = i; activeMedia.pause();
         const url = URL.createObjectURL(playlist[i]);
         document.getElementById('track-name').innerText = playlist[i].name;
-        
         if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); }
         else { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); }
-        
         initVisualizer();
-        document.getElementById('play-btn').innerText = '⏸';
+        document.getElementById('play-btn').innerHTML = '<i class="fas fa-pause"></i>';
     }
 
     function togglePlay() {
-        if(activeMedia.paused) { activeMedia.play(); document.getElementById('play-btn').innerText = '⏸'; }
-        else { activeMedia.pause(); document.getElementById('play-btn').innerText = '▶'; }
+        if(activeMedia.paused) { activeMedia.play(); document.getElementById('play-btn').innerHTML = '<i class="fas fa-pause"></i>'; }
+        else { activeMedia.pause(); document.getElementById('play-btn').innerHTML = '<i class="fas fa-play"></i>'; }
     }
 
     function nextT() { if(trackIdx < playlist.length - 1) playT(trackIdx + 1); }
     function prevT() { if(trackIdx > 0) playT(trackIdx - 1); }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-    function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
-
-    // Visualizer (Original Engine)
     function initVisualizer() {
         if (audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -276,24 +278,23 @@
             let h = array[i] / 5;
             let angle = (i * 2 * Math.PI) / 60;
             vCtx.strokeStyle = '#00ffcc';
-            vCtx.lineWidth = 2; vCtx.beginPath();
+            vCtx.lineWidth = 2.5; vCtx.beginPath();
             vCtx.moveTo(90 + Math.cos(angle)*50, 90 + Math.sin(angle)*50);
             vCtx.lineTo(90 + Math.cos(angle)*(50+h), 90 + Math.sin(angle)*(50+h));
             vCtx.stroke();
         }
+        document.getElementById('p-circle').style.transform = `scale(${1 + array[10]/600})`;
     }
 
-    function runHacker() {
-        document.getElementById('shadow-os').style.display = 'block';
-        const res = document.getElementById('h-results');
-        res.innerHTML = "[SYSTEM]: DECRYPTING FIREBASE...<br>";
-        setTimeout(() => { res.innerHTML += "[SUCCESS]: ACCESS GRANTED."; }, 2000);
-    }
-
-    // PWA Service Worker Registration
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
-    }
+    // Time Update
+    activeMedia.ontimeupdate = () => {
+        document.getElementById('seek-slider').max = activeMedia.duration || 0;
+        document.getElementById('seek-slider').value = activeMedia.currentTime;
+        document.getElementById('curr-time').innerText = formatTime(activeMedia.currentTime);
+        document.getElementById('dur-time').innerText = formatTime(activeMedia.duration);
+    };
+    function formatTime(s) { let m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec<10?'0':''}${sec}`; }
+    document.getElementById('seek-slider').oninput = function() { activeMedia.currentTime = this.value; };
 </script>
 </body>
 </html>
