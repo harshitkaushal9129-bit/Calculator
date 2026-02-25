@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaushal-pro-v3';
+const CACHE_NAME = 'kaushal-pro-v4';
 const assets = [
   './',
   './index.html',
@@ -9,7 +9,6 @@ const assets = [
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Caching essential assets...');
       return cache.addAll(assets);
     })
   );
