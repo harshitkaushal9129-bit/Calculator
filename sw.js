@@ -1,19 +1,7 @@
-const CACHE_NAME = 'kaushal-pro-v5';
-const assets = [
-  './',
-  './index.html',
-  './manifest.json',
-  './kaushalji.jpg'
-];
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(assets))
-  );
+self.addEventListener('install', (e) => {
+  self.skipWaiting();
 });
 
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
-  );
+self.addEventListener('fetch', (e) => {
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
