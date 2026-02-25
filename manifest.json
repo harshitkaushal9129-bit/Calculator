@@ -5,18 +5,17 @@
   "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0b0f1a",
-  "theme_color": "#00f2ff",
+  "background_color": "#050b18",
+  "theme_color": "#00d2ff",
   "icons": [
     {
       "src": "kaushalji.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "sizes": "192x192",
+      "type": "image/jpeg"
     },
     {
       "src": "kaushalji.jpg",
-      "sizes": "192x192",
+      "sizes": "512x512",
       "type": "image/jpeg"
     }
   ]
