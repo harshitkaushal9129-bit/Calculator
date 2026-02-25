@@ -54,6 +54,11 @@
                     </div>
                     <div class="space-y-2">
                         <a href="https://wa.me/919129191898" target="_blank" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-green-400 font-bold"><i class="fab fa-whatsapp text-xl"></i> WhatsApp Support</a>
+                        
+                        <button id="installBtn" class="hidden items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-cyan-400 w-full font-bold text-left">
+                            <i class="fas fa-download text-xl"></i> Install App
+                        </button>
+
                         <button onclick="changePass()" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-orange-400 w-full font-bold text-left"><i class="fas fa-key text-xl"></i> New Vault Code</button>
                     </div>
                 </div>
@@ -131,54 +136,46 @@
     </div>
 
     <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
-
-        <button id="installBtn" class="hidden items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-cyan-400 w-full font-bold text-left">
-    <i class="fas fa-download text-xl"></i> Install App
-</button>
-
 <script>
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-
-    // Install logic
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.classList.remove('hidden'); // Button dikhao jab install ready ho
-        installBtn.classList.add('flex');
-    });
-
-    installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('User installed the app');
-            }
-            deferredPrompt = null;
-            installBtn.classList.add('hidden');
-        }
-    });
-
-    // Register Service Worker correctly
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW Registered'))
-                .catch(err => console.log('SW Failed', err));
-        });
-    }
-        
-</script>
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Failed', err));
+            });
+        }
+
+    </script>
     <script>
-        // PWA Registration
+        // PWA Install Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.classList.remove('hidden');
+            installBtn.classList.add('flex');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') console.log('User installed the app');
+                deferredPrompt = null;
+                installBtn.classList.add('hidden');
+            }
+        });
+
+        // Register Service Worker
         
 
         const resDisplay = document.getElementById('res');
         let pass = localStorage.getItem('vPass') || "1234";
         let db;
 
-        // IndexedDB initialization
+        // IndexedDB
         const req = indexedDB.open("KaushalProDB", 2);
         req.onupgradeneeded = e => { 
             db = e.target.result; 
@@ -188,7 +185,7 @@
         };
         req.onsuccess = e => db = e.target.result;
 
-        // Calculator functions
+        // Calc Functions
         function ins(v) { if(resDisplay.innerText==='0') resDisplay.innerText=v; else resDisplay.innerText+=v; }
         function cls() { resDisplay.innerText='0'; }
         function del() { resDisplay.innerText = resDisplay.innerText.length>1 ? resDisplay.innerText.slice(0,-1) : '0'; }
@@ -203,15 +200,12 @@
             } catch { resDisplay.innerText = "Error"; }
         }
 
-        // UI Control
         function toggleMenu() { document.getElementById('menu').classList.toggle('hidden'); }
         function closeModals() {
             document.getElementById('geo-ui').style.display='none';
             document.getElementById('history-ui').style.display='none';
         }
         function openGeo() { document.getElementById('geo-ui').style.display='block'; }
-        
-        // Vault & Files
         function openVault() { document.getElementById('vault-ui').style.display='block'; loadFiles(); }
         
         function handleFiles(files) {
@@ -234,36 +228,22 @@
                 if(cursor) {
                     const item = cursor.value;
                     const div = document.createElement('div');
-                    div.className = "glass p-2 rounded-3xl relative animate-pulse";
+                    div.className = "glass p-2 rounded-3xl relative";
                     div.innerHTML = `
                         <button onclick="delFile(${item.id})" class="absolute top-2 right-2 bg-red-600 w-6 h-6 rounded-full text-[10px] z-10 flex items-center justify-center"><i class="fas fa-trash"></i></button>
                         <img src="${item.src}" class="w-full h-32 object-cover rounded-2xl cursor-pointer" onclick="openPreview('${item.src}')">`;
                     grid.appendChild(div);
-                    setTimeout(() => div.classList.remove('animate-pulse'), 500);
                     cursor.continue();
                 }
             };
         }
 
-        function delFile(id) { 
-            db.transaction("files", "readwrite").objectStore("files").delete(id).onsuccess = loadFiles; 
-        }
+        function delFile(id) { db.transaction("files", "readwrite").objectStore("files").delete(id).onsuccess = loadFiles; }
+        function openPreview(src) { document.getElementById('overlay-img').src = src; document.getElementById('media-overlay').style.display = 'flex'; }
 
-        function openPreview(src) { 
-            document.getElementById('overlay-img').src = src; 
-            document.getElementById('media-overlay').style.display = 'flex'; 
-        }
-
-        // Settings & History
         function changePass() { 
             let n = prompt("Enter New Secret Code:"); 
-            if(n && n.length >= 4) { 
-                localStorage.setItem('vPass', n); 
-                pass = n; 
-                alert("Code Updated!"); 
-            } else if(n) {
-                alert("Code must be at least 4 digits.");
-            }
+            if(n && n.length >= 4) { localStorage.setItem('vPass', n); pass = n; alert("Code Updated!"); }
         }
 
         function saveHist(s) {
@@ -276,7 +256,7 @@
             const list = document.getElementById('history-list'); 
             list.innerHTML = '';
             JSON.parse(localStorage.getItem('kLog') || '[]').forEach(x => {
-                list.innerHTML += `<div class="glass p-4 rounded-2xl border-l-4 border-accent font-mono text-xs shadow-lg">${x}</div>`;
+                list.innerHTML += `<div class="glass p-4 rounded-2xl border-l-4 border-accent font-mono text-xs mb-2">${x}</div>`;
             });
             document.getElementById('history-ui').style.display = 'block';
         }
@@ -288,10 +268,7 @@
             }
         }
 
-        // Close menu on click outside
-        window.onclick = (e) => { 
-            if(!e.target.closest('.relative')) document.getElementById('menu').classList.add('hidden'); 
-        }
+        window.onclick = (e) => { if(!e.target.closest('.relative')) document.getElementById('menu').classList.add('hidden'); }
     </script>
 </body>
 </html>
