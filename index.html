@@ -305,5 +305,10 @@
         async function shareApp() { if(navigator.share) await navigator.share({title:'Kaushal Pro', url: window.location.href}); }
         window.onclick = (e) => { if(!e.target.closest('.relative')) document.getElementById('menu').classList.add('hidden'); }
     </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
+    </script>
 </body>
 </html>
