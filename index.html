@@ -132,15 +132,47 @@
 
     <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
 
+        <button id="installBtn" class="hidden items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition text-cyan-400 w-full font-bold text-left">
+    <i class="fas fa-download text-xl"></i> Install App
+</button>
+
+<script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    // Install logic
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.classList.remove('hidden'); // Button dikhao jab install ready ho
+        installBtn.classList.add('flex');
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User installed the app');
+            }
+            deferredPrompt = null;
+            installBtn.classList.add('hidden');
+        }
+    });
+
+    // Register Service Worker correctly
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW Registered'))
+                .catch(err => console.log('SW Failed', err));
+        });
+    }
+        
+</script>
     <script>
         // PWA Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('SW Registered'))
-                    .catch(err => console.log('SW Failed', err));
-            });
-        }
+        
 
         const resDisplay = document.getElementById('res');
         let pass = localStorage.getItem('vPass') || "1234";
