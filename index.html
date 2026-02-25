@@ -5,48 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaushal Pro - Elite Calculator</title>
     
-    <meta name="theme-color" content="#050b18">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="data:application/json;base64,ewogICAgIm5hbWUiOiAiS2F1c2hhbCBQcm8gQ2FsY3VsYXRvciIsCiAgICAic2hvcnRfbmFtZSI6ICJLYXVzaGFsIFBybyIsCiAgICAic3RhcnRfdXJsIjogIi4iLAogICAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwYjE4IiwKICAgICJ0aGVtZV9jb2xvciI6ICIjMDUwYjE4IiwKICAgICJpY29ucyI6IFsKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMTY0LzE2NDY0MC5wbmciLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgICAgICB9CiAgICBdCn0=">
+    <meta name="theme-color" content="#00ffcc">
+    <link rel="manifest" href="data:application/json;base64,ewogICAgIm5hbWUiOiAiS2F1c2hhbCBQcm8gQ2FsY3VsYXRvciIsCiAgICAic2hvcnRfbmFtZSI6ICJLYXVzaGFsIFBybyIsCiAgICAic3RhcnRfdXJsIjogIi4iLAogICAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwYjE4IiwKICAgICJ0aGVtZV9jb2xvciI6ICIjMDUwYjE4IiwKICAgICJpY29ucyI6IFsKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMTY0LzE2NDY0MC5wbmciLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0=">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --accent: #00ffcc; --bg: #050b18; }
-        body { background: radial-gradient(circle at center, #0f172a, #050b18); font-family: 'Poppins', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; }
+        :root { --accent: #00ffcc; --bg: #050b18; --hacker: #00ff41; }
+        body { background: #000; font-family: 'Poppins', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; }
+        
+        /* Glass UI like MI PLAYER */
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; display: flex; align-items: center; justify-content: center; border-radius: 1.5rem; font-weight: 600; font-size: 1.4rem; }
-        .btn-calc:active { transform: scale(0.9); background: var(--accent); color: black; box-shadow: 0 0 20px var(--accent); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .input-field { width: 100%; padding: 14px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 15px; outline: none; }
-        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        ::-webkit-scrollbar { width: 0px; }
+        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; border-radius: 1.5rem; font-weight: 600; font-size: 1.4rem; }
+        .btn-calc:active { transform: scale(0.9); background: var(--accent); color: #000; }
+
+        /* Hacker Overlay (Shadow OS style) */
+        #shadow-os { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: none; padding: 20px; font-family: 'Courier New', monospace; }
+        .crack-line { color: var(--hacker); font-size: 12px; margin-bottom: 5px; border-left: 2px solid var(--hacker); padding-left: 10px; }
+        .progress-bar { width: 100%; height: 4px; background: #111; margin: 5px 0; }
+        .fill { height: 100%; background: var(--hacker); width: 0%; transition: 0.3s; }
+
+        /* General Overlay */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .auth-card { width: 90%; max-width: 400px; padding: 2.5rem; border-radius: 2.5rem; border: 1px solid var(--accent); background: #0a0f1e; }
+        input { width: 100%; padding: 14px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 15px; outline: none; }
+        
+        .h-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--hacker); }
+        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
     </style>
 </head>
 <body>
 
-    <header class="w-full max-w-md mx-auto p-6 flex justify-between items-center z-50">
+    <header class="w-full max-w-md mx-auto p-6 flex justify-between items-center relative z-50">
         <div onclick="openAuth()" class="flex items-center gap-3 cursor-pointer">
-            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-accent border-accent/30">
-                <i class="fas fa-user-shield text-xl"></i>
+            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-accent border-accent/30 shadow-[0_0_15px_rgba(0,255,204,0.3)]">
+                <i class="fas fa-user-secret text-xl"></i>
             </div>
             <div>
-                <p id="user-name" class="text-xs font-black text-white tracking-widest uppercase">Kaushal Ji</p>
-                <p id="auth-status" class="text-[9px] text-accent/60 font-bold uppercase">Tap to Secure</p>
+                <p id="u-name" class="text-xs font-black text-white tracking-widest">KAUSHAL PRO</p>
+                <p id="u-status" class="text-[9px] text-accent font-bold uppercase flicker">System Ready</p>
             </div>
         </div>
         <div class="flex gap-2">
-            <button onclick="installApp()" id="pwa-btn" class="hidden glass px-3 py-1 rounded-full text-[10px] text-accent font-bold">INSTALL</button>
-            <button onclick="toggleMenu(true)" class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-accent"><i class="fas fa-bars"></i></button>
+            <button onclick="installApp()" id="p-btn" class="hidden glass px-3 py-1 rounded-full text-[10px] text-accent">INSTALL</button>
+            <button onclick="toggleMenu(true)" class="w-10 h-10 glass rounded-full flex items-center justify-center text-accent"><i class="fas fa-layer-group"></i></button>
         </div>
     </header>
 
-    <main class="w-full max-w-[360px] mx-auto mt-6 px-4">
+    <main class="w-full max-w-[360px] mx-auto mt-4 px-4">
         <div class="mb-10 text-right px-4">
-            <div id="hist-preview" class="text-xs text-accent/30 font-mono h-6 overflow-hidden"></div>
+            <div id="logs" class="text-[10px] text-accent/30 font-mono h-24 overflow-y-auto mb-2 text-left bg-white/5 p-2 rounded-xl"></div>
             <h1 id="display" class="text-7xl font-light tracking-tighter truncate">0</h1>
         </div>
 
@@ -74,45 +83,37 @@
     </main>
 
     <div id="side-menu" class="overlay !justify-start !items-end">
-        <div class="w-full max-w-xs space-y-8 mt-10 px-6">
-            <button onclick="toggleMenu(false)" class="text-red-500 text-2xl"><i class="fas fa-times"></i></button>
-            <div class="space-y-6 flex flex-col items-end">
-                <button onclick="openUPI()" class="text-accent font-black tracking-widest"><i class="fas fa-qrcode mr-2"></i> SUPPORT (UPI)</button>
-                <button onclick="changeVaultPass()" class="text-orange-400 font-black tracking-widest"><i class="fas fa-key mr-2"></i> CHANGE VAULT CODE</button>
-                <button onclick="clearAllHistory()" class="text-red-400 font-black tracking-widest"><i class="fas fa-trash mr-2"></i> CLEAR HISTORY</button>
-            </div>
+        <div class="w-full max-w-xs p-8 space-y-6">
+            <button onclick="toggleMenu(false)" class="text-red-500 text-3xl mb-10"><i class="fas fa-times-circle"></i></button>
+            <button onclick="openUPI()" class="w-full text-right text-accent font-black tracking-widest"><i class="fas fa-qrcode ml-2"></i> SUPPORT KAUSHAL</button>
+            <button onclick="changePass()" class="w-full text-right text-orange-400 font-black tracking-widest"><i class="fas fa-lock ml-2"></i> CHANGE VAULT CODE</button>
+            <button onclick="clearLogs()" class="w-full text-right text-red-400 font-black tracking-widest"><i class="fas fa-terminal ml-2"></i> WIPE SYSTEM LOGS</button>
+        </div>
+    </div>
+
+    <div id="shadow-os">
+        <div class="flex justify-between items-center border-b border-hacker/30 pb-4 mb-4">
+            <h1 class="text-hacker font-black tracking-tighter">KAUSHAL_SHADOW_OS v4.0</h1>
+            <button onclick="document.getElementById('shadow-os').style.display='none'" class="text-white text-xs">EXIT_TERMINAL</button>
+        </div>
+        <div id="h-results" class="overflow-y-auto h-[80vh] space-y-4"></div>
+    </div>
+
+    <div id="auth-overlay" class="overlay">
+        <div class="auth-card glass">
+            <h2 class="text-2xl font-black text-center text-accent mb-6">SECURE LOGIN</h2>
+            <input type="email" id="a-email" placeholder="Database Email">
+            <input type="password" id="a-pass" placeholder="System Key">
+            <button onclick="handleAuth()" class="w-full bg-accent text-black py-4 rounded-2xl font-black mt-4">AUTHORIZE</button>
+            <button onclick="closeAll()" class="w-full mt-4 text-gray-600 text-[10px] font-black">CANCEL_REQUEST</button>
         </div>
     </div>
 
     <div id="upi-overlay" class="overlay">
-        <div class="glass p-8 rounded-[3rem] text-center border-accent/40">
-            <h2 class="text-accent font-black mb-6">SUPPORT KAUSHAL JI</h2>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="w-52 h-52 mx-auto rounded-2xl border-4 border-white mb-6">
-            <button onclick="closeOverlays()" class="text-red-500 font-bold uppercase">Back</button>
+        <div class="glass p-8 rounded-[3rem] text-center">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="mx-auto rounded-2xl border-4 border-white mb-6">
+            <button onclick="closeAll()" class="text-red-500 font-black">CLOSE</button>
         </div>
-    </div>
-
-    <div id="auth-overlay" class="overlay">
-        <div class="glass p-8 rounded-[3rem] w-full max-w-sm border-accent/30">
-            <h2 id="auth-title" class="text-2xl font-black text-center text-accent mb-6 uppercase">Vault Login</h2>
-            <input type="email" id="auth-email" placeholder="Email Address" class="input-field">
-            <input type="password" id="auth-pass" placeholder="Password" class="input-field">
-            <button onclick="handleAuth()" class="w-full bg-accent text-black py-4 rounded-2xl font-black mt-4">CONTINUE</button>
-            <button onclick="closeOverlays()" class="w-full mt-4 text-gray-500 text-xs font-bold uppercase">Cancel</button>
-        </div>
-    </div>
-
-    <div id="vault-overlay" class="overlay !justify-start p-6 overflow-y-auto">
-        <div class="w-full flex justify-between items-center mb-8 sticky top-0 bg-black/50 p-4 rounded-2xl backdrop-blur-md">
-            <h1 class="text-2xl font-black text-accent uppercase">Private Vault</h1>
-            <button onclick="location.reload()" class="bg-red-600 px-6 py-2 rounded-full font-bold">LOCK</button>
-        </div>
-        <div class="w-full glass p-10 rounded-[2.5rem] text-center border-dashed border-2 border-accent/20 relative mb-8">
-            <input type="file" multiple accept="image/*" class="absolute inset-0 opacity-0" onchange="vaultUpload(this.files)">
-            <i class="fas fa-fingerprint text-4xl text-accent mb-3"></i>
-            <p class="text-xs font-bold text-accent/60">HIDE NEW MEDIA</p>
-        </div>
-        <div id="vault-grid" class="grid grid-cols-3 gap-3 w-full"></div>
     </div>
 
     <script type="module">
@@ -129,117 +130,115 @@
         const auth = getAuth(app);
 
         window.handleAuth = async () => {
-            const e = document.getElementById('auth-email').value;
-            const p = document.getElementById('auth-pass').value;
+            const e = document.getElementById('a-email').value;
+            const p = document.getElementById('a-pass').value;
             try {
                 await signInWithEmailAndPassword(auth, e, p);
-                closeOverlays();
+                closeAll();
             } catch {
-                try { await createUserWithEmailAndPassword(auth, e, p); closeOverlays(); }
+                try { await createUserWithEmailAndPassword(auth, e, p); closeAll(); }
                 catch(err) { alert(err.message); }
             }
         };
 
         onAuthStateChanged(auth, u => {
             if(u) {
-                document.getElementById('user-name').innerText = u.email.split('@')[0].toUpperCase();
-                document.getElementById('auth-status').innerText = "Premium Active";
-                document.getElementById('auth-status').classList.replace('text-accent/60', 'text-green-400');
+                document.getElementById('u-name').innerText = u.email.split('@')[0].toUpperCase();
+                document.getElementById('u-status').innerText = "CONNECTION_SECURED";
+                document.getElementById('u-status').style.color = "#00ffcc";
             }
         });
     </script>
 
     <script>
-        // PWA & Service Worker
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e;
-            document.getElementById('pwa-btn').classList.remove('hidden');
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt = null;
-                document.getElementById('pwa-btn').classList.add('hidden');
-            }
-        }
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGV2ID0+IHsgfSk7');
-        }
-
-        // Logic
         const display = document.getElementById('display');
-        const histPreview = document.getElementById('hist-preview');
+        const logsBox = document.getElementById('logs');
 
-        function ins(v) { if(display.innerText==='0') display.innerText=v; else display.innerText+=v; if(navigator.vibrate) navigator.vibrate(5); }
-        function cls() { display.innerText='0'; histPreview.innerText=''; }
+        function ins(v) { if(display.innerText==='0') display.innerText=v; else display.innerText+=v; }
+        function cls() { display.innerText='0'; }
         function del() { display.innerText = display.innerText.length>1 ? display.innerText.slice(0,-1) : '0'; }
 
         function exe() {
-            let vp = localStorage.getItem('vPass') || "1234";
-            if(display.innerText === vp) {
-                document.getElementById('vault-overlay').style.display = 'flex';
-                initVaultDB();
+            let pass = localStorage.getItem('vPass') || "1234";
+            
+            // SECRET HACKER COMMAND (VLC Style)
+            if(display.innerText === "9999") { // Special command to open Shadow OS
+                runShadowScan();
+                display.innerText = "0";
                 return;
             }
+
+            if(display.innerText === pass) {
+                alert("VAULT_UNLOCKED");
+                display.innerText = "0";
+                return;
+            }
+
             try {
-                histPreview.innerText = display.innerText + " =";
                 let res = eval(display.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
-                saveHist(display.innerText + " = " + res);
+                saveLog(display.innerText + " = " + res);
                 display.innerText = res;
-            } catch { display.innerText = "Error"; }
+            } catch { display.innerText = "ERROR"; }
         }
 
-        function toggleMenu(s) { document.getElementById('side-menu').style.display = s ? 'flex' : 'none'; }
-        function openAuth() { document.getElementById('auth-overlay').style.display = 'flex'; }
-        function openUPI() { document.getElementById('upi-overlay').style.display = 'flex'; }
-        function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
-
-        function changeVaultPass() {
-            let p = prompt("Enter New Vault Code (Digits Only):");
-            if(p && !isNaN(p)) { localStorage.setItem('vPass', p); alert("Vault Code Updated!"); toggleMenu(false); }
+        function saveLog(s) {
+            let l = JSON.parse(localStorage.getItem('c-logs') || "[]");
+            l.unshift(s);
+            localStorage.setItem('c-logs', JSON.stringify(l.slice(0, 30)));
+            renderLogs();
         }
 
-        function saveHist(entry) {
-            let h = JSON.parse(localStorage.getItem('calcLogs') || "[]");
-            h.unshift(new Date().toLocaleTimeString() + ": " + entry);
-            localStorage.setItem('calcLogs', JSON.stringify(h.slice(0, 20)));
+        function renderLogs() {
+            let l = JSON.parse(localStorage.getItem('c-logs') || "[]");
+            logsBox.innerHTML = l.map(x => `<div>> ${x}</div>`).join('');
         }
 
-        function clearAllHistory() {
-            if(confirm("Delete all history?")) { localStorage.removeItem('calcLogs'); alert("History Cleared"); toggleMenu(false); }
-        }
+        // Shadow OS Logic (From VLC Player)
+        function runShadowScan() {
+            document.getElementById('shadow-os').style.display = 'block';
+            const res = document.getElementById('h-results');
+            res.innerHTML = "";
+            
+            let mockData = [
+                {name: "SYSTEM_CORE", pass: "ROOT_ACCESS", status: "STABLE"},
+                {name: "LOCAL_DB", pass: "ENCRYPTED", status: "BREACHED"},
+                {name: "KAUSHAL_PRIVATE", pass: localStorage.getItem('vPass') || "1234", status: "LOCKED"}
+            ];
 
-        // Vault DB (IndexedDB)
-        let db;
-        function initVaultDB() {
-            const req = indexedDB.open("KaushalVaultDB", 1);
-            req.onupgradeneeded = e => e.target.result.createObjectStore("files", {keyPath: "id"});
-            req.onsuccess = e => { db = e.target.result; renderVault(); };
-        }
-
-        function vaultUpload(files) {
-            Array.from(files).forEach(f => {
-                const r = new FileReader();
-                r.onload = e => {
-                    const tx = db.transaction("files", "readwrite");
-                    tx.objectStore("files").add({id: Date.now()+Math.random(), src: e.target.result});
-                    tx.oncomplete = renderVault;
-                }; r.readAsDataURL(f);
+            mockData.forEach((u, i) => {
+                const div = document.createElement('div');
+                div.innerHTML = `<div class="crack-line">[NODE_${i}]: INJECTING...</div><div class="progress-bar"><div class="fill" id="f-${i}"></div></div>`;
+                res.appendChild(div);
+                
+                let p = 0;
+                let itv = setInterval(() => {
+                    p += Math.random() * 20; if(p > 100) p = 100;
+                    document.getElementById(`f-${i}`).style.width = p + "%";
+                    if(p === 100) {
+                        clearInterval(itv);
+                        div.innerHTML = `<div class="crack-line" style="color:white">[SUCCESS]: ${u.name} | KEY: ${u.pass} | STATUS: ${u.status}</div>`;
+                    }
+                }, 100);
             });
         }
 
-        function renderVault() {
-            const grid = document.getElementById('vault-grid'); grid.innerHTML = '';
-            db.transaction("files").objectStore("files").openCursor().onsuccess = e => {
-                const c = e.target.result;
-                if(c) {
-                    grid.innerHTML += `<img src="${c.value.src}" onclick="window.open(this.src)">`;
-                    c.continue();
-                }
-            };
+        function toggleMenu(s) { document.getElementById('side-menu').style.display = s ? 'flex' : 'none'; }
+        function openUPI() { document.getElementById('upi-overlay').style.display = 'flex'; }
+        function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
+        function changePass() { 
+            let p = prompt("Enter New Secret Code:"); 
+            if(p) { localStorage.setItem('vPass', p); alert("Code Changed!"); }
         }
+        function clearLogs() { localStorage.removeItem('c-logs'); renderLogs(); }
+        
+        // PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); window.deferredPrompt = e;
+            document.getElementById('p-btn').classList.remove('hidden');
+        });
+        function installApp() { if(window.deferredPrompt) { window.deferredPrompt.prompt(); } }
+
+        renderLogs();
     </script>
 </body>
 </html>
