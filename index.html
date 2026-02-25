@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kaushal Pro Calculator - Elite Edition</title>
+    <title>Kaushal Pro - Elite Calculator & MI Player</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,212 +13,353 @@
             --main-clr: #00ffcc; --bg-dark: #050b18; 
             --hacker-green: #00ff41;
             --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
         }
-        body { background: radial-gradient(circle at center, #1a1a1a, #000); font-family: 'Segoe UI', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; }
+        body { background: radial-gradient(circle at center, #1a1a1a, #000); font-family: 'Segoe UI', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); }
         
+        /* Main Container Like Phone */
+        .phone-frame { width: 360px; height: 740px; background: #080808; border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 204, 0.15); }
+
         /* Calculator Buttons */
-        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; border-radius: 1.5rem; font-weight: 800; }
+        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; border-radius: 1.5rem; font-weight: 800; font-size: 1.2rem; }
         .btn-calc:active { transform: scale(0.9); background: var(--main-clr); color: #000; box-shadow: 0 0 20px var(--main-clr); }
 
-        /* Overlays */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .card-elite { width: 90%; max-width: 400px; padding: 2rem; border-radius: 2.5rem; border: 1px solid var(--main-clr); background: #080808; box-shadow: 0 0 30px rgba(0,255,204,0.2); }
-        
-        /* Menu Sidebar */
-        #side-menu { position: fixed; right: -100%; top: 0; width: 80%; height: 100%; background: rgba(5, 5, 5, 0.98); z-index: 2000; transition: 0.4s ease-in-out; border-left: 1px solid var(--main-clr); padding: 40px 20px; }
+        /* Overlays & Sidebar */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        #side-menu { position: absolute; right: -100%; top: 0; width: 85%; height: 100%; background: rgba(5, 5, 5, 0.98); z-index: 2000; transition: 0.4s ease-in-out; border-left: 1px solid var(--main-clr); padding: 50px 20px; }
         #side-menu.active { right: 0; }
-        .menu-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 15px; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .menu-item:hover { color: var(--main-clr); background: rgba(0,255,204,0.05); }
+        .menu-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 15px; font-size: 14px; cursor: pointer; }
 
-        /* Vault Grid */
-        #vault-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-top: 20px; }
-        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; border: 1px solid var(--glass-border); }
+        /* MI Player Specifics */
+        .video-box { width: 95%; height: 200px; background: #000; border-radius: 20px; margin: 10px auto; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid #222; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        #pdf-viewer { width: 95%; height: 280px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; margin: 10px auto; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .visualizer-container { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; margin: 10px 0; }
+        #v-canvas { position: absolute; width: 100%; height: 100%; }
+        
+        /* Shadow Terminal */
+        #shadow-os { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: none; padding: 25px; font-family: 'Courier New', monospace; color: var(--hacker-green); overflow-y: auto; }
+        .crack-line { border-bottom: 1px solid #002200; padding: 10px 0; font-size: 13px; display: flex; align-items: center; gap: 15px; }
+        .progress-bar { width: 100%; background: #111; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 5px; }
+        .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: 0.3s; }
+
+        input[type=range] { width: 100%; accent-color: var(--main-clr); height: 4px; }
+        .play-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; color: #000; font-size: 24px; box-shadow: 0 0 15px var(--main-clr); }
+
+        /* Vault */
+        #vault-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: 15px; }
+        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border); }
     </style>
 </head>
 <body>
 
-    <header class="w-full max-w-md mx-auto p-6 flex justify-between items-center z-[100] sticky top-0">
+<div class="phone-frame" id="main-frame">
+    <header class="p-6 flex justify-between items-center z-50">
         <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-main-clr border-main-clr/30 shadow-[0_0_20px_rgba(0,255,204,0.3)]">
-                <i class="fas fa-user-shield text-xl"></i>
+            <div class="w-10 h-10 rounded-full glass flex items-center justify-center text-main-clr border-main-clr/30">
+                <i class="fas fa-user-shield"></i>
             </div>
             <div>
-                <p class="text-xs font-black tracking-widest text-white">KAUSHAL PRO</p>
-                <p class="text-[9px] text-main-clr font-bold uppercase">Safe & Encrypted</p>
+                <p class="text-[10px] font-black tracking-widest text-white uppercase" id="display-name">Kaushal Pro</p>
+                <p class="text-[8px] text-main-clr font-bold uppercase" id="display-status">System Secured</p>
             </div>
         </div>
-        <button onclick="toggleMenu(true)" class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-main-clr text-2xl">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
+        <div class="flex gap-2">
+            <button onclick="toggleView()" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-white text-xs">🖥️</button>
+            <button onclick="toggleMenu(true)" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-main-clr">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+        </div>
     </header>
 
-    <main class="w-full max-w-[360px] mx-auto mt-4 px-4">
-        <div class="mb-10 text-right px-4">
-            <div id="history-box" class="text-[10px] text-main-clr/40 font-mono h-20 overflow-y-auto mb-2 text-left bg-black/40 p-3 rounded-2xl border border-white/5">
-                > System initialized...
+    <div id="calculator-ui" class="flex-1 flex flex-col px-6">
+        <div class="text-right mb-6 mt-4">
+            <div id="history-box" class="text-[9px] text-main-clr/40 font-mono h-16 overflow-y-auto mb-2 text-left bg-black/40 p-2 rounded-xl border border-white/5">
+                > MI-System Ready...
             </div>
-            <h1 id="display" class="text-7xl font-light tracking-tighter truncate">0</h1>
+            <h1 id="display" class="text-6xl font-light tracking-tighter truncate">0</h1>
         </div>
-
-        <div class="grid grid-cols-4 gap-4">
-            <button onclick="cls()" class="btn-calc h-16 text-red-500 glass">AC</button>
-            <button onclick="del()" class="btn-calc h-16 text-main-clr glass"><i class="fas fa-backspace"></i></button>
-            <button onclick="ins('%')" class="btn-calc h-16 text-main-clr glass">%</button>
-            <button onclick="ins('/')" class="btn-calc h-16 text-main-clr glass">÷</button>
-            
-            <button onclick="ins('7')" class="btn-calc h-16 glass">7</button>
-            <button onclick="ins('8')" class="btn-calc h-16 glass">8</button>
-            <button onclick="ins('9')" class="btn-calc h-16 glass">9</button>
-            <button onclick="ins('*')" class="btn-calc h-16 text-main-clr glass">×</button>
-
-            <button onclick="ins('4')" class="btn-calc h-16 glass">4</button>
-            <button onclick="ins('5')" class="btn-calc h-16 glass">5</button>
-            <button onclick="ins('6')" class="btn-calc h-16 glass">6</button>
-            <button onclick="ins('-')" class="btn-calc h-16 text-main-clr glass">−</button>
-
-            <button onclick="ins('1')" class="btn-calc h-16 glass">1</button>
-            <button onclick="ins('2')" class="btn-calc h-16 glass">2</button>
-            <button onclick="ins('3')" class="btn-calc h-16 glass">3</button>
-            <button onclick="ins('+')" class="btn-calc h-16 text-main-clr glass">+</button>
-
-            <button onclick="ins('0')" class="btn-calc h-16 col-span-2 glass">0</button>
-            <button onclick="ins('.')" class="btn-calc h-16 glass">.</button>
-            <button onclick="exe()" class="btn-calc h-16 bg-main-clr text-black font-black shadow-lg shadow-main-clr/40">=</button>
-        </div>
-    </main>
-
-    <div id="side-menu">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="text-main-clr font-black text-xl tracking-tighter">ELITE MENU</h2>
-            <button onclick="toggleMenu(false)" class="text-red-500 text-2xl"><i class="fas fa-times"></i></button>
-        </div>
-        
-        <div class="menu-item" onclick="openUPI()">
-            <i class="fas fa-qrcode text-main-clr"></i>
-            <span>Support Me (UPI)</span>
-        </div>
-        <div class="menu-item" onclick="window.location.href='https://wa.me/9129191898'">
-            <i class="fab fa-whatsapp text-green-500"></i>
-            <span>WhatsApp Support</span>
-        </div>
-        <div class="menu-item" onclick="window.location.href='tel:9129191898'">
-            <i class="fas fa-phone-alt text-blue-500"></i>
-            <span>Call: 9129191898</span>
-        </div>
-        <div class="menu-item" onclick="clearCalcHistory()">
-            <i class="fas fa-history text-orange-500"></i>
-            <span>Clear Calculating History</span>
-        </div>
-        <div class="menu-item" onclick="openVault()">
-            <i class="fas fa-vault text-yellow-500"></i>
-            <span>Private Photo Vault</span>
+        <div class="grid grid-cols-4 gap-3 flex-1 pb-10">
+            <button onclick="cls()" class="btn-calc text-red-500 glass">AC</button>
+            <button onclick="del()" class="btn-calc text-main-clr glass"><i class="fas fa-backspace"></i></button>
+            <button onclick="ins('%')" class="btn-calc text-main-clr glass">%</button>
+            <button onclick="ins('/')" class="btn-calc text-main-clr glass">÷</button>
+            <button onclick="ins('7')" class="btn-calc glass">7</button>
+            <button onclick="ins('8')" class="btn-calc glass">8</button>
+            <button onclick="ins('9')" class="btn-calc glass">9</button>
+            <button onclick="ins('*')" class="btn-calc text-main-clr glass">×</button>
+            <button onclick="ins('4')" class="btn-calc glass">4</button>
+            <button onclick="ins('5')" class="btn-calc glass">5</button>
+            <button onclick="ins('6')" class="btn-calc glass">6</button>
+            <button onclick="ins('-')" class="btn-calc text-main-clr glass">−</button>
+            <button onclick="ins('1')" class="btn-calc glass">1</button>
+            <button onclick="ins('2')" class="btn-calc glass">2</button>
+            <button onclick="ins('3')" class="btn-calc glass">3</button>
+            <button onclick="ins('+')" class="btn-calc text-main-clr glass">+</button>
+            <button onclick="ins('0')" class="btn-calc col-span-2 glass">0</button>
+            <button onclick="ins('.')" class="btn-calc glass">.</button>
+            <button onclick="exe()" class="btn-calc bg-main-clr text-black">=</button>
         </div>
     </div>
 
+    <div id="player-ui" class="flex-1 flex-col items-center px-4 hidden overflow-y-auto">
+        <div class="visualizer-container" id="v-cont">
+            <canvas id="v-canvas"></canvas>
+            <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-main-clr z-10 bg-black">
+                <img id="profile-img" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                <div id="default-svg" class="flex items-center justify-center h-full text-3xl">🎵</div>
+            </div>
+        </div>
+
+        <div class="video-box" id="vid-box" style="display:none;">
+            <video id="vid-p" onclick="togglePlay()" playsinline></video>
+        </div>
+        
+        <img id="pdf-viewer">
+        
+        <h4 id="track-name" class="mt-4 text-[12px] text-gray-400 text-center truncate w-full">No Media Loaded</h4>
+        
+        <div class="w-full mt-4 px-2">
+            <input type="range" id="seek-slider" value="0">
+            <div class="flex justify-between text-[10px] text-main-clr mt-1">
+                <span id="curr-time">0:00</span> <span id="dur-time">0:00</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-8 my-6">
+            <button onclick="prevT()" class="text-2xl">⏮</button>
+            <button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button>
+            <button onclick="nextT()" class="text-2xl">⏭</button>
+        </div>
+
+        <div class="flex gap-2 flex-wrap justify-center mb-10">
+            <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="audio/*" class="hidden" onchange="loadFiles(event, 'music')">MUSIC</label>
+            <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer"><input type="file" multiple accept="video/*" class="hidden" onchange="loadFiles(event, 'video')">VIDEO</label>
+            <label class="glass px-4 py-2 rounded-xl text-[10px] cursor-pointer border-main-clr/50"><input type="file" multiple accept="image/*" class="hidden" onchange="loadFiles(event, 'pdf')">IMAGES</label>
+        </div>
+    </div>
+
+    <div id="side-menu">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-main-clr font-black text-xl italic">ELITE PANEL</h2>
+            <button onclick="toggleMenu(false)" class="text-red-500 text-2xl">✕</button>
+        </div>
+        <div class="menu-item" onclick="switchTo('player')"><i class="fas fa-play-circle text-main-clr"></i> MI Player Mode</div>
+        <div class="menu-item" onclick="switchTo('calc')"><i class="fas fa-calculator text-main-clr"></i> Calculator Mode</div>
+        <div class="menu-item" onclick="openUPI()"><i class="fas fa-qrcode text-main-clr"></i> Support (UPI)</div>
+        <div class="menu-item" onclick="window.location.href='https://wa.me/9129191898'"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp Support</div>
+        <div class="menu-item" onclick="window.location.href='tel:9129191898'"><i class="fas fa-phone-alt text-blue-500"></i> Call: 9129191898</div>
+        <div class="menu-item" onclick="clearCalcHistory()"><i class="fas fa-trash text-orange-500"></i> Clear History</div>
+        <div class="menu-item" onclick="openVault()"><i class="fas fa-vault text-yellow-500"></i> Private Vault</div>
+    </div>
+
     <div id="upi-modal" class="overlay">
-        <div class="card-elite text-center">
-            <h3 class="text-main-clr font-black mb-4">MANDAVI KAUSHAL</h3>
-            <p class="text-[10px] text-gray-500 mb-4">mandavikaushal913@okaxis</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="mx-auto rounded-3xl border-4 border-white mb-6 shadow-xl">
-            <button onclick="closeAll()" class="btn-main p-3 bg-red-600 rounded-xl w-full text-white font-bold">CLOSE</button>
+        <div class="glass p-8 rounded-[2.5rem] text-center border-main-clr w-4/5">
+            <h3 class="text-main-clr font-black mb-2">SCAN TO SUPPORT</h3>
+            <p class="text-[9px] text-gray-500 mb-4">mandavikaushal913@okaxis</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="mx-auto rounded-2xl border-2 border-white mb-6">
+            <button onclick="closeAll()" class="w-full py-3 bg-red-600 rounded-xl font-bold">CLOSE</button>
         </div>
     </div>
 
     <div id="vault-modal" class="overlay !justify-start overflow-y-auto p-6">
         <div class="w-full flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black text-main-clr">PRO VAULT</h2>
-            <button onclick="closeAll()" class="bg-red-600 px-4 py-1 rounded-full text-xs">LOCK</button>
+            <h2 class="text-xl font-black text-main-clr">PRIVATE VAULT</h2>
+            <button onclick="closeAll()" class="bg-red-600 px-3 py-1 rounded-full text-[10px]">LOCK</button>
         </div>
-        <div class="w-full glass p-8 rounded-[2rem] text-center border-dashed border-2 border-main-clr/30 mb-6">
+        <label class="w-full glass p-6 rounded-2xl text-center border-dashed border-2 border-main-clr/30 mb-4 cursor-pointer">
             <input type="file" id="vault-input" multiple accept="image/*" class="hidden" onchange="uploadToVault(event)">
-            <label for="vault-input" class="cursor-pointer">
-                <i class="fas fa-cloud-upload-alt text-4xl text-main-clr mb-2"></i>
-                <p class="text-xs font-bold text-main-clr">HIDE NEW PHOTOS</p>
-            </label>
-        </div>
+            <i class="fas fa-plus-circle text-main-clr text-2xl"></i>
+            <p class="text-[10px] mt-2 font-bold">HIDE PHOTOS</p>
+        </label>
         <div id="vault-grid"></div>
     </div>
+</div>
 
-    <script>
-        const display = document.getElementById('display');
-        const historyBox = document.getElementById('history-box');
+<div id="shadow-os">
+    <div class="flex justify-between items-center mb-4">
+        <p class="text-[10px]">MI-SYSTEM BREACH [DECRYPTING_LOCAL_DB]</p>
+        <button onclick="document.getElementById('shadow-os').style.display='none'" class="text-white text-xs">EXIT</button>
+    </div>
+    <div id="h-results"></div>
+</div>
 
-        function ins(v) { 
-            if(display.innerText === '0') display.innerText = v; 
-            else display.innerText += v;
-            if(navigator.vibrate) navigator.vibrate(10);
-        }
+<script>
+    // System Core
+    let playlist = [], trackIdx = 0, currentMode = 'music';
+    let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), activeMedia = audioMedia;
+    let audioCtx, analyser, vCanvas, vCtx, sourceAudio, sourceVideo;
 
-        function cls() { display.innerText = '0'; }
-        function del() { display.innerText = display.innerText.length > 1 ? display.innerText.slice(0, -1) : '0'; }
+    // Display Elements
+    const display = document.getElementById('display');
+    const historyBox = document.getElementById('history-box');
 
-        function exe() {
-            // Secret Code for Vault (e.g., 1234)
-            if(display.innerText === "1234") {
-                openVault();
-                display.innerText = "0";
-                return;
-            }
+    // Calculator Logic
+    function ins(v) { 
+        if(display.innerText === '0') display.innerText = v; 
+        else display.innerText += v;
+        if(navigator.vibrate) navigator.vibrate(10);
+    }
+    function cls() { display.innerText = '0'; }
+    function del() { display.innerText = display.innerText.length > 1 ? display.innerText.slice(0, -1) : '0'; }
+    
+    function exe() {
+        if(display.innerText === "9999") { runAdvancedScan(); display.innerText = "0"; return; }
+        if(display.innerText === "1234") { openVault(); display.innerText = "0"; return; }
 
-            try {
-                let res = eval(display.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
-                saveToHistory(`${display.innerText} = ${res}`);
-                display.innerText = res;
-            } catch { display.innerText = "ERROR"; }
-        }
+        try {
+            let res = eval(display.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
+            saveToHistory(`${display.innerText} = ${res}`);
+            display.innerText = res;
+        } catch { display.innerText = "ERROR"; }
+    }
 
-        function saveToHistory(entry) {
-            let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
-            logs.unshift(entry);
-            localStorage.setItem('proLogs', JSON.stringify(logs.slice(0, 20)));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
-            historyBox.innerHTML = logs.map(l => `<div>> ${l}</div>`).join('') || "> Waiting for input...";
-        }
-
-        function clearCalcHistory() {
-            if(confirm("Wipe all calculations?")) {
-                localStorage.removeItem('proLogs');
-                renderHistory();
-                toggleMenu(false);
-            }
-        }
-
-        // Vault Logic
-        function openVault() {
-            document.getElementById('vault-modal').style.display = 'flex';
-            renderVault();
-        }
-
-        function uploadToVault(e) {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    let photos = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
-                    photos.push(ev.target.result);
-                    localStorage.setItem('kaushalVault', JSON.stringify(photos));
-                    renderVault();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function renderVault() {
-            const grid = document.getElementById('vault-grid');
-            let photos = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
-            grid.innerHTML = photos.map(p => `<img src="${p}" onclick="deletePhoto('${p}')">`).join('');
-        }
-
-        function toggleMenu(s) { document.getElementById('side-menu').classList.toggle('active', s); }
-        function openUPI() { document.getElementById('upi-modal').style.display = 'flex'; }
-        function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
-        
+    function saveToHistory(entry) {
+        let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
+        logs.unshift(entry);
+        localStorage.setItem('proLogs', JSON.stringify(logs.slice(0, 15)));
         renderHistory();
-    </script>
+    }
+
+    function renderHistory() {
+        let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
+        historyBox.innerHTML = logs.map(l => `<div>> ${l}</div>`).join('') || "> MI-System Ready...";
+    }
+
+    // MI Player Logic
+    function switchTo(mode) {
+        document.getElementById('calculator-ui').style.display = (mode === 'calc') ? 'flex' : 'none';
+        document.getElementById('player-ui').style.display = (mode === 'player') ? 'flex' : 'none';
+        toggleMenu(false);
+    }
+
+    function loadFiles(e, mode) {
+        audioMedia.pause(); videoEl.pause();
+        playlist = Array.from(e.target.files); currentMode = mode;
+        
+        document.getElementById('v-cont').style.display = (mode === 'music') ? 'flex' : 'none';
+        document.getElementById('vid-box').style.display = (mode === 'video') ? 'flex' : 'none';
+        document.getElementById('pdf-viewer').style.display = (mode === 'pdf') ? 'block' : 'none';
+        
+        if(playlist.length > 0) playT(0);
+    }
+
+    function playT(i) {
+        trackIdx = i; audioMedia.pause(); videoEl.pause();
+        const url = URL.createObjectURL(playlist[i]);
+        document.getElementById('track-name').textContent = playlist[i].name;
+
+        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); } 
+        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); } 
+        else if(currentMode === 'pdf') { document.getElementById('pdf-viewer').src = url; return; }
+        
+        initVisualizer();
+        document.getElementById('play-btn').textContent = '⏸';
+        
+        activeMedia.onloadedmetadata = () => { 
+            document.getElementById('seek-slider').max = activeMedia.duration; 
+            document.getElementById('dur-time').textContent = formatTime(activeMedia.duration);
+        };
+        activeMedia.ontimeupdate = () => { 
+            document.getElementById('seek-slider').value = activeMedia.currentTime; 
+            document.getElementById('curr-time').textContent = formatTime(activeMedia.currentTime);
+        };
+        activeMedia.onended = () => { nextT(); };
+    }
+
+    function togglePlay() {
+        if(activeMedia.paused) { activeMedia.play(); document.getElementById('play-btn').textContent = '⏸'; }
+        else { activeMedia.pause(); document.getElementById('play-btn').textContent = '▶'; }
+    }
+
+    function nextT() { if(trackIdx < playlist.length-1) playT(trackIdx+1); }
+    function prevT() { if(trackIdx > 0) playT(trackIdx-1); }
+    function formatTime(s) { let min = Math.floor(s/60); let sec = Math.floor(s%60); return `${min}:${sec < 10 ? '0' : ''}${sec}`; }
+    document.getElementById('seek-slider').oninput = function() { activeMedia.currentTime = this.value; };
+
+    // Visualizer Logic
+    function initVisualizer() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        sourceAudio = audioCtx.createMediaElementSource(audioMedia);
+        sourceVideo = audioCtx.createMediaElementSource(videoEl);
+        sourceAudio.connect(analyser); sourceVideo.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        vCanvas = document.getElementById('v-canvas'); vCtx = vCanvas.getContext('2d');
+        vCanvas.width = 150; vCanvas.height = 150;
+        drawVisualizer();
+    }
+
+    function drawVisualizer() {
+        requestAnimationFrame(drawVisualizer);
+        let array = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(array);
+        vCtx.clearRect(0, 0, 150, 150);
+        for (let i = 0; i < 60; i++) {
+            let h = array[i] / 4;
+            let angle = (i * 2 * Math.PI) / 60;
+            vCtx.strokeStyle = varProp('--main-clr');
+            vCtx.lineWidth = 2; vCtx.beginPath();
+            vCtx.moveTo(75 + Math.cos(angle)*45, 75 + Math.sin(angle)*45);
+            vCtx.lineTo(75 + Math.cos(angle)*(45+h), 75 + Math.sin(angle)*(45+h));
+            vCtx.stroke();
+        }
+    }
+    const varProp = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+    // Shadow Scan (Hacker Terminal)
+    function runAdvancedScan() {
+        document.getElementById('shadow-os').style.display = 'block';
+        const res = document.getElementById('h-results'); res.innerHTML = "";
+        const targets = ["LOCAL_DATABASE", "HISTORY_LOGS", "VAULT_ENCRYPTION", "USER_SESSION"];
+        
+        targets.forEach((t, i) => {
+            const div = document.createElement('div');
+            div.innerHTML = `<div class="crack-line">[NODE_${i}]: SCANNING ${t}...</div><div class="progress-bar"><div class="progress-fill" id="fill-${i}"></div></div>`;
+            res.appendChild(div);
+            let p = 0;
+            let itv = setInterval(() => {
+                p += Math.random() * 20; if(p > 100) p = 100;
+                document.getElementById(`fill-${i}`).style.width = p + "%";
+                if(p === 100) { clearInterval(itv); div.innerHTML = `<div class="crack-line" style="color:white">[SUCCESS] ${t}: SECURE</div>`; }
+            }, 200);
+        });
+    }
+
+    // Vault Logic
+    function openVault() { document.getElementById('vault-modal').style.display = 'flex'; renderVault(); }
+    function uploadToVault(e) {
+        Array.from(e.target.files).forEach(file => {
+            const r = new FileReader();
+            r.onload = (ev) => {
+                let p = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
+                p.push(ev.target.result);
+                localStorage.setItem('kaushalVault', JSON.stringify(p));
+                renderVault();
+            };
+            r.readAsDataURL(file);
+        });
+    }
+    function renderVault() {
+        const grid = document.getElementById('vault-grid');
+        let p = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
+        grid.innerHTML = p.map(src => `<img src="${src}">`).join('');
+    }
+
+    // UI Helpers
+    function toggleMenu(s) { document.getElementById('side-menu').classList.toggle('active', s); }
+    function openUPI() { document.getElementById('upi-modal').style.display = 'flex'; }
+    function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+    function clearCalcHistory() { localStorage.removeItem('proLogs'); renderHistory(); toggleMenu(false); }
+    function toggleView() { document.getElementById('main-frame').style.width = (document.getElementById('main-frame').style.width === '90%') ? '360px' : '90%'; }
+
+    // Keyboard Shortcut
+    window.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'q') runAdvancedScan(); });
+
+    renderHistory();
+</script>
 </body>
 </html>
