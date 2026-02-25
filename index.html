@@ -95,17 +95,15 @@
 
     <div id="geo-ui">
         <div class="max-w-2xl mx-auto pb-20">
-            <div class="flex justify-between items-center mb-8 sticky top-0 bg-black/90 py-4 z-50">
+            <div class="flex justify-between items-center mb-8 bg-black/90 py-4 z-50">
                 <h1 class="text-2xl font-black text-yellow-400 uppercase">Shape Engine</h1>
                 <button onclick="closeModals()" class="bg-red-600 px-6 py-2 rounded-full font-bold">CLOSE</button>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="shape-box">
-                    <h3 class="text-sm font-bold mb-3">Circle Area</h3>
-                    <input type="number" id="c-r" placeholder="Radius" class="geo-input">
-                    <button onclick="calcShape('circle')" class="w-full bg-accent text-black py-2 rounded-lg font-bold">SOLVE</button>
-                    <p id="r-circle" class="mt-2 text-green-400 font-mono"></p>
-                </div>
+            <div class="shape-box">
+                <h3 class="text-sm font-bold mb-3">Circle Area</h3>
+                <input type="number" id="c-r" placeholder="Radius" class="geo-input">
+                <button onclick="calcShape('circle')" class="w-full bg-accent text-black py-2 rounded-lg font-bold">SOLVE</button>
+                <p id="r-circle" class="mt-2 text-green-400 font-mono"></p>
             </div>
         </div>
     </div>
@@ -127,7 +125,7 @@
 
     <div id="history-ui">
         <div class="max-w-xl mx-auto">
-            <div class="flex justify-between items-center mb-8 sticky top-0 bg-black py-4 z-50">
+            <div class="flex justify-between items-center mb-8 py-4 z-50">
                 <h1 class="text-2xl font-black text-green-400 uppercase">Logs</h1>
                 <button onclick="closeModals()" class="bg-red-600 px-6 py-2 rounded-full font-bold">BACK</button>
             </div>
@@ -135,21 +133,10 @@
         </div>
     </div>
 
-    <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src="" alt="Preview"></div>
+    <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
 
     <script>
-        // Battery Status Logic
-        if (navigator.getBattery) {
-            navigator.getBattery().then(battery => {
-                const updateBattery = () => {
-                    document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + "%";
-                };
-                updateBattery();
-                battery.addEventListener('levelchange', updateBattery);
-            });
-        }
-
-        // PWA Install Logic
+        // 1. PWA Setup
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
 
@@ -164,22 +151,29 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') console.log('PWA Installed');
+                if (outcome === 'accepted') installBtn.classList.add('hidden');
                 deferredPrompt = null;
-                installBtn.classList.add('hidden');
             }
         });
 
-        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(reg => console.log('SW Registered'))
-                    .catch(err => console.error('SW Registration Failed', err));
+                    .catch(err => console.log('SW Failed', err));
             });
         }
 
-        // Calculator & Vault Logic
+        // 2. Battery Logic
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                const update = () => document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + "%";
+                update();
+                battery.addEventListener('levelchange', update);
+            });
+        }
+
+        // 3. Calculator & Vault Logic
         const resDisplay = document.getElementById('res');
         let pass = localStorage.getItem('vPass') || "1234";
         let db;
@@ -198,59 +192,48 @@
         function exe() {
             if(resDisplay.innerText === pass) { openVault(); resDisplay.innerText='0'; return; }
             try {
-                let formula = resDisplay.innerText.replace(/×/g, '*').replace(/÷/g, '/');
-                let final = eval(formula);
+                let final = eval(resDisplay.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
                 saveHist(resDisplay.innerText + " = " + final);
                 resDisplay.innerText = final;
             } catch { resDisplay.innerText = "Error"; }
         }
 
         function toggleMenu() { document.getElementById('menu').classList.toggle('hidden'); }
-        function closeModals() {
-            document.getElementById('geo-ui').style.display='none';
-            document.getElementById('history-ui').style.display='none';
-            document.getElementById('vault-ui').style.display='none';
-        }
+        function closeModals() { document.querySelectorAll('#geo-ui, #history-ui, #vault-ui').forEach(el => el.style.display='none'); }
         function openGeo() { document.getElementById('geo-ui').style.display='block'; }
         function openVault() { document.getElementById('vault-ui').style.display='block'; loadFiles(); }
-        
+
         function handleFiles(files) {
             Array.from(files).forEach(f => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const tx = db.transaction("files", "readwrite");
-                    tx.objectStore("files").add({ id: Date.now()+Math.random(), type: f.type, src: e.target.result });
+                    tx.objectStore("files").add({ id: Date.now()+Math.random(), src: e.target.result });
                     tx.oncomplete = loadFiles;
                 }; reader.readAsDataURL(f);
             });
         }
 
         function loadFiles() {
-            const grid = document.getElementById('vault-grid'); 
-            grid.innerHTML = '';
-            const store = db.transaction("files", "readonly").objectStore("files");
-            store.openCursor().onsuccess = e => {
+            const grid = document.getElementById('vault-grid'); grid.innerHTML = '';
+            db.transaction("files", "readonly").objectStore("files").openCursor().onsuccess = e => {
                 const cursor = e.target.result;
                 if(cursor) {
-                    const item = cursor.value;
                     const div = document.createElement('div');
                     div.className = "glass p-2 rounded-3xl relative";
-                    div.innerHTML = `
-                        <button onclick="delFile(${item.id})" class="absolute top-2 right-2 bg-red-600 w-6 h-6 rounded-full text-[10px] z-10 flex items-center justify-center"><i class="fas fa-trash"></i></button>
-                        <img src="${item.src}" class="w-full h-32 object-cover rounded-2xl cursor-pointer" onclick="openPreview('${item.src}')">`;
-                    grid.appendChild(div);
-                    cursor.continue();
+                    div.innerHTML = `<button onclick="delFile(${cursor.value.id})" class="absolute top-2 right-2 bg-red-600 w-6 h-6 rounded-full text-[10px] z-10">×</button>
+                                     <img src="${cursor.value.src}" class="w-full h-32 object-cover rounded-2xl cursor-pointer" onclick="openPreview('${cursor.value.src}')">`;
+                    grid.appendChild(div); cursor.continue();
                 }
             };
         }
 
         function delFile(id) { db.transaction("files", "readwrite").objectStore("files").delete(id).onsuccess = loadFiles; }
         function openPreview(src) { document.getElementById('overlay-img').src = src; document.getElementById('media-overlay').style.display = 'flex'; }
-
+        
         function changePass() { 
             let n = prompt("Enter New Secret Code:"); 
-            if(n && n.length >= 4) { localStorage.setItem('vPass', n); pass = n; alert("Code Updated!"); }
-            else if(n) { alert("Code must be at least 4 digits!"); }
+            if(n && n.length >= 4) { localStorage.setItem('vPass', n); pass = n; alert("Updated!"); }
         }
 
         function saveHist(s) {
@@ -260,8 +243,7 @@
         }
 
         function showHistory() {
-            const list = document.getElementById('history-list'); 
-            list.innerHTML = '';
+            const list = document.getElementById('history-list'); list.innerHTML = '';
             JSON.parse(localStorage.getItem('kLog') || '[]').forEach(x => {
                 list.innerHTML += `<div class="glass p-4 rounded-2xl border-l-4 border-accent font-mono text-xs mb-2">${x}</div>`;
             });
@@ -269,10 +251,8 @@
         }
 
         function calcShape(shape) {
-            if(shape==='circle') {
-                let r = document.getElementById('c-r').value;
-                if(r) document.getElementById('r-circle').innerText = "Area: " + (3.14 * r * r).toFixed(2);
-            }
+            let r = document.getElementById('c-r').value;
+            if(r) document.getElementById('r-circle').innerText = "Area: " + (3.14 * r * r).toFixed(2);
         }
 
         window.onclick = (e) => { if(!e.target.closest('.relative')) document.getElementById('menu').classList.add('hidden'); }
