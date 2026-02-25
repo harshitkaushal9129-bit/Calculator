@@ -35,7 +35,7 @@
                 <h1 class="text-sm font-black tracking-widest text-accent italic uppercase">KAUSHAL PRO</h1>
                 <p class="text-[9px] opacity-60 font-bold flex items-center gap-2">
                     <i class="fas fa-battery-three-quarters text-green-400"></i>
-                    <span id="battery-level">100%</span>
+                    <span id="battery-level">--%</span>
                 </p>
             </div>
         </div>
@@ -48,7 +48,7 @@
                 <div id="menu" class="hidden absolute right-0 mt-4 w-72 glass p-6 rounded-[2.5rem] z-[100] shadow-2xl border border-accent/30">
                     <div class="text-center mb-4">
                         <div class="bg-white p-2 rounded-2xl inline-block shadow-inner">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mandavikaushal913@okaxis" class="w-24 h-24">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mandavikaushal913@okaxis" class="w-24 h-24" alt="UPI QR">
                         </div>
                         <p class="text-[10px] text-accent mt-2 font-mono">mandavikaushal913@okaxis</p>
                     </div>
@@ -135,18 +135,20 @@
         </div>
     </div>
 
-    <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
-<script>
-    if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('SW Registered'))
-                    .catch(err => console.log('SW Failed', err));
+    <div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src="" alt="Preview"></div>
+
+    <script>
+        // Battery Status Logic
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                const updateBattery = () => {
+                    document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + "%";
+                };
+                updateBattery();
+                battery.addEventListener('levelchange', updateBattery);
             });
         }
 
-    </script>
-    <script>
         // PWA Install Logic
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
@@ -162,30 +164,33 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') console.log('User installed the app');
+                if (outcome === 'accepted') console.log('PWA Installed');
                 deferredPrompt = null;
                 installBtn.classList.add('hidden');
             }
         });
 
-        // Register Service Worker
-        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.error('SW Registration Failed', err));
+            });
+        }
 
+        // Calculator & Vault Logic
         const resDisplay = document.getElementById('res');
         let pass = localStorage.getItem('vPass') || "1234";
         let db;
 
-        // IndexedDB
         const req = indexedDB.open("KaushalProDB", 2);
         req.onupgradeneeded = e => { 
             db = e.target.result; 
-            if (!db.objectStoreNames.contains("files")) {
-                db.createObjectStore("files", {keyPath: "id"}); 
-            }
+            if (!db.objectStoreNames.contains("files")) db.createObjectStore("files", {keyPath: "id"}); 
         };
         req.onsuccess = e => db = e.target.result;
 
-        // Calc Functions
         function ins(v) { if(resDisplay.innerText==='0') resDisplay.innerText=v; else resDisplay.innerText+=v; }
         function cls() { resDisplay.innerText='0'; }
         function del() { resDisplay.innerText = resDisplay.innerText.length>1 ? resDisplay.innerText.slice(0,-1) : '0'; }
@@ -204,6 +209,7 @@
         function closeModals() {
             document.getElementById('geo-ui').style.display='none';
             document.getElementById('history-ui').style.display='none';
+            document.getElementById('vault-ui').style.display='none';
         }
         function openGeo() { document.getElementById('geo-ui').style.display='block'; }
         function openVault() { document.getElementById('vault-ui').style.display='block'; loadFiles(); }
@@ -244,6 +250,7 @@
         function changePass() { 
             let n = prompt("Enter New Secret Code:"); 
             if(n && n.length >= 4) { localStorage.setItem('vPass', n); pass = n; alert("Code Updated!"); }
+            else if(n) { alert("Code must be at least 4 digits!"); }
         }
 
         function saveHist(s) {
