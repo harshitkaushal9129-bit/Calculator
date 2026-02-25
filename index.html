@@ -1,244 +1,224 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kaushal Pro - Elite Calculator</title>
+    <title>Kaushal Pro Calculator - Elite Edition</title>
     
-    <meta name="theme-color" content="#00ffcc">
-    <link rel="manifest" href="data:application/json;base64,ewogICAgIm5hbWUiOiAiS2F1c2hhbCBQcm8gQ2FsY3VsYXRvciIsCiAgICAic2hvcnRfbmFtZSI6ICJLYXVzaGFsIFBybyIsCiAgICAic3RhcnRfdXJsIjogIi4iLAogICAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwYjE4IiwKICAgICJ0aGVtZV9jb2xvciI6ICIjMDUwYjE4IiwKICAgICJpY29ucyI6IFsKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMTY0LzE2NDY0MC5wbmciLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0=">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --accent: #00ffcc; --bg: #050b18; --hacker: #00ff41; }
-        body { background: #000; font-family: 'Poppins', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; }
+        :root { 
+            --main-clr: #00ffcc; --bg-dark: #050b18; 
+            --hacker-green: #00ff41;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        body { background: radial-gradient(circle at center, #1a1a1a, #000); font-family: 'Segoe UI', sans-serif; color: white; min-height: 100vh; margin: 0; overflow: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); }
         
-        /* Glass UI like MI PLAYER */
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; border-radius: 1.5rem; font-weight: 600; font-size: 1.4rem; }
-        .btn-calc:active { transform: scale(0.9); background: var(--accent); color: #000; }
+        /* Calculator Buttons */
+        .btn-calc { background: rgba(255, 255, 255, 0.05); transition: 0.1s; border-radius: 1.5rem; font-weight: 800; }
+        .btn-calc:active { transform: scale(0.9); background: var(--main-clr); color: #000; box-shadow: 0 0 20px var(--main-clr); }
 
-        /* Hacker Overlay (Shadow OS style) */
-        #shadow-os { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: none; padding: 20px; font-family: 'Courier New', monospace; }
-        .crack-line { color: var(--hacker); font-size: 12px; margin-bottom: 5px; border-left: 2px solid var(--hacker); padding-left: 10px; }
-        .progress-bar { width: 100%; height: 4px; background: #111; margin: 5px 0; }
-        .fill { height: 100%; background: var(--hacker); width: 0%; transition: 0.3s; }
-
-        /* General Overlay */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .auth-card { width: 90%; max-width: 400px; padding: 2.5rem; border-radius: 2.5rem; border: 1px solid var(--accent); background: #0a0f1e; }
-        input { width: 100%; padding: 14px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 15px; outline: none; }
+        /* Overlays */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .card-elite { width: 90%; max-width: 400px; padding: 2rem; border-radius: 2.5rem; border: 1px solid var(--main-clr); background: #080808; box-shadow: 0 0 30px rgba(0,255,204,0.2); }
         
-        .h-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--hacker); }
-        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+        /* Menu Sidebar */
+        #side-menu { position: fixed; right: -100%; top: 0; width: 80%; height: 100%; background: rgba(5, 5, 5, 0.98); z-index: 2000; transition: 0.4s ease-in-out; border-left: 1px solid var(--main-clr); padding: 40px 20px; }
+        #side-menu.active { right: 0; }
+        .menu-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 15px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { color: var(--main-clr); background: rgba(0,255,204,0.05); }
+
+        /* Vault Grid */
+        #vault-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-top: 20px; }
+        #vault-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; border: 1px solid var(--glass-border); }
     </style>
 </head>
 <body>
 
-    <header class="w-full max-w-md mx-auto p-6 flex justify-between items-center relative z-50">
-        <div onclick="openAuth()" class="flex items-center gap-3 cursor-pointer">
-            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-accent border-accent/30 shadow-[0_0_15px_rgba(0,255,204,0.3)]">
-                <i class="fas fa-user-secret text-xl"></i>
+    <header class="w-full max-w-md mx-auto p-6 flex justify-between items-center z-[100] sticky top-0">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-main-clr border-main-clr/30 shadow-[0_0_20px_rgba(0,255,204,0.3)]">
+                <i class="fas fa-user-shield text-xl"></i>
             </div>
             <div>
-                <p id="u-name" class="text-xs font-black text-white tracking-widest">KAUSHAL PRO</p>
-                <p id="u-status" class="text-[9px] text-accent font-bold uppercase flicker">System Ready</p>
+                <p class="text-xs font-black tracking-widest text-white">KAUSHAL PRO</p>
+                <p class="text-[9px] text-main-clr font-bold uppercase">Safe & Encrypted</p>
             </div>
         </div>
-        <div class="flex gap-2">
-            <button onclick="installApp()" id="p-btn" class="hidden glass px-3 py-1 rounded-full text-[10px] text-accent">INSTALL</button>
-            <button onclick="toggleMenu(true)" class="w-10 h-10 glass rounded-full flex items-center justify-center text-accent"><i class="fas fa-layer-group"></i></button>
-        </div>
+        <button onclick="toggleMenu(true)" class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-main-clr text-2xl">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
     </header>
 
     <main class="w-full max-w-[360px] mx-auto mt-4 px-4">
         <div class="mb-10 text-right px-4">
-            <div id="logs" class="text-[10px] text-accent/30 font-mono h-24 overflow-y-auto mb-2 text-left bg-white/5 p-2 rounded-xl"></div>
+            <div id="history-box" class="text-[10px] text-main-clr/40 font-mono h-20 overflow-y-auto mb-2 text-left bg-black/40 p-3 rounded-2xl border border-white/5">
+                > System initialized...
+            </div>
             <h1 id="display" class="text-7xl font-light tracking-tighter truncate">0</h1>
         </div>
 
         <div class="grid grid-cols-4 gap-4">
-            <button onclick="cls()" class="btn-calc h-16 text-red-500">AC</button>
-            <button onclick="del()" class="btn-calc h-16 text-accent"><i class="fas fa-backspace"></i></button>
-            <button onclick="ins('%')" class="btn-calc h-16 text-accent">%</button>
-            <button onclick="ins('/')" class="btn-calc h-16 text-accent">÷</button>
-            <button onclick="ins('7')" class="btn-calc h-16">7</button>
-            <button onclick="ins('8')" class="btn-calc h-16">8</button>
-            <button onclick="ins('9')" class="btn-calc h-16">9</button>
-            <button onclick="ins('*')" class="btn-calc h-16 text-accent">×</button>
-            <button onclick="ins('4')" class="btn-calc h-16">4</button>
-            <button onclick="ins('5')" class="btn-calc h-16">5</button>
-            <button onclick="ins('6')" class="btn-calc h-16">6</button>
-            <button onclick="ins('-')" class="btn-calc h-16 text-accent">−</button>
-            <button onclick="ins('1')" class="btn-calc h-16">1</button>
-            <button onclick="ins('2')" class="btn-calc h-16">2</button>
-            <button onclick="ins('3')" class="btn-calc h-16">3</button>
-            <button onclick="ins('+')" class="btn-calc h-16 text-accent">+</button>
-            <button onclick="ins('0')" class="btn-calc h-16 col-span-2">0</button>
-            <button onclick="ins('.')" class="btn-calc h-16">.</button>
-            <button onclick="exe()" class="btn-calc h-16 bg-accent text-black font-black">=</button>
+            <button onclick="cls()" class="btn-calc h-16 text-red-500 glass">AC</button>
+            <button onclick="del()" class="btn-calc h-16 text-main-clr glass"><i class="fas fa-backspace"></i></button>
+            <button onclick="ins('%')" class="btn-calc h-16 text-main-clr glass">%</button>
+            <button onclick="ins('/')" class="btn-calc h-16 text-main-clr glass">÷</button>
+            
+            <button onclick="ins('7')" class="btn-calc h-16 glass">7</button>
+            <button onclick="ins('8')" class="btn-calc h-16 glass">8</button>
+            <button onclick="ins('9')" class="btn-calc h-16 glass">9</button>
+            <button onclick="ins('*')" class="btn-calc h-16 text-main-clr glass">×</button>
+
+            <button onclick="ins('4')" class="btn-calc h-16 glass">4</button>
+            <button onclick="ins('5')" class="btn-calc h-16 glass">5</button>
+            <button onclick="ins('6')" class="btn-calc h-16 glass">6</button>
+            <button onclick="ins('-')" class="btn-calc h-16 text-main-clr glass">−</button>
+
+            <button onclick="ins('1')" class="btn-calc h-16 glass">1</button>
+            <button onclick="ins('2')" class="btn-calc h-16 glass">2</button>
+            <button onclick="ins('3')" class="btn-calc h-16 glass">3</button>
+            <button onclick="ins('+')" class="btn-calc h-16 text-main-clr glass">+</button>
+
+            <button onclick="ins('0')" class="btn-calc h-16 col-span-2 glass">0</button>
+            <button onclick="ins('.')" class="btn-calc h-16 glass">.</button>
+            <button onclick="exe()" class="btn-calc h-16 bg-main-clr text-black font-black shadow-lg shadow-main-clr/40">=</button>
         </div>
     </main>
 
-    <div id="side-menu" class="overlay !justify-start !items-end">
-        <div class="w-full max-w-xs p-8 space-y-6">
-            <button onclick="toggleMenu(false)" class="text-red-500 text-3xl mb-10"><i class="fas fa-times-circle"></i></button>
-            <button onclick="openUPI()" class="w-full text-right text-accent font-black tracking-widest"><i class="fas fa-qrcode ml-2"></i> SUPPORT KAUSHAL</button>
-            <button onclick="changePass()" class="w-full text-right text-orange-400 font-black tracking-widest"><i class="fas fa-lock ml-2"></i> CHANGE VAULT CODE</button>
-            <button onclick="clearLogs()" class="w-full text-right text-red-400 font-black tracking-widest"><i class="fas fa-terminal ml-2"></i> WIPE SYSTEM LOGS</button>
+    <div id="side-menu">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-main-clr font-black text-xl tracking-tighter">ELITE MENU</h2>
+            <button onclick="toggleMenu(false)" class="text-red-500 text-2xl"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="menu-item" onclick="openUPI()">
+            <i class="fas fa-qrcode text-main-clr"></i>
+            <span>Support Me (UPI)</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='https://wa.me/9129191898'">
+            <i class="fab fa-whatsapp text-green-500"></i>
+            <span>WhatsApp Support</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='tel:9129191898'">
+            <i class="fas fa-phone-alt text-blue-500"></i>
+            <span>Call: 9129191898</span>
+        </div>
+        <div class="menu-item" onclick="clearCalcHistory()">
+            <i class="fas fa-history text-orange-500"></i>
+            <span>Clear Calculating History</span>
+        </div>
+        <div class="menu-item" onclick="openVault()">
+            <i class="fas fa-vault text-yellow-500"></i>
+            <span>Private Photo Vault</span>
         </div>
     </div>
 
-    <div id="shadow-os">
-        <div class="flex justify-between items-center border-b border-hacker/30 pb-4 mb-4">
-            <h1 class="text-hacker font-black tracking-tighter">KAUSHAL_SHADOW_OS v4.0</h1>
-            <button onclick="document.getElementById('shadow-os').style.display='none'" class="text-white text-xs">EXIT_TERMINAL</button>
-        </div>
-        <div id="h-results" class="overflow-y-auto h-[80vh] space-y-4"></div>
-    </div>
-
-    <div id="auth-overlay" class="overlay">
-        <div class="auth-card glass">
-            <h2 class="text-2xl font-black text-center text-accent mb-6">SECURE LOGIN</h2>
-            <input type="email" id="a-email" placeholder="Database Email">
-            <input type="password" id="a-pass" placeholder="System Key">
-            <button onclick="handleAuth()" class="w-full bg-accent text-black py-4 rounded-2xl font-black mt-4">AUTHORIZE</button>
-            <button onclick="closeAll()" class="w-full mt-4 text-gray-600 text-[10px] font-black">CANCEL_REQUEST</button>
+    <div id="upi-modal" class="overlay">
+        <div class="card-elite text-center">
+            <h3 class="text-main-clr font-black mb-4">MANDAVI KAUSHAL</h3>
+            <p class="text-[10px] text-gray-500 mb-4">mandavikaushal913@okaxis</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="mx-auto rounded-3xl border-4 border-white mb-6 shadow-xl">
+            <button onclick="closeAll()" class="btn-main p-3 bg-red-600 rounded-xl w-full text-white font-bold">CLOSE</button>
         </div>
     </div>
 
-    <div id="upi-overlay" class="overlay">
-        <div class="glass p-8 rounded-[3rem] text-center">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis" class="mx-auto rounded-2xl border-4 border-white mb-6">
-            <button onclick="closeAll()" class="text-red-500 font-black">CLOSE</button>
+    <div id="vault-modal" class="overlay !justify-start overflow-y-auto p-6">
+        <div class="w-full flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black text-main-clr">PRO VAULT</h2>
+            <button onclick="closeAll()" class="bg-red-600 px-4 py-1 rounded-full text-xs">LOCK</button>
         </div>
+        <div class="w-full glass p-8 rounded-[2rem] text-center border-dashed border-2 border-main-clr/30 mb-6">
+            <input type="file" id="vault-input" multiple accept="image/*" class="hidden" onchange="uploadToVault(event)">
+            <label for="vault-input" class="cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-4xl text-main-clr mb-2"></i>
+                <p class="text-xs font-bold text-main-clr">HIDE NEW PHOTOS</p>
+            </label>
+        </div>
+        <div id="vault-grid"></div>
     </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-            authDomain: "calculator-by-kaushalji.firebaseapp.com",
-            projectId: "calculator-by-kaushalji",
-            appId: "1:156130281294:web:73b80a5f344daeabdd001f"
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        window.handleAuth = async () => {
-            const e = document.getElementById('a-email').value;
-            const p = document.getElementById('a-pass').value;
-            try {
-                await signInWithEmailAndPassword(auth, e, p);
-                closeAll();
-            } catch {
-                try { await createUserWithEmailAndPassword(auth, e, p); closeAll(); }
-                catch(err) { alert(err.message); }
-            }
-        };
-
-        onAuthStateChanged(auth, u => {
-            if(u) {
-                document.getElementById('u-name').innerText = u.email.split('@')[0].toUpperCase();
-                document.getElementById('u-status').innerText = "CONNECTION_SECURED";
-                document.getElementById('u-status').style.color = "#00ffcc";
-            }
-        });
-    </script>
 
     <script>
         const display = document.getElementById('display');
-        const logsBox = document.getElementById('logs');
+        const historyBox = document.getElementById('history-box');
 
-        function ins(v) { if(display.innerText==='0') display.innerText=v; else display.innerText+=v; }
-        function cls() { display.innerText='0'; }
-        function del() { display.innerText = display.innerText.length>1 ? display.innerText.slice(0,-1) : '0'; }
+        function ins(v) { 
+            if(display.innerText === '0') display.innerText = v; 
+            else display.innerText += v;
+            if(navigator.vibrate) navigator.vibrate(10);
+        }
+
+        function cls() { display.innerText = '0'; }
+        function del() { display.innerText = display.innerText.length > 1 ? display.innerText.slice(0, -1) : '0'; }
 
         function exe() {
-            let pass = localStorage.getItem('vPass') || "1234";
-            
-            // SECRET HACKER COMMAND (VLC Style)
-            if(display.innerText === "9999") { // Special command to open Shadow OS
-                runShadowScan();
-                display.innerText = "0";
-                return;
-            }
-
-            if(display.innerText === pass) {
-                alert("VAULT_UNLOCKED");
+            // Secret Code for Vault (e.g., 1234)
+            if(display.innerText === "1234") {
+                openVault();
                 display.innerText = "0";
                 return;
             }
 
             try {
                 let res = eval(display.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
-                saveLog(display.innerText + " = " + res);
+                saveToHistory(`${display.innerText} = ${res}`);
                 display.innerText = res;
             } catch { display.innerText = "ERROR"; }
         }
 
-        function saveLog(s) {
-            let l = JSON.parse(localStorage.getItem('c-logs') || "[]");
-            l.unshift(s);
-            localStorage.setItem('c-logs', JSON.stringify(l.slice(0, 30)));
-            renderLogs();
+        function saveToHistory(entry) {
+            let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
+            logs.unshift(entry);
+            localStorage.setItem('proLogs', JSON.stringify(logs.slice(0, 20)));
+            renderHistory();
         }
 
-        function renderLogs() {
-            let l = JSON.parse(localStorage.getItem('c-logs') || "[]");
-            logsBox.innerHTML = l.map(x => `<div>> ${x}</div>`).join('');
+        function renderHistory() {
+            let logs = JSON.parse(localStorage.getItem('proLogs') || "[]");
+            historyBox.innerHTML = logs.map(l => `<div>> ${l}</div>`).join('') || "> Waiting for input...";
         }
 
-        // Shadow OS Logic (From VLC Player)
-        function runShadowScan() {
-            document.getElementById('shadow-os').style.display = 'block';
-            const res = document.getElementById('h-results');
-            res.innerHTML = "";
-            
-            let mockData = [
-                {name: "SYSTEM_CORE", pass: "ROOT_ACCESS", status: "STABLE"},
-                {name: "LOCAL_DB", pass: "ENCRYPTED", status: "BREACHED"},
-                {name: "KAUSHAL_PRIVATE", pass: localStorage.getItem('vPass') || "1234", status: "LOCKED"}
-            ];
+        function clearCalcHistory() {
+            if(confirm("Wipe all calculations?")) {
+                localStorage.removeItem('proLogs');
+                renderHistory();
+                toggleMenu(false);
+            }
+        }
 
-            mockData.forEach((u, i) => {
-                const div = document.createElement('div');
-                div.innerHTML = `<div class="crack-line">[NODE_${i}]: INJECTING...</div><div class="progress-bar"><div class="fill" id="f-${i}"></div></div>`;
-                res.appendChild(div);
-                
-                let p = 0;
-                let itv = setInterval(() => {
-                    p += Math.random() * 20; if(p > 100) p = 100;
-                    document.getElementById(`f-${i}`).style.width = p + "%";
-                    if(p === 100) {
-                        clearInterval(itv);
-                        div.innerHTML = `<div class="crack-line" style="color:white">[SUCCESS]: ${u.name} | KEY: ${u.pass} | STATUS: ${u.status}</div>`;
-                    }
-                }, 100);
+        // Vault Logic
+        function openVault() {
+            document.getElementById('vault-modal').style.display = 'flex';
+            renderVault();
+        }
+
+        function uploadToVault(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    let photos = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
+                    photos.push(ev.target.result);
+                    localStorage.setItem('kaushalVault', JSON.stringify(photos));
+                    renderVault();
+                };
+                reader.readAsDataURL(file);
             });
         }
 
-        function toggleMenu(s) { document.getElementById('side-menu').style.display = s ? 'flex' : 'none'; }
-        function openUPI() { document.getElementById('upi-overlay').style.display = 'flex'; }
-        function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
-        function changePass() { 
-            let p = prompt("Enter New Secret Code:"); 
-            if(p) { localStorage.setItem('vPass', p); alert("Code Changed!"); }
+        function renderVault() {
+            const grid = document.getElementById('vault-grid');
+            let photos = JSON.parse(localStorage.getItem('kaushalVault') || "[]");
+            grid.innerHTML = photos.map(p => `<img src="${p}" onclick="deletePhoto('${p}')">`).join('');
         }
-        function clearLogs() { localStorage.removeItem('c-logs'); renderLogs(); }
-        
-        // PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); window.deferredPrompt = e;
-            document.getElementById('p-btn').classList.remove('hidden');
-        });
-        function installApp() { if(window.deferredPrompt) { window.deferredPrompt.prompt(); } }
 
-        renderLogs();
+        function toggleMenu(s) { document.getElementById('side-menu').classList.toggle('active', s); }
+        function openUPI() { document.getElementById('upi-modal').style.display = 'flex'; }
+        function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
+        
+        renderHistory();
     </script>
 </body>
 </html>
