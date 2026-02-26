@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MI PLAYER PRO - Kaushal Ji</title>
-    <link rel="icon" type="image/jpeg" href="https://harshitkaushal9129-bit.github.io/Calculator/kaushalji.jpg">
-
     <link rel="manifest" href="manifest.json">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -334,52 +332,10 @@
         } else { alert("Link: " + window.location.href); }
     }
 
-    // 1. क्लॉक अपडेट (इसे एक बार रखें)
-setInterval(() => {
-    const d = new Date();
-    document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2,'0');
-}, 1000);
-
-// 2. मेनू बंद करने का लॉजिक
-window.onclick = () => {
-    document.getElementById('drop-menu').style.display = 'none';
-};
-
-// 3. सीक बार (Seek Bar) अपडेट फंक्शन (सिर्फ एक बार रखें)
-const updateSeek = () => {
-    const s = document.getElementById('seek');
-    if(active && active.duration) { 
-        s.max = active.duration; 
-        s.value = active.currentTime; 
-    }
-};
-
-audio.ontimeupdate = updateSeek;
-video.ontimeupdate = updateSeek;
-document.getElementById('seek').oninput = (e) => { 
-    if(active) active.currentTime = e.target.value; 
-};
-
-// 4. बैटरी कोड (बिल्कुल सही तरीका)
-function updateBattery() {
-    if (navigator.getBattery) {
-        navigator.getBattery().then(function(battery) {
-            const updateUI = () => {
-                const level = Math.round(battery.level * 100);
-                const status = battery.charging ? "⚡ " : "BAT: ";
-                document.getElementById('bat-val').innerText = status + level + "%";
-            };
-            updateUI(); 
-            battery.addEventListener('levelchange', updateUI);
-            battery.addEventListener('chargingchange', updateUI);
-        });
-    } else {
-        document.getElementById('bat-val').innerText = "BAT: N/A";
-    }
-}
-updateBattery();
-
-    // --- यहाँ बैटरी कोड खत्म होता है ---
+    setInterval(() => {
+        const d = new Date();
+        document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2,'0');
+    }, 1000);
 
     window.onclick = () => document.getElementById('drop-menu').style.display='none';
     
@@ -391,6 +347,5 @@ updateBattery();
     video.ontimeupdate = updateSeek;
     document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
 </script>
-
 </body>
 </html>
