@@ -334,37 +334,51 @@
         } else { alert("Link: " + window.location.href); }
     }
 
-    setInterval(() => {
-        const d = new Date();
-        document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2,'0');
-    }, 1000);
+    // 1. क्लॉक अपडेट (इसे एक बार रखें)
+setInterval(() => {
+    const d = new Date();
+    document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2,'0');
+}, 1000);
 
-    window.onclick = () => document.getElementById('drop-menu').style.display='none';
-    
-    const updateSeek = () => {
-        const s = document.getElementById('seek');
-        if(active.duration) { s.max = active.duration; s.value = active.currentTime; }
-    };
-    audio.ontimeupdate = updateSeek;
-    video.ontimeupdate = updateSeek;
-    document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
-    // --- यहाँ से नया बैटरी कोड शुरू होता है ---
-    function updateBattery() {
-        if (navigator.getBattery) {
-            navigator.getBattery().then(function(battery) {
-                const updateUI = () => {
-                    const level = Math.round(battery.level * 100);
-                    const status = battery.charging ? "⚡ " : "BAT: ";
-                    document.getElementById('bat-val').innerText = status + level + "%";
-                };
+// 2. मेनू बंद करने का लॉजिक
+window.onclick = () => {
+    document.getElementById('drop-menu').style.display = 'none';
+};
 
-                updateUI(); // तुरंत अपडेट करने के लिए
-                battery.onlevelchange = updateUI; // लेवल बदलने पर
-                battery.onchargingchange = updateUI; // चार्जिंग पिन लगाने/हटाने पर
-            });
-        }
+// 3. सीक बार (Seek Bar) अपडेट फंक्शन (सिर्फ एक बार रखें)
+const updateSeek = () => {
+    const s = document.getElementById('seek');
+    if(active && active.duration) { 
+        s.max = active.duration; 
+        s.value = active.currentTime; 
     }
-    updateBattery(); // फंक्शन को चालू करें
+};
+
+audio.ontimeupdate = updateSeek;
+video.ontimeupdate = updateSeek;
+document.getElementById('seek').oninput = (e) => { 
+    if(active) active.currentTime = e.target.value; 
+};
+
+// 4. बैटरी कोड (बिल्कुल सही तरीका)
+function updateBattery() {
+    if (navigator.getBattery) {
+        navigator.getBattery().then(function(battery) {
+            const updateUI = () => {
+                const level = Math.round(battery.level * 100);
+                const status = battery.charging ? "⚡ " : "BAT: ";
+                document.getElementById('bat-val').innerText = status + level + "%";
+            };
+            updateUI(); 
+            battery.addEventListener('levelchange', updateUI);
+            battery.addEventListener('chargingchange', updateUI);
+        });
+    } else {
+        document.getElementById('bat-val').innerText = "BAT: N/A";
+    }
+}
+updateBattery();
+
     // --- यहाँ बैटरी कोड खत्म होता है ---
 
     window.onclick = () => document.getElementById('drop-menu').style.display='none';
