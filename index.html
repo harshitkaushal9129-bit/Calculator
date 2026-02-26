@@ -45,7 +45,6 @@
             backdrop-filter: blur(20px);
         }
 
-        /* View Modes */
         .laptop-view { width: 90% !important; max-width: 1100px; height: 85% !important; border-radius: 20px !important; }
         .keypad-view { width: 320px !important; height: 650px !important; border-radius: 30px !important; }
         .android-view { width: 350px !important; height: 700px !important; border-radius: 45px !important; }
@@ -53,7 +52,6 @@
         .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
         .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
 
-        /* Keypad Styling - Only visible in keypad view */
         .physical-keypad {
             display: none;
             grid-template-columns: repeat(3, 1fr);
@@ -63,7 +61,7 @@
             border-top: 2px solid #222;
         }
         .keypad-view .physical-keypad { display: grid; }
-        .keypad-view .main-layout { flex: 0.6; } /* Shrink screen to fit keypad */
+        .keypad-view .main-layout { flex: 0.6; } 
 
         .key {
             background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
@@ -81,7 +79,6 @@
         .key:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; color: var(--main-clr); }
         .key.ok-btn { background: var(--accent-gradient); color: #000; border: none; }
 
-        /* Rest of your original styling */
         .status-bar {
             display: flex; justify-content: space-between; padding: 12px 25px 0;
             font-size: 10px; color: var(--main-clr); font-weight: bold;
@@ -133,6 +130,7 @@
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: var(--main-clr); cursor: pointer;
         }
+        #upload-status { font-size: 10px; color: var(--main-clr); display: none; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -165,19 +163,18 @@
 
         <div id="reg-overlay" class="overlay">
             <div class="card">
-                <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3>
+                <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">Elite Registration</h3>
                 <input type="text" id="reg-name" placeholder="नाम">
-                <input type="number" id="reg-phone" placeholder="मोबाइल">
-                <input type="email" id="reg-email" placeholder="ईमेल">
+                <input type="number" id="reg-phone" placeholder="मोबाइल (ID)">
                 <input type="password" id="reg-pass" placeholder="पासवर्ड">
                 <input type="file" id="reg-pic" accept="image/*" style="font-size: 10px;">
-                <button class="btn-main" onclick="saveNewUser()">बनाएं</button>
+                <button class="btn-main" id="reg-btn" onclick="saveNewUser()">बनाएं / लॉगिन</button>
                 <button onclick="closeOverlays()" style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%;">बंद करें</button>
             </div>
         </div>
 
         <div class="header">
-            <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
+            <div id="header-user-icon" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden;">👤</div>
             <div style="text-align:center;">
                 <span style="font-weight: 900; font-size: 12px; color:var(--main-clr); letter-spacing: 1px; display:block;">MI PLAYER PRO</span>
                 <select id="view-select-main" class="view-selector" onchange="changeView(this.value)">
@@ -196,6 +193,7 @@
             <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto;">
                 <div id="display-name" style="font-weight:bold; font-size:18px;">Kaushal ji</div>
                 <div id="display-contact" style="font-size:11px; color:var(--main-clr); margin-bottom:15px;">Elite User</div>
+                <div id="upload-status">Syncing to cloud...</div>
 
                 <div class="visualizer-container" id="v-cont">
                     <canvas id="v-canvas"></canvas>
@@ -231,6 +229,9 @@
                     <label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer;"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event, 'video')">Video</label>
                     <label style="border:1px solid var(--main-clr); padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; color:var(--main-clr);"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event, 'pdf')">Images</label>
                 </div>
+
+                <div id="cloud-playlist-view" style="width:100%; margin-top:20px; font-size:11px; color:#888;">
+                    </div>
             </div>
         </div>
 
@@ -259,7 +260,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
         authDomain: "calculator-by-kaushalji.firebaseapp.com",
@@ -267,27 +267,131 @@
         projectId: "calculator-by-kaushalji",
         storageBucket: "calculator-by-kaushalji.firebasestorage.app",
         messagingSenderId: "156130281294",
-        appId: "1:156130281294:web:73b80a5f344daeabdd001f",
-        measurementId: "G-TKRF2YK924"
+        appId: "1:156130281294:web:73b80a5f344daeabdd001f"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const storage = firebase.storage();
 
-    let playlist = [], trackIdx = 0, currentMode = 'music';
+    let playlist = [], trackIdx = 0, currentMode = 'music', currentUser = null;
     let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), pdfViewer = document.getElementById('pdf-viewer');
     let activeMedia = audioMedia;
     const seekSlider = document.getElementById('seek-slider');
     const currTimeText = document.getElementById('curr-time');
     const durTimeText = document.getElementById('dur-time');
 
-    // --- Live Info ---
+    // --- 1. Auth & Registration Logic ---
+    async function saveNewUser() {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+        const pass = document.getElementById('reg-pass').value;
+        const pic = document.getElementById('reg-pic').files[0];
+        const btn = document.getElementById('reg-btn');
+
+        if(!phone || !pass) return alert("Mobile & Password required!");
+        btn.innerText = "Processing...";
+
+        const snapshot = await database.ref('users/' + phone).once('value');
+        const userData = snapshot.val();
+
+        if(userData) {
+            if(userData.password === pass) {
+                loginSuccess(userData);
+            } else {
+                alert("Wrong password!");
+                btn.innerText = "बनाएं / लॉगिन";
+            }
+        } else {
+            let picUrl = "";
+            if(pic) {
+                const pSnap = await storage.ref('profiles/' + phone).put(pic);
+                picUrl = await pSnap.ref.getDownloadURL();
+            }
+            const newUser = { name: name || "User", phone, password: pass, profilePic: picUrl };
+            await database.ref('users/' + phone).set(newUser);
+            loginSuccess(newUser);
+        }
+    }
+
+    function loginSuccess(user) {
+        currentUser = user;
+        document.getElementById('display-name').innerText = user.name;
+        if(user.profilePic) {
+            const img = document.getElementById('profile-img');
+            img.src = user.profilePic; img.style.display = 'block';
+            document.getElementById('default-svg').style.display = 'none';
+            document.getElementById('header-user-icon').innerHTML = `<img src="${user.profilePic}" width="100%">`;
+        }
+        closeOverlays();
+        loadCloudPlaylist();
+    }
+
+    // --- 2. Permanent Playlist & Sync ---
+    async function loadFiles(e, mode) {
+        const files = Array.from(e.target.files);
+        playlist = files.map(f => ({ name: f.name, file: f, url: URL.createObjectURL(f), type: mode }));
+        currentMode = mode;
+        
+        document.getElementById('v-cont').style.display = mode === 'music' ? 'flex' : 'none';
+        document.getElementById('vid-box').style.display = mode === 'video' ? 'flex' : 'none';
+        pdfViewer.style.display = mode === 'pdf' ? 'block' : 'none';
+        
+        if(playlist.length > 0) playT(0);
+
+        // Sync to cloud if logged in
+        if(currentUser) {
+            const status = document.getElementById('upload-status');
+            status.style.display = 'block';
+            for(let pItem of playlist) {
+                const fRef = storage.ref('media/' + currentUser.phone + '/' + pItem.name);
+                await fRef.put(pItem.file);
+                const cloudUrl = await fRef.getDownloadURL();
+                await database.ref('playlists/' + currentUser.phone).push({
+                    name: pItem.name, url: cloudUrl, type: mode
+                });
+            }
+            status.style.display = 'none';
+        }
+    }
+
+    function loadCloudPlaylist() {
+        if(!currentUser) return;
+        database.ref('playlists/' + currentUser.phone).on('value', snap => {
+            const listDiv = document.getElementById('cloud-playlist-view');
+            listDiv.innerHTML = "<b>Cloud Synced Playlist:</b><br>";
+            const cloudItems = [];
+            snap.forEach(child => {
+                const item = child.val();
+                cloudItems.push(item);
+                const itemEl = document.createElement('div');
+                itemEl.style = "padding:5px 0; border-bottom:1px solid #222; cursor:pointer;";
+                itemEl.innerText = "☁ " + item.name;
+                itemEl.onclick = () => playCloudTrack(item);
+                listDiv.appendChild(itemEl);
+            });
+            if(playlist.length === 0 && cloudItems.length > 0) {
+                playlist = cloudItems; // Use cloud items if local is empty
+            }
+        });
+    }
+
+    function playCloudTrack(item) {
+        document.getElementById('track-name').textContent = item.name;
+        currentMode = item.type;
+        document.getElementById('v-cont').style.display = item.type === 'music' ? 'flex' : 'none';
+        document.getElementById('vid-box').style.display = item.type === 'video' ? 'flex' : 'none';
+        
+        if(item.type === 'video') { activeMedia = videoEl; videoEl.src = item.url; videoEl.play(); }
+        else { activeMedia = audioMedia; audioMedia.src = item.url; audioMedia.play(); }
+        btnUpdate('⏸');
+    }
+
+    // --- Original Logic Restored ---
     function updateLiveInfo() {
         const now = new Date();
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         document.getElementById('live-day').textContent = days[now.getDay()];
         document.getElementById('live-time').textContent = now.toLocaleTimeString();
-
         if (navigator.getBattery) {
             navigator.getBattery().then(bat => {
                 document.getElementById('live-battery').textContent = `BAT: ${Math.round(bat.level * 100)}%`;
@@ -296,87 +400,22 @@
     }
     setInterval(updateLiveInfo, 1000);
 
-    // --- View Switcher ---
     function changeView(view) {
         const frame = document.getElementById('main-frame');
         const selector = document.getElementById('view-select-main');
         frame.classList.remove('laptop-view', 'android-view', 'keypad-view');
-        
         if(view === 'laptop') frame.classList.add('laptop-view');
         else if(view === 'keypad') frame.classList.add('keypad-view');
         else frame.classList.add('android-view');
-        
         selector.value = view;
     }
 
-    // --- Keypad Functions ---
-    function adjustVolume(val) {
-        if (activeMedia.volume + val <= 1 && activeMedia.volume + val >= 0) {
-            activeMedia.volume += val;
-        }
-    }
-
-    // --- Progress & Time Logic ---
-    function formatTime(sec) {
-        let m = Math.floor(sec / 60);
-        let s = Math.floor(sec % 60);
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
-    function updateProgress() {
-        if (!activeMedia.paused && activeMedia.duration) {
-            const current = activeMedia.currentTime;
-            const duration = activeMedia.duration;
-            seekSlider.max = Math.floor(duration);
-            seekSlider.value = Math.floor(current);
-            currTimeText.textContent = formatTime(current);
-            durTimeText.textContent = formatTime(duration);
-        }
-    }
-
-    function manualSeek() {
-        activeMedia.currentTime = seekSlider.value;
-    }
-
-    audioMedia.ontimeupdate = updateProgress;
-    videoEl.ontimeupdate = updateProgress;
-    audioMedia.onloadedmetadata = updateProgress;
-    videoEl.onloadedmetadata = updateProgress;
-
-    // --- Original Logic Restored ---
-    function toggleSupportMenu(e) {
-        e.stopPropagation();
-        const menu = document.getElementById('support-menu');
-        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function showUPIDetails() {
-        document.getElementById('upi-overlay').style.display = 'flex';
-        document.getElementById('support-menu').style.display = 'none';
-    }
-
-    async function shareApp() {
-        if (navigator.share) {
-            try { await navigator.share({ title: 'MI PLAYER PRO', text: 'Elite Media Player by Kaushal Ji!', url: window.location.href }); } 
-            catch (err) { console.log("Share failed"); }
-        } else { alert("Copy URL: " + window.location.href); }
-    }
-
-    function loadFiles(e, mode) {
-        playlist = Array.from(e.target.files);
-        currentMode = mode;
-        document.getElementById('v-cont').style.display = mode === 'music' ? 'flex' : 'none';
-        document.getElementById('vid-box').style.display = mode === 'video' ? 'flex' : 'none';
-        pdfViewer.style.display = mode === 'pdf' ? 'block' : 'none';
-        if(playlist.length > 0) playT(0);
-    }
-
     function playT(i) {
-        trackIdx = i; const url = URL.createObjectURL(playlist[i]);
-        document.getElementById('track-name').textContent = playlist[i].name;
-        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); }
-        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); }
-        else if(currentMode === 'pdf') { pdfViewer.src = url; }
+        trackIdx = i; const item = playlist[i];
+        document.getElementById('track-name').textContent = item.name;
+        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = item.url; videoEl.play(); }
+        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = item.url; audioMedia.play(); }
+        else if(currentMode === 'pdf') { pdfViewer.src = item.url; }
         btnUpdate('⏸');
     }
 
@@ -384,12 +423,25 @@
         if(activeMedia.paused) { activeMedia.play(); btnUpdate('⏸'); } 
         else { activeMedia.pause(); btnUpdate('▶'); } 
     }
-    
+
+    function adjustVolume(val) { if (activeMedia.volume + val <= 1 && activeMedia.volume + val >= 0) activeMedia.volume += val; }
+    function manualSeek() { activeMedia.currentTime = seekSlider.value; }
     function btnUpdate(txt) { document.getElementById('play-btn').textContent = txt; }
     function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
     function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
     function nextT() { if(trackIdx < playlist.length-1) playT(trackIdx+1); }
     function prevT() { if(trackIdx > 0) playT(trackIdx-1); }
+    function toggleSupportMenu(e) { e.stopPropagation(); const menu = document.getElementById('support-menu'); menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex'; }
+    function showUPIDetails() { document.getElementById('upi-overlay').style.display = 'flex'; document.getElementById('support-menu').style.display = 'none'; }
+    
+    audioMedia.ontimeupdate = videoEl.ontimeupdate = () => {
+        if (!activeMedia.paused && activeMedia.duration) {
+            seekSlider.max = Math.floor(activeMedia.duration);
+            seekSlider.value = Math.floor(activeMedia.currentTime);
+            currTimeText.textContent = Math.floor(activeMedia.currentTime/60) + ":" + (Math.floor(activeMedia.currentTime%60)).toString().padStart(2,'0');
+            durTimeText.textContent = Math.floor(activeMedia.duration/60) + ":" + (Math.floor(activeMedia.duration%60)).toString().padStart(2,'0');
+        }
+    };
 
     window.onclick = () => { document.getElementById('support-menu').style.display = 'none'; };
     updateLiveInfo();
