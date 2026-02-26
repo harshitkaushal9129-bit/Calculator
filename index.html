@@ -29,10 +29,7 @@
         .main-container { display: flex; flex: 1; overflow: hidden; }
         .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
         .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
-        
-        /* Laptop View Fix: Niche wali playlist chhupana aur side wali dikhana */
         .laptop-mode .playlist-side { display: block !important; }
-        .laptop-mode #mobile-playlist { display: none !important; }
 
         .display-area { width: 100%; max-width: 450px; height: 230px; background: #000; border-radius: 15px; margin: 15px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
         #vid-p, #img-p { width: 100%; height: 100%; object-fit: contain; display: none; }
@@ -63,7 +60,7 @@
 <div class="device" id="frame">
     <div class="status-bar">
         <span id="clock">00:00</span>
-        <span id="bat-val">BAT: 85%</span>
+        <span id="bat-val">BAT: --%</span>
     </div>
 
     <div id="login-box" class="overlay">
@@ -82,6 +79,7 @@
             <input type="text" id="r-name" placeholder="Full Name">
             <input type="number" id="r-phone" placeholder="Phone Number">
             <input type="password" id="r-pass" placeholder="Create Password">
+            <p style="font-size:9px; color:#888; margin:5px 0;">Profile Picture (Optional):</p>
             <input type="file" id="r-img" accept="image/*" style="font-size:10px;">
             <button class="p-btn" style="width:100%; border-radius:10px; font-size:16px;" onclick="handleRegister()">Sign Up</button>
             <button onclick="hidePop()" style="background:none; border:none; color:#555; width:100%; margin-top:10px;">Close</button>
@@ -102,6 +100,7 @@
             <div class="icon-btn" id="login-trigger" onclick="showLogin()">🔐</div>
             <span class="icon-label">Login</span>
         </div>
+
         <div style="text-align:center;">
             <b style="font-size:13px; color:var(--main);">MI PLAYER PRO</b>
             <select onchange="setView(this.value)" style="background:none; border:none; color:#888; font-size:10px; display:block; margin:auto; outline:none;">
@@ -109,10 +108,12 @@
                 <option value="laptop">Laptop</option>
             </select>
         </div>
+
         <div style="text-align:center;" onclick="shareApp()">
             <div class="icon-btn">📤</div>
             <span class="icon-label">Share</span>
         </div>
+        
         <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-size:20px;">⋮</div>
     </div>
 
@@ -223,8 +224,6 @@
             const b64 = await toBase64(file);
             const item = { name: file.name, url: b64, type: type };
             if(currentUser) {
-                // Cloud per sirf name store karein taaki database crash na ho (Ideal way)
-                // Lekin aapke logic ke liye main url bhej raha hoon
                 db.ref('playlists/' + currentUser.phone).push(item);
             } else {
                 playlist.push(item);
@@ -238,7 +237,7 @@
             playlist = [];
             snap.forEach(child => { 
                 let data = child.val();
-                data.id = child.key;
+                data.id = child.key; // Store key for deletion
                 playlist.push(data); 
             });
             renderLists();
@@ -246,20 +245,22 @@
     }
 
     function renderLists() {
-        const mCont = document.getElementById('m-list-cont');
-        const lCont = document.getElementById('l-list-cont');
-        
-        const html = playlist.map((item, i) => `
-            <div class="list-item">
-                <div style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" onclick="loadTrack(${i})">
-                    ${item.type === 'audio' ? '🎵' : item.type === 'video' ? '🎥' : '🖼️'} ${item.name}
-                </div>
-                <div class="del-btn" onclick="deleteTrack('${item.id}', ${i})">🗑️</div>
-            </div>
-        `).join('');
-
-        if(mCont) mCont.innerHTML = html;
-        if(lCont) lCont.innerHTML = html;
+        const conts = [document.getElementById('m-list-cont'), document.getElementById('l-list-cont')];
+        conts.forEach(c => {
+            if(!c) return;
+            c.innerHTML = "";
+            playlist.forEach((item, i) => {
+                const d = document.createElement('div');
+                d.className = 'list-item';
+                d.innerHTML = `
+                    <div style="flex:1" onclick="loadTrack(${i})">
+                        ${item.type === 'audio' ? '🎵' : item.type === 'video' ? '🎥' : '🖼️'} ${item.name}
+                    </div>
+                    <div class="del-btn" onclick="deleteTrack('${item.id}', ${i})">🗑️</div>
+                `;
+                c.appendChild(d);
+            });
+        });
     }
 
     function deleteTrack(id, index) {
@@ -272,11 +273,21 @@
         }
     }
 
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'MI PLAYER PRO',
+                text: 'Check out this amazing player by Kaushal Ji!',
+                url: window.location.href
+            });
+        } else {
+            alert("Share Link: " + window.location.href);
+        }
+    }
+
     function loadTrack(i) {
         cursor = i;
         const item = playlist[i];
-        if(!item) return;
-        
         audio.pause(); video.pause();
         document.getElementById('music-ui').style.display = 'none';
         document.getElementById('vid-p').style.display = 'none';
@@ -289,7 +300,7 @@
         } else if(item.type === 'video') {
             document.getElementById('vid-p').style.display = 'block';
             active = video; video.src = item.url; video.play();
-        } else if(item.type === 'image') {
+        } else {
             document.getElementById('img-p').style.display = 'block';
             document.getElementById('img-p').src = item.url;
             active = { paused: true, play: ()=>{}, pause: ()=>{} };
@@ -298,38 +309,23 @@
     }
 
     function handlePlay() {
-        if(active.paused) { 
-            active.play(); 
-            if(!active.paused || active.src) document.getElementById('play-trigger').innerText = '⏸'; 
-        }
+        if(active.paused) { active.play(); document.getElementById('play-trigger').innerText = '⏸'; }
         else { active.pause(); document.getElementById('play-trigger').innerText = '▶'; }
     }
 
     function changeTrack(dir) {
-        let next = cursor + dir;
-        if(next >= 0 && next < playlist.length) loadTrack(next);
+        cursor += dir;
+        if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor);
     }
 
-    // Modal & View Controls
     function showLogin() { document.getElementById('login-box').style.display = 'flex'; }
     function showReg() { document.getElementById('reg-box').style.display = 'flex'; }
     function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
     function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
     function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
-    
     function setView(v) {
         const f = document.getElementById('frame');
-        if(v === 'laptop') {
-            f.classList.add('laptop-mode');
-        } else {
-            f.classList.remove('laptop-mode');
-        }
-    }
-
-    function shareApp() {
-        if (navigator.share) {
-            navigator.share({ title: 'MI PLAYER PRO', url: window.location.href });
-        } else { alert("Link: " + window.location.href); }
+        v === 'laptop' ? f.classList.add('laptop-mode') : f.classList.remove('laptop-mode');
     }
 
     setInterval(() => {
@@ -339,6 +335,7 @@
 
     window.onclick = () => document.getElementById('drop-menu').style.display='none';
     
+    // Update seek bar for both audio and video
     const updateSeek = () => {
         const s = document.getElementById('seek');
         if(active.duration) { s.max = active.duration; s.value = active.currentTime; }
