@@ -346,6 +346,35 @@
     audio.ontimeupdate = updateSeek;
     video.ontimeupdate = updateSeek;
     document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
+    // --- यहाँ से नया बैटरी कोड शुरू होता है ---
+    function updateBattery() {
+        if (navigator.getBattery) {
+            navigator.getBattery().then(function(battery) {
+                const updateUI = () => {
+                    const level = Math.round(battery.level * 100);
+                    const status = battery.charging ? "⚡ " : "BAT: ";
+                    document.getElementById('bat-val').innerText = status + level + "%";
+                };
+
+                updateUI(); // तुरंत अपडेट करने के लिए
+                battery.onlevelchange = updateUI; // लेवल बदलने पर
+                battery.onchargingchange = updateUI; // चार्जिंग पिन लगाने/हटाने पर
+            });
+        }
+    }
+    updateBattery(); // फंक्शन को चालू करें
+    // --- यहाँ बैटरी कोड खत्म होता है ---
+
+    window.onclick = () => document.getElementById('drop-menu').style.display='none';
+    
+    const updateSeek = () => {
+        const s = document.getElementById('seek');
+        if(active.duration) { s.max = active.duration; s.value = active.currentTime; }
+    };
+    audio.ontimeupdate = updateSeek;
+    video.ontimeupdate = updateSeek;
+    document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
 </script>
+
 </body>
 </html>
