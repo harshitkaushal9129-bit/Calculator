@@ -8,52 +8,61 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { 
-            --main: #00ffcc; --bg: #0a0a0a; --panel: #151515;
-            --gradient: linear-gradient(135deg, #00ffcc, #0099ff);
-        }
-        body { margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        
-        .device { 
-            width: 360px; height: 740px; background: var(--bg); border: 8px solid #222; border-radius: 40px; 
-            position: relative; display: flex; flex-direction: column; transition: 0.4s ease; box-shadow: 0 0 50px rgba(0,255,204,0.2);
-        }
-        .laptop-mode { width: 95% !important; max-width: 1100px; height: 85% !important; border-radius: 15px !important; }
+    :root { 
+        --main: #00ffcc; --bg: #0a0a0a; --panel: #151515;
+        --gradient: linear-gradient(135deg, #00ffcc, #0099ff);
+    }
+    body { margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    
+    .device { 
+        width: 360px; height: 740px; background: var(--bg); border: 8px solid #222; border-radius: 40px; 
+        position: relative; display: flex; flex-direction: column; transition: 0.4s ease; box-shadow: 0 0 50px rgba(0,255,204,0.2);
+    }
 
-        .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main); }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); position: relative; }
-        
-        .icon-btn { width: 35px; height: 35px; border-radius: 50%; background: #222; border: 1px solid var(--main); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 14px; }
-        .icon-label { font-size: 8px; color: var(--main); display: block; margin-top: 2px; }
+    /* लैपटॉप मोड सेटिंग्स */
+    .laptop-mode { width: 95% !important; max-width: 1100px; height: 85% !important; border-radius: 15px !important; }
+    .laptop-mode .main-container { flex-direction: row; } /* प्लेयर लेफ्ट, लिस्ट राइट */
 
-        .main-container { display: flex; flex: 1; overflow: hidden; }
-        .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
-        .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
-        .laptop-mode .playlist-side { display: block !important; }
+    .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main); }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); position: relative; }
+    
+    .icon-btn { width: 35px; height: 35px; border-radius: 50%; background: #222; border: 1px solid var(--main); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 14px; }
+    .icon-label { font-size: 8px; color: var(--main); display: block; margin-top: 2px; }
 
-        .display-area { width: 100%; max-width: 450px; height: 230px; background: #000; border-radius: 15px; margin: 15px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
-        #vid-p, #img-p { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .music-anim { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--main); animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; font-size: 40px; }
-        @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(0,255,204,0.7);} 70% {box-shadow: 0 0 0 20px rgba(0,255,204,0);} 100% {box-shadow: 0 0 0 0 rgba(0,255,204,0);} }
+    .main-container { display: flex; flex: 1; overflow: hidden; }
+    .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
 
-        .controls { display: flex; align-items: center; gap: 25px; margin-top: 15px; }
-        .p-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); border: none; font-size: 25px; cursor: pointer; color: #000; }
-        .seek-bar { width: 90%; margin: 15px 0; accent-color: var(--main); }
+    /* प्लेलिस्ट: मोबाइल में छुपी रहेगी, सिर्फ लैपटॉप मोड में दाईं ओर दिखेगी */
+    .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
+    .laptop-mode .playlist-side { display: block !important; }
+    
+    /* मोबाइल व्यू के नीचे वाली प्लेलिस्ट को हमेशा के लिए बंद किया */
+    #mobile-playlist { display: none !important; }
 
-        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
-        .f-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.96); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; }
-        .card { background: #111; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 280px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
-        
-        .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-        .list-item:hover { background: rgba(255,255,255,0.05); }
-        .del-btn { color: #ff4444; font-size: 16px; padding: 5px; cursor: pointer; }
+    .display-area { width: 100%; max-width: 450px; height: 230px; background: #000; border-radius: 15px; margin: 15px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
+    #vid-p, #img-p { width: 100%; height: 100%; object-fit: contain; display: none; }
+    .music-anim { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--main); animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(0,255,204,0.7);} 70% {box-shadow: 0 0 0 20px rgba(0,255,204,0);} 100% {box-shadow: 0 0 0 0 rgba(0,255,204,0);} }
 
-        #drop-menu { position: absolute; top: 60px; right: 50px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 150px; }
-        .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
-    </style>
+    .controls { display: flex; align-items: center; gap: 25px; margin-top: 15px; }
+    .p-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); border: none; font-size: 25px; cursor: pointer; color: #000; }
+    .seek-bar { width: 90%; margin: 15px 0; accent-color: var(--main); }
+
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+    .f-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+    
+    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.96); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; }
+    .card { background: #111; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 280px; }
+    input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+    
+    .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+    .list-item:hover { background: rgba(255,255,255,0.05); }
+    .del-btn { color: #ff4444; font-size: 16px; padding: 5px; cursor: pointer; }
+
+    #drop-menu { position: absolute; top: 60px; right: 50px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 150px; }
+    .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
+</style>
+
 </head>
 <body>
 
