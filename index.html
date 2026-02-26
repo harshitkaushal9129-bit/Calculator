@@ -412,6 +412,186 @@
 
     function playT(i) {
         trackIdx = i; const item = playlist[i];
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
+        authDomain: "calculator-by-kaushalji.firebaseapp.com",
+        databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
+        projectId: "calculator-by-kaushalji",
+        storageBucket: "calculator-by-kaushalji.firebasestorage.app",
+        messagingSenderId: "156130281294",
+        appId: "1:156130281294:web:73b80a5f344daeabdd001f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const storage = firebase.storage();
+
+    let playlist = [], trackIdx = 0, currentMode = 'music', currentUser = null;
+    let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), pdfViewer = document.getElementById('pdf-viewer');
+    let activeMedia = audioMedia;
+    const seekSlider = document.getElementById('seek-slider');
+    const currTimeText = document.getElementById('curr-time');
+    const durTimeText = document.getElementById('dur-time');
+
+    // --- Helper: Convert File to Base64 ---
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    // --- 1. Auth & Registration Logic (Base64 Profile Pic) ---
+    async function saveNewUser() {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+        const pass = document.getElementById('reg-pass').value;
+        const picFile = document.getElementById('reg-pic').files[0];
+        const btn = document.getElementById('reg-btn');
+
+        if(!phone || !pass) return alert("Mobile & Password required!");
+        btn.innerText = "Processing...";
+
+        try {
+            const snapshot = await database.ref('users/' + phone).once('value');
+            const userData = snapshot.val();
+
+            if(userData) {
+                if(userData.password === pass) {
+                    loginSuccess(userData);
+                } else {
+                    alert("Wrong password!");
+                    btn.innerText = "बनाएं / लॉगिन";
+                }
+            } else {
+                let base64Pic = "";
+                if(picFile) {
+                    base64Pic = await toBase64(picFile);
+                }
+                const newUser = { 
+                    name: name || "User", 
+                    phone: phone, 
+                    password: pass, 
+                    profilePic: base64Pic // Storing image as string
+                };
+                await database.ref('users/' + phone).set(newUser);
+                loginSuccess(newUser);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error saving data!");
+            btn.innerText = "बनाएं / लॉगिन";
+        }
+    }
+
+    function loginSuccess(user) {
+        currentUser = user;
+        document.getElementById('display-name').innerText = user.name;
+        if(user.profilePic) {
+            const img = document.getElementById('profile-img');
+            img.src = user.profilePic; 
+            img.style.display = 'block';
+            document.getElementById('default-svg').style.display = 'none';
+            document.getElementById('header-user-icon').innerHTML = `<img src="${user.profilePic}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        }
+        closeOverlays();
+        loadCloudPlaylist();
+    }
+
+    // --- 2. Permanent Playlist & Sync (Base64 Media) ---
+    async function loadFiles(e, mode) {
+        const files = Array.from(e.target.files);
+        currentMode = mode;
+        
+        document.getElementById('v-cont').style.display = mode === 'music' ? 'flex' : 'none';
+        document.getElementById('vid-box').style.display = mode === 'video' ? 'flex' : 'none';
+        pdfViewer.style.display = mode === 'pdf' ? 'block' : 'none';
+
+        const status = document.getElementById('upload-status');
+        if(currentUser) status.style.display = 'block';
+
+        for(let f of files) {
+            const base64Data = await toBase64(f);
+            const item = { name: f.name, url: base64Data, type: mode };
+            playlist.push(item);
+
+            if(currentUser) {
+                // Syncing Base64 string directly to Realtime Database
+                await database.ref('playlists/' + currentUser.phone).push(item);
+            }
+        }
+        
+        if(playlist.length > 0) playT(0);
+        status.style.display = 'none';
+    }
+
+    function loadCloudPlaylist() {
+        if(!currentUser) return;
+        database.ref('playlists/' + currentUser.phone).on('value', snap => {
+            const listDiv = document.getElementById('cloud-playlist-view');
+            listDiv.innerHTML = "<b>Cloud Synced Playlist:</b><br>";
+            const cloudItems = [];
+            snap.forEach(child => {
+                const item = child.val();
+                cloudItems.push(item);
+                const itemEl = document.createElement('div');
+                itemEl.style = "padding:5px 0; border-bottom:1px solid #222; cursor:pointer; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+                itemEl.innerText = "☁ " + item.name;
+                itemEl.onclick = () => playCloudTrack(item);
+                listDiv.appendChild(itemEl);
+            });
+            if(cloudItems.length > 0) {
+                playlist = cloudItems;
+            }
+        });
+    }
+
+    function playCloudTrack(item) {
+        document.getElementById('track-name').textContent = item.name;
+        currentMode = item.type;
+        document.getElementById('v-cont').style.display = item.type === 'music' ? 'flex' : 'none';
+        document.getElementById('vid-box').style.display = item.type === 'video' ? 'flex' : 'none';
+        
+        if(item.type === 'video') { 
+            activeMedia = videoEl; 
+            videoEl.src = item.url; 
+            videoEl.play(); 
+        } else { 
+            activeMedia = audioMedia; 
+            audioMedia.src = item.url; 
+            audioMedia.play(); 
+        }
+        btnUpdate('⏸');
+    }
+
+    // --- Original Logic Restored ---
+    function updateLiveInfo() {
+        const now = new Date();
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        document.getElementById('live-day').textContent = days[now.getDay()];
+        document.getElementById('live-time').textContent = now.toLocaleTimeString();
+        if (navigator.getBattery) {
+            navigator.getBattery().then(bat => {
+                document.getElementById('live-battery').textContent = `BAT: ${Math.round(bat.level * 100)}%`;
+            });
+        }
+    }
+    setInterval(updateLiveInfo, 1000);
+
+    function changeView(view) {
+        const frame = document.getElementById('main-frame');
+        const selector = document.getElementById('view-select-main');
+        frame.classList.remove('laptop-view', 'android-view', 'keypad-view');
+        if(view === 'laptop') frame.classList.add('laptop-view');
+        else if(view === 'keypad') frame.classList.add('keypad-view');
+        else frame.classList.add('android-view');
+        selector.value = view;
+    }
+
+    function playT(i) {
+        if(!playlist[i]) return;
+        trackIdx = i; 
+        const item = playlist[i];
         document.getElementById('track-name').textContent = item.name;
         if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = item.url; videoEl.play(); }
         else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = item.url; audioMedia.play(); }
@@ -446,5 +626,6 @@
     window.onclick = () => { document.getElementById('support-menu').style.display = 'none'; };
     updateLiveInfo();
 </script>
+
 </body>
 </html>
