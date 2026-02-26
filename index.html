@@ -22,6 +22,11 @@
 
         .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main); }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); position: relative; }
+        
+        /* Icons Style */
+        .icon-btn { width: 35px; height: 35px; border-radius: 50%; background: #222; border: 1px solid var(--main); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 14px; }
+        .icon-label { font-size: 8px; color: var(--main); display: block; }
+
         .main-container { display: flex; flex: 1; overflow: hidden; }
         .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
         .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
@@ -39,14 +44,14 @@
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
         .f-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
         
-        #drop-menu { position: absolute; top: 55px; right: 15px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 5000; width: 180px; }
-        .m-item { padding: 12px; font-size: 13px; border-bottom: 1px solid #222; cursor: pointer; }
-
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; }
-        .card { background: #1a1a1a; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 300px; }
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.96); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; }
+        .card { background: #111; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 280px; }
         input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
         
-        .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; transition: 0.2s; text-align: left; }
+        .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; text-align: left; }
+        
+        #drop-menu { position: absolute; top: 60px; right: 50px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 150px; }
+        .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -57,52 +62,71 @@
         <span id="bat-val">BAT: --%</span>
     </div>
 
-    <div id="auth-box" class="overlay">
+    <div id="login-box" class="overlay">
         <div class="card">
-            <h3 style="color:var(--main); margin-top:0;">MI Pro Login</h3>
-            <input type="text" id="u-name" placeholder="Name">
-            <input type="number" id="u-phone" placeholder="Phone">
-            <input type="password" id="u-pass" placeholder="Password">
-            <input type="file" id="u-img" accept="image/*" style="font-size:10px;">
-            <button class="p-btn" style="width:100%; border-radius:10px; font-size:16px;" onclick="doAuth()">Sync to Cloud</button>
-            <button onclick="hidePop()" style="background:none; border:none; color:#555; width:100%; margin-top:10px;">Skip / Cancel</button>
+            <h3 style="color:var(--main); margin-top:0;">Login</h3>
+            <input type="number" id="l-phone" placeholder="Phone Number">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="p-btn" style="width:100%; border-radius:10px; font-size:16px;" onclick="handleLogin()">Login</button>
+            <button onclick="hidePop()" style="background:none; border:none; color:#555; width:100%; margin-top:10px;">Close</button>
+        </div>
+    </div>
+
+    <div id="reg-box" class="overlay">
+        <div class="card">
+            <h3 style="color:var(--main); margin-top:0;">Register</h3>
+            <input type="text" id="r-name" placeholder="Full Name">
+            <input type="number" id="r-phone" placeholder="Phone Number">
+            <input type="password" id="r-pass" placeholder="Create Password">
+            <p style="font-size:9px; color:#888; margin:5px 0;">Profile Picture (Optional):</p>
+            <input type="file" id="r-img" accept="image/*" style="font-size:10px;">
+            <button class="p-btn" style="width:100%; border-radius:10px; font-size:16px;" onclick="handleRegister()">Sign Up</button>
+            <button onclick="hidePop()" style="background:none; border:none; color:#555; width:100%; margin-top:10px;">Close</button>
         </div>
     </div>
 
     <div id="upi-box" class="overlay">
         <div class="card" style="text-align: center;">
             <h3 style="color:var(--main);">Support Kaushal Ji</h3>
-            <p style="font-size:12px;">mandavikaushal913@okaxis</p>
-            <div style="background:#fff; padding:10px; display:inline-block; border-radius:10px;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" width="140">
-            </div>
+            <p style="font-size:11px;">mandavikaushal913@okaxis</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis" width="140">
             <button class="f-btn" style="width:100%; margin-top:15px;" onclick="hidePop()">Close</button>
         </div>
     </div>
 
     <div class="header">
-        <div id="pfp" onclick="showAuth()" style="width:35px; height:35px; border-radius:50%; background:#333; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--main);">👤</div>
+        <div style="text-align:center;">
+            <div class="icon-btn" id="login-trigger" onclick="showLogin()">🔐</div>
+            <span class="icon-label">Login</span>
+        </div>
+
         <div style="text-align:center;">
             <b style="font-size:13px; color:var(--main);">MI PLAYER PRO</b>
-            <select onchange="setView(this.value)" style="background:none; border:none; color:#888; font-size:10px; display:block; margin:auto;">
-                <option value="mobile">Mobile View</option>
-                <option value="laptop">Laptop View</option>
+            <select onchange="setView(this.value)" style="background:none; border:none; color:#888; font-size:10px; display:block; margin:auto; outline:none;">
+                <option value="mobile">Mobile</option>
+                <option value="laptop">Laptop</option>
             </select>
         </div>
-        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-weight:bold; font-size:20px;">⋮</div>
+
+        <div style="text-align:center;">
+            <div class="icon-btn" id="reg-trigger" onclick="showReg()">🆔</div>
+            <span class="icon-label">Register</span>
+        </div>
+        
+        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-size:20px; margin-left:10px;">⋮</div>
     </div>
 
     <div id="drop-menu">
-        <div class="m-item" onclick="showAuth()">☁️ Login / Sync</div>
         <div class="m-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp</div>
         <div class="m-item" onclick="window.location.href='tel:9129191898'">📞 Call Support</div>
         <div class="m-item" onclick="showUPI()">💰 Support (UPI)</div>
+        <div class="m-item" style="color:red;" onclick="location.reload()">📴 Logout</div>
     </div>
 
     <div class="main-container">
         <div class="player-side">
-            <div id="user-welcome" style="font-weight:bold; font-size:18px;">Guest Mode</div>
-            <div id="track-title" style="color:#888; font-size:12px; margin-top:5px;">No Media Playing</div>
+            <div id="user-welcome" style="font-weight:bold; font-size:16px; color:var(--main);">Guest Mode</div>
+            <div id="track-title" style="color:#888; font-size:11px; margin-top:5px; height:15px; overflow:hidden;">No Media</div>
 
             <div class="display-area">
                 <div id="music-ui" class="music-anim">🎵</div>
@@ -125,7 +149,7 @@
             </div>
             
             <div id="mobile-playlist" style="width:100%; margin-top:20px; text-align:left;">
-                <b style="font-size:12px; color:var(--main);">Quick Playlist</b>
+                <b style="font-size:11px; color:var(--main);">Current Playlist</b>
                 <div id="m-list-cont"></div>
             </div>
         </div>
@@ -151,57 +175,62 @@
     let video = document.getElementById('vid-p');
     let active = audio;
 
-    // --- PWA Service Worker ---
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-
-    // --- Base64 Logic ---
+    // --- Helper: Base64 ---
     function toBase64(file) {
-        return new Promise((resolve) => {
+        return new Promise((r) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
+            reader.onload = () => r(reader.result);
         });
     }
 
-    // --- Auth ---
-    async function doAuth() {
-        const n = document.getElementById('u-name').value;
-        const p = document.getElementById('u-phone').value;
-        const pw = document.getElementById('u-pass').value;
-        const imgFile = document.getElementById('u-img').files[0];
+    // --- Registration Logic ---
+    async function handleRegister() {
+        const n = document.getElementById('r-name').value;
+        const p = document.getElementById('r-phone').value;
+        const pw = document.getElementById('r-pass').value;
+        const img = document.getElementById('r-img').files[0];
 
-        if(!p || !pw) return alert("Phone & Pass required!");
+        if(!p || !pw) return alert("Phone & Password required!");
+        
+        const b64Img = img ? await toBase64(img) : "";
+        const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img };
+        
+        await db.ref('users/' + p).set(user);
+        alert("Registration Successful! Please Login.");
+        hidePop();
+        showLogin();
+    }
 
-        let profileB64 = imgFile ? await toBase64(imgFile) : "";
+    // --- Login Logic ---
+    async function handleLogin() {
+        const p = document.getElementById('l-phone').value;
+        const pw = document.getElementById('l-pass').value;
 
         const snap = await db.ref('users/' + p).once('value');
-        if(snap.exists()) {
-            if(snap.val().password === pw) startSession(snap.val());
-            else alert("Wrong password!");
+        if(snap.exists() && snap.val().password === pw) {
+            startSession(snap.val());
         } else {
-            const newUser = { name: n || "User", phone: p, password: pw, profilePic: profileB64 };
-            await db.ref('users/' + p).set(newUser);
-            startSession(newUser);
+            alert("Invalid Credentials!");
         }
     }
 
     function startSession(user) {
         currentUser = user;
-        document.getElementById('user-welcome').innerText = user.name;
-        document.getElementById('auth-box').style.display = 'none';
+        document.getElementById('user-welcome').innerText = "Namaste, " + user.name;
+        hidePop();
         if(user.profilePic) {
-            document.getElementById('pfp').innerHTML = `<img src="${user.profilePic}" style="width:100%;height:100%;object-fit:cover;">`;
+            document.getElementById('login-trigger').innerHTML = `<img src="${user.profilePic}" style="width:100%;height:100%;object-fit:cover;">`;
         }
         syncCloud();
     }
 
-    // --- Media Core ---
+    // --- Sync & Media ---
     async function importFiles(e, type) {
         const files = Array.from(e.target.files);
         for(let file of files) {
             const b64 = await toBase64(file);
             const item = { name: file.name, url: b64, type: type };
-            
             if(currentUser) {
                 db.ref('playlists/' + currentUser.phone).push(item);
             } else {
@@ -267,10 +296,12 @@
         if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor);
     }
 
-    function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
-    function showAuth() { document.getElementById('auth-box').style.display = 'flex'; }
+    // --- UI Controls ---
+    function showLogin() { document.getElementById('login-box').style.display = 'flex'; }
+    function showReg() { document.getElementById('reg-box').style.display = 'flex'; }
     function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
     function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
+    function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
     function setView(v) {
         const f = document.getElementById('frame');
         v === 'laptop' ? f.classList.add('laptop-mode') : f.classList.remove('laptop-mode');
