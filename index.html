@@ -21,11 +21,10 @@
         .laptop-mode { width: 95% !important; max-width: 1100px; height: 85% !important; border-radius: 15px !important; }
 
         .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main); }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); position: relative; }
         
-        /* Icons Style */
         .icon-btn { width: 35px; height: 35px; border-radius: 50%; background: #222; border: 1px solid var(--main); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 14px; }
-        .icon-label { font-size: 8px; color: var(--main); display: block; }
+        .icon-label { font-size: 8px; color: var(--main); display: block; margin-top: 2px; }
 
         .main-container { display: flex; flex: 1; overflow: hidden; }
         .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
@@ -48,8 +47,10 @@
         .card { background: #111; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 280px; }
         input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
         
-        .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; text-align: left; }
-        
+        .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .list-item:hover { background: rgba(255,255,255,0.05); }
+        .del-btn { color: #ff4444; font-size: 16px; padding: 5px; cursor: pointer; }
+
         #drop-menu { position: absolute; top: 60px; right: 50px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 150px; }
         .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
     </style>
@@ -108,15 +109,16 @@
             </select>
         </div>
 
-        <div style="text-align:center;">
-            <div class="icon-btn" id="reg-trigger" onclick="showReg()">🆔</div>
-            <span class="icon-label">Register</span>
+        <div style="text-align:center;" onclick="shareApp()">
+            <div class="icon-btn">📤</div>
+            <span class="icon-label">Share</span>
         </div>
         
-        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-size:20px; margin-left:10px;">⋮</div>
+        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-size:20px;">⋮</div>
     </div>
 
     <div id="drop-menu">
+        <div class="m-item" onclick="showReg()">🆔 Register Account</div>
         <div class="m-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp</div>
         <div class="m-item" onclick="window.location.href='tel:9129191898'">📞 Call Support</div>
         <div class="m-item" onclick="showUPI()">💰 Support (UPI)</div>
@@ -175,7 +177,6 @@
     let video = document.getElementById('vid-p');
     let active = audio;
 
-    // --- Helper: Base64 ---
     function toBase64(file) {
         return new Promise((r) => {
             const reader = new FileReader();
@@ -184,35 +185,27 @@
         });
     }
 
-    // --- Registration Logic ---
     async function handleRegister() {
         const n = document.getElementById('r-name').value;
         const p = document.getElementById('r-phone').value;
         const pw = document.getElementById('r-pass').value;
         const img = document.getElementById('r-img').files[0];
-
         if(!p || !pw) return alert("Phone & Password required!");
-        
         const b64Img = img ? await toBase64(img) : "";
         const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img };
-        
         await db.ref('users/' + p).set(user);
-        alert("Registration Successful! Please Login.");
+        alert("Registration Successful!");
         hidePop();
         showLogin();
     }
 
-    // --- Login Logic ---
     async function handleLogin() {
         const p = document.getElementById('l-phone').value;
         const pw = document.getElementById('l-pass').value;
-
         const snap = await db.ref('users/' + p).once('value');
         if(snap.exists() && snap.val().password === pw) {
             startSession(snap.val());
-        } else {
-            alert("Invalid Credentials!");
-        }
+        } else { alert("Invalid Credentials!"); }
     }
 
     function startSession(user) {
@@ -225,7 +218,6 @@
         syncCloud();
     }
 
-    // --- Sync & Media ---
     async function importFiles(e, type) {
         const files = Array.from(e.target.files);
         for(let file of files) {
@@ -243,7 +235,11 @@
     function syncCloud() {
         db.ref('playlists/' + currentUser.phone).on('value', snap => {
             playlist = [];
-            snap.forEach(child => { playlist.push(child.val()); });
+            snap.forEach(child => { 
+                let data = child.val();
+                data.id = child.key; // Store key for deletion
+                playlist.push(data); 
+            });
             renderLists();
         });
     }
@@ -256,11 +252,37 @@
             playlist.forEach((item, i) => {
                 const d = document.createElement('div');
                 d.className = 'list-item';
-                d.innerHTML = (item.type === 'audio' ? '🎵 ' : item.type === 'video' ? '🎥 ' : '🖼 ') + item.name;
-                d.onclick = () => loadTrack(i);
+                d.innerHTML = `
+                    <div style="flex:1" onclick="loadTrack(${i})">
+                        ${item.type === 'audio' ? '🎵' : item.type === 'video' ? '🎥' : '🖼️'} ${item.name}
+                    </div>
+                    <div class="del-btn" onclick="deleteTrack('${item.id}', ${i})">🗑️</div>
+                `;
                 c.appendChild(d);
             });
         });
+    }
+
+    function deleteTrack(id, index) {
+        if(!confirm("Hटाना चाहते हैं?")) return;
+        if(currentUser && id !== "undefined") {
+            db.ref('playlists/' + currentUser.phone + '/' + id).remove();
+        } else {
+            playlist.splice(index, 1);
+            renderLists();
+        }
+    }
+
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'MI PLAYER PRO',
+                text: 'Check out this amazing player by Kaushal Ji!',
+                url: window.location.href
+            });
+        } else {
+            alert("Share Link: " + window.location.href);
+        }
     }
 
     function loadTrack(i) {
@@ -296,7 +318,6 @@
         if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor);
     }
 
-    // --- UI Controls ---
     function showLogin() { document.getElementById('login-box').style.display = 'flex'; }
     function showReg() { document.getElementById('reg-box').style.display = 'flex'; }
     function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
@@ -314,10 +335,13 @@
 
     window.onclick = () => document.getElementById('drop-menu').style.display='none';
     
-    active.ontimeupdate = () => {
+    // Update seek bar for both audio and video
+    const updateSeek = () => {
         const s = document.getElementById('seek');
         if(active.duration) { s.max = active.duration; s.value = active.currentTime; }
     };
+    audio.ontimeupdate = updateSeek;
+    video.ontimeupdate = updateSeek;
     document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
 </script>
 </body>
