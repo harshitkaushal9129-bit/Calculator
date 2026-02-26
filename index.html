@@ -382,6 +382,36 @@
         }).catch(err => console.log("PWA Error", err));
     }
 </script>
+<script>
+    // 1. Right Click (माउस का दायां बटन) ब्लॉक करें
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 2. सभी Function Keys (F1-F12) और Inspect Tool शॉर्टकट्स ब्लॉक करें
+    document.onkeydown = function (e) {
+        // F1 से F12 ब्लॉक करें
+        if (e.keyCode >= 112 && e.keyCode <= 123) {
+            return false;
+        }
+
+        // Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+U (View Source) ब्लॉक करें
+        if (e.ctrlKey && (e.shiftKey || e.keyCode === 85)) {
+            if (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) {
+                return false;
+            }
+            if (e.keyCode === 85) { // Ctrl+U
+                return false;
+            }
+        }
+    };
+
+    // 3. 'Debugger' ट्रिक (अगर कोई कंसोल खोल ले तो ऐप रुक जाएगा)
+    setInterval(function() {
+        debugger;
+    }, 100);
+
+    console.log("%cरुको!", "color: red; font-size: 40px; font-weight: bold;");
+    console.log("कौशल जी की अनुमति के बिना यहाँ छेड़छाड़ करना मना है।");
+</script>
 
 </body>
 </html>
