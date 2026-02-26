@@ -3,301 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MI PLAYER PRO - Kaushal Ji Edition</title>
-    
+    <title>MI PLAYER PRO - Kaushal Ji</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root { 
-            --main-clr: #00ffcc; --bg-dark: #080808;
-            --glass: rgba(255, 255, 255, 0.05);
-            --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+            --main: #00ffcc; --bg: #0a0a0a; --panel: #151515;
+            --gradient: linear-gradient(135deg, #00ffcc, #0099ff);
         }
-
-        body { 
-            margin: 0; background: #000; 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; font-family: 'Segoe UI', sans-serif; color: #fff; overflow: hidden; 
-        }
+        body { margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         
-        /* Device Frames */
-        .phone { 
-            width: 350px; height: 700px; background: var(--bg-dark); 
-            border: 8px solid #1a1a1a; border-radius: 45px; position: relative; 
-            display: flex; flex-direction: column; transition: 0.5s; 
-            box-shadow: 0 0 50px rgba(0, 255, 204, 0.2);
+        /* Device Styling */
+        .device { 
+            width: 360px; height: 740px; background: var(--bg); border: 8px solid #222; border-radius: 40px; 
+            position: relative; display: flex; flex-direction: column; transition: 0.4s ease; box-shadow: 0 0 50px rgba(0,255,204,0.2);
         }
+        .laptop-mode { width: 95% !important; max-width: 1100px; height: 85% !important; border-radius: 15px !important; }
 
-        /* Laptop View Layout */
-        .laptop-view { 
-            width: 95% !important; max-width: 1200px; height: 85% !important; border-radius: 20px !important; 
-        }
-        .laptop-view .main-layout { flex-direction: row !important; }
-        .laptop-view .player-section { flex: 2; border-right: 1px solid #222; }
-        .laptop-view .playlist-section { display: block !important; flex: 1; max-height: 100%; overflow-y: auto; padding: 15px; }
+        /* Layouts */
+        .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
+        .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
+        .laptop-mode .playlist-side { display: block !important; }
 
-        .main-layout { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-        .playlist-section { display: none; } /* Default hidden in mobile */
+        /* Media Display */
+        .display-area { width: 100%; max-width: 450px; height: 230px; background: #000; border-radius: 15px; margin: 15px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
+        #vid-p, #img-p { width: 100%; height: 100%; object-fit: contain; display: none; }
+        .music-anim { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--main); animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(0,255,204,0.7);} 70% {box-shadow: 0 0 0 20px rgba(0,255,204,0);} 100% {box-shadow: 0 0 0 0 rgba(0,255,204,0);} }
 
-        /* Header & Status */
-        .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main-clr); }
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--glass); border-bottom: 1px solid #222; }
+        /* Controls */
+        .controls { display: flex; align-items: center; gap: 25px; margin-top: 15px; }
+        .p-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); border: none; font-size: 25px; cursor: pointer; color: #000; }
+        .seek-bar { width: 90%; margin: 15px 0; accent-color: var(--main); }
 
-        /* Support Menu */
-        #support-menu {
-            position: absolute; top: 70px; right: 20px; background: #111; 
-            border: 1px solid var(--main-clr); border-radius: 12px; display: none; 
-            flex-direction: column; z-index: 2000; width: 200px; overflow: hidden;
-        }
-        .menu-item { padding: 12px; font-size: 13px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.2s; }
-        .menu-item:hover { background: var(--main-clr); color: #000; }
-
-        /* Player UI */
-        .player-section { padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; overflow-y: auto; width: 100%; box-sizing: border-box; }
-        .video-box { width: 100%; max-width: 500px; height: 220px; background: #000; border-radius: 15px; display: none; margin-bottom: 15px; border: 1px solid #333; }
-        .img-display { width: 100%; max-width: 400px; height: 300px; object-fit: contain; display: none; border-radius: 10px; }
-        
-        .visualizer { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--main-clr); margin: 20px; overflow: hidden; }
-        .visualizer img { width: 100%; height: 100%; object-fit: cover; }
-
-        .controls { display: flex; align-items: center; gap: 30px; margin: 20px 0; }
-        .play-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-gradient); border: none; font-size: 24px; cursor: pointer; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
+        /* Buttons & Menu */
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+        .f-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        .f-btn:hover { border-color: var(--main); }
+        #drop-menu { position: absolute; top: 60px; right: 15px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 5000; width: 180px; }
+        .m-item { padding: 12px; font-size: 13px; border-bottom: 1px solid #222; cursor: pointer; }
 
         /* Overlays */
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
-        .card { background: #111; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; border: 1px solid var(--main-clr); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
-
-        /* Action Buttons */
-        .btn-row { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; justify-content: center; }
-        .file-label { padding: 10px 15px; background: #222; border-radius: 10px; font-size: 12px; cursor: pointer; border: 1px solid #444; }
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: #1a1a1a; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 300px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+        
+        .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .list-item:hover { background: #222; color: var(--main); }
     </style>
 </head>
 <body>
 
-<div class="phone" id="main-frame">
+<div class="device" id="frame">
     <div class="status-bar">
-        <span id="live-time">00:00:00</span>
-        <span id="live-battery">BAT: 100%</span>
+        <span id="clock">00:00</span>
+        <span id="bat-val">BAT: --%</span>
     </div>
 
-    <div id="auth-overlay" class="overlay">
+    <div id="auth-box" class="overlay" style="display: flex;">
         <div class="card">
-            <h3 id="auth-title" style="color:var(--main-clr); margin-top:0;">Elite Login</h3>
-            <input type="text" id="reg-name" placeholder="Full Name">
-            <input type="number" id="reg-phone" placeholder="Mobile Number">
-            <input type="password" id="reg-pass" placeholder="Password">
-            <button class="play-btn" style="width:100%; border-radius:10px;" onclick="handleAuth()">Submit</button>
-            <p onclick="closeOverlays()" style="text-align:center; color:red; cursor:pointer; margin-top:15px;">Cancel</p>
+            <h3 style="color:var(--main); margin-top:0;">MI Pro Login</h3>
+            <input type="text" id="u-name" placeholder="Full Name">
+            <input type="number" id="u-phone" placeholder="Mobile Number">
+            <input type="password" id="u-pass" placeholder="Password">
+            <button class="p-btn" style="width:100%; border-radius:10px; font-size:16px;" onclick="doAuth()">Login / Sign Up</button>
         </div>
     </div>
 
-    <div id="upi-overlay" class="overlay">
-        <div class="card" style="text-align:center;">
-            <h3 style="color:var(--main-clr);">Support Kaushal Ji</h3>
-            <p>UPI ID: <b>mandavikaushal913@okaxis</b></p>
-            <div style="background:white; padding:10px; display:inline-block; border-radius:10px;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" width="150">
+    <div id="upi-box" class="overlay">
+        <div class="card" style="text-align: center;">
+            <h3 style="color:var(--main);">Support Kaushal Ji</h3>
+            <p style="font-size:12px;">ID: mandavikaushal913@okaxis</p>
+            <div style="background:#fff; padding:10px; display:inline-block; border-radius:10px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" width="140">
             </div>
-            <button class="play-btn" style="width:100%; border-radius:10px; margin-top:15px;" onclick="closeOverlays()">Done</button>
+            <button class="f-btn" style="width:100%; margin-top:15px;" onclick="hidePop()">Close</button>
         </div>
     </div>
 
     <div class="header">
-        <div id="user-pfp" style="width:35px; height:35px; background:#333; border-radius:50%; overflow:hidden;">👤</div>
+        <div id="pfp" style="width:35px; height:35px; border-radius:50%; background:#333; overflow:hidden;">👤</div>
         <div style="text-align:center;">
-            <b style="font-size:14px; color:var(--main-clr);">MI PLAYER PRO</b>
-            <select onchange="changeView(this.value)" style="display:block; background:none; color:#888; border:none; font-size:10px; margin:auto;">
-                <option value="android">Mobile View</option>
+            <b style="font-size:13px; color:var(--main);">MI PLAYER PRO</b>
+            <select onchange="setView(this.value)" style="background:none; border:none; color:#888; font-size:10px; display:block; margin:auto;">
+                <option value="mobile">Mobile View</option>
                 <option value="laptop">Laptop View</option>
             </select>
         </div>
-        <div style="display:flex; gap:12px;">
-            <span onclick="openAuth()" style="cursor:pointer;">⚙️</span>
-            <span onclick="toggleSupport(event)" style="cursor:pointer; color:var(--main-clr); font-weight:bold;">⋮</span>
-        </div>
+        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-weight:bold; font-size:20px;">⋮</div>
     </div>
 
-    <div id="support-menu">
-        <div class="menu-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp</div>
-        <div class="menu-item" onclick="window.location.href='tel:9129191898'">📞 Call Support</div>
-        <div class="menu-item" onclick="document.getElementById('upi-overlay').style.display='flex'">💰 Support by UPI</div>
-        <div class="menu-item" onclick="shareApp()">📤 Share App</div>
+    <div id="drop-menu">
+        <div class="m-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp</div>
+        <div class="m-item" onclick="window.location.href='tel:9129191898'">📞 Call Support</div>
+        <div class="m-item" onclick="showUPI()">💰 Support (UPI)</div>
+        <div class="m-item" onclick="shareApp()">📤 Share App</div>
+        <div class="m-item" style="color:red;" onclick="location.reload()">📴 Logout</div>
     </div>
 
-    <div class="main-layout">
-        <div class="player-section">
-            <div id="display-name" style="font-weight:bold; font-size:18px;">Welcome</div>
-            <div style="color:var(--main-clr); font-size:12px; margin-bottom:10px;">Elite Member</div>
+    <div class="main-container">
+        <div class="player-side">
+            <div id="user-welcome" style="font-weight:bold; font-size:18px;">Welcome User</div>
+            <div id="track-title" style="color:#888; font-size:12px; margin-top:5px;">No Media Playing</div>
 
-            <div class="visualizer" id="music-ui">
-                <img id="track-art" src="https://harshitkaushal9129-bit.github.io/Calculator/kaushal.jpg">
+            <div class="display-area">
+                <div id="music-ui" class="music-anim">🎵</div>
+                <video id="vid-p" controls></video>
+                <img id="img-p">
             </div>
 
-            <div class="video-box" id="video-ui"><video id="vid-player" style="width:100%; height:100%;" controls></video></div>
-            <img id="img-ui" class="img-display">
-
-            <h4 id="track-name" style="margin:10px 0; font-size:14px;">No Media Loaded</h4>
-
-            <input type="range" id="seek-slider" value="0" style="width:90%;">
+            <input type="range" id="seek" class="seek-bar" value="0">
             
             <div class="controls">
-                <button onclick="prevT()" style="background:none; border:none; color:white; font-size:24px;">⏮</button>
-                <button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button>
-                <button onclick="nextT()" style="background:none; border:none; color:white; font-size:24px;">⏭</button>
+                <button onclick="changeTrack(-1)" style="background:none; border:none; color:#fff; font-size:25px;">⏮</button>
+                <button id="play-trigger" class="p-btn" onclick="handlePlay()">▶</button>
+                <button onclick="changeTrack(1)" style="background:none; border:none; color:#fff; font-size:25px;">⏭</button>
             </div>
 
-            <div class="btn-row">
-                <label class="file-label">🎵 Music <input type="file" hidden multiple accept="audio/*" onchange="loadMedia(event, 'music')"></label>
-                <label class="file-label">🎥 Video <input type="file" hidden multiple accept="video/*" onchange="loadMedia(event, 'video')"></label>
-                <label class="file-label">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="loadMedia(event, 'image')"></label>
+            <div class="btn-group">
+                <label class="f-btn">🎵 Audio <input type="file" hidden multiple accept="audio/*" onchange="importFiles(event, 'audio')"></label>
+                <label class="f-btn">🎥 Video <input type="file" hidden multiple accept="video/*" onchange="importFiles(event, 'video')"></label>
+                <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
+            </div>
+            
+            <div id="mobile-playlist" style="width:100%; margin-top:20px; text-align:left; display:block;">
+                <b style="font-size:12px; color:var(--main);">Quick Playlist</b>
+                <div id="m-list-cont"></div>
             </div>
         </div>
 
-        <div class="playlist-section" id="side-playlist">
-            <h3 style="color:var(--main-clr); border-bottom:1px solid #333; padding-bottom:10px;">Playlist</h3>
-            <div id="playlist-items"></div>
+        <div class="playlist-side" id="side-list">
+            <b style="color:var(--main); display:block; margin-bottom:10px;">Master Playlist</b>
+            <div id="l-list-cont"></div>
         </div>
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <script>
-    // Firebase Setup (Wahi rakha hai jo aapne diya)
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-        authDomain: "calculator-by-kaushalji.firebaseapp.com",
         databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
         projectId: "calculator-by-kaushalji",
-        storageBucket: "calculator-by-kaushalji.firebasestorage.app",
-        messagingSenderId: "156130281294",
-        appId: "1:156130281294:web:73b80a5f344daeabdd001f"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let playlist = [], trackIdx = 0, currentUser = null;
+    let playlist = [], cursor = 0, currentUser = null;
     let audio = new Audio();
-    let video = document.getElementById('vid-player');
-    let currentActive = audio;
+    let video = document.getElementById('vid-p');
+    let active = audio;
 
     // --- Authentication ---
-    function openAuth() { document.getElementById('auth-overlay').style.display = 'flex'; }
-    function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
+    async function doAuth() {
+        const n = document.getElementById('u-name').value;
+        const p = document.getElementById('u-phone').value;
+        const pw = document.getElementById('u-pass').value;
 
-    async function handleAuth() {
-        const name = document.getElementById('reg-name').value;
-        const phone = document.getElementById('reg-phone').value;
-        const pass = document.getElementById('reg-pass').value;
+        if(!p || !pw) return alert("Phone & Password required!");
 
-        if(!phone || !pass) return alert("Fill details!");
-
-        const snap = await db.ref('users/' + phone).once('value');
+        const snap = await db.ref('users/' + p).once('value');
         if(snap.exists()) {
-            if(snap.val().password === pass) login(snap.val());
+            const data = snap.val();
+            if(data.password === pw) startSession(data);
             else alert("Wrong password!");
         } else {
-            const user = { name, phone, password: pass };
-            await db.ref('users/' + phone).set(user);
-            login(user);
+            const newUser = { name: n || "Elite User", phone: p, password: pw };
+            await db.ref('users/' + p).set(newUser);
+            startSession(newUser);
         }
     }
 
-    function login(user) {
+    function startSession(user) {
         currentUser = user;
-        document.getElementById('display-name').innerText = user.name;
-        closeOverlays();
-        loadCloudPlaylist();
+        document.getElementById('user-welcome').innerText = user.name;
+        document.getElementById('auth-box').style.display = 'none';
+        syncCloud();
     }
 
     // --- Media Core ---
-    async function loadMedia(e, type) {
+    function importFiles(e, type) {
         const files = Array.from(e.target.files);
-        for(let f of files) {
+        files.forEach(file => {
             const reader = new FileReader();
-            reader.readAsDataURL(f);
-            reader.onload = async () => {
-                const item = { name: f.name, url: reader.result, type: type };
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const item = { name: file.name, url: reader.result, type: type };
                 playlist.push(item);
                 if(currentUser) db.ref('playlists/' + currentUser.phone).push(item);
-                updatePlaylistUI();
+                renderLists();
             };
-        }
-    }
-
-    function updatePlaylistUI() {
-        const container = document.getElementById('playlist-items');
-        container.innerHTML = "";
-        playlist.forEach((item, i) => {
-            const div = document.createElement('div');
-            div.style = "padding:10px; border-bottom:1px solid #222; cursor:pointer; font-size:12px;";
-            div.innerHTML = (item.type === 'music' ? '🎵 ' : item.type === 'video' ? '🎥 ' : '🖼 ') + item.name;
-            div.onclick = () => playT(i);
-            container.appendChild(div);
         });
     }
 
-    function playT(i) {
-        trackIdx = i;
+    function syncCloud() {
+        db.ref('playlists/' + currentUser.phone).on('value', snap => {
+            playlist = [];
+            snap.forEach(child => { playlist.push(child.val()); });
+            renderLists();
+        });
+    }
+
+    function renderLists() {
+        const conts = [document.getElementById('m-list-cont'), document.getElementById('l-list-cont')];
+        conts.forEach(c => {
+            c.innerHTML = "";
+            playlist.forEach((item, i) => {
+                const d = document.createElement('div');
+                d.className = 'list-item';
+                d.innerHTML = (item.type === 'audio' ? '🎵 ' : item.type === 'video' ? '🎥 ' : '🖼 ') + item.name;
+                d.onclick = () => loadTrack(i);
+                c.appendChild(d);
+            });
+        });
+    }
+
+    function loadTrack(i) {
+        cursor = i;
         const item = playlist[i];
-        
-        // Reset Displays
-        document.getElementById('music-ui').style.display = 'none';
-        document.getElementById('video-ui').style.display = 'none';
-        document.getElementById('img-ui').style.display = 'none';
         audio.pause(); video.pause();
+        document.getElementById('music-ui').style.display = 'none';
+        document.getElementById('vid-p').style.display = 'none';
+        document.getElementById('img-p').style.display = 'none';
+        document.getElementById('track-title').innerText = item.name;
 
-        document.getElementById('track-name').innerText = item.name;
-
-        if(item.type === 'music') {
-            document.getElementById('music-ui').style.display = 'block';
-            currentActive = audio;
-            audio.src = item.url; audio.play();
+        if(item.type === 'audio') {
+            document.getElementById('music-ui').style.display = 'flex';
+            active = audio; audio.src = item.url; audio.play();
         } else if(item.type === 'video') {
-            document.getElementById('video-ui').style.display = 'block';
-            currentActive = video;
-            video.src = item.url; video.play();
+            document.getElementById('vid-p').style.display = 'block';
+            active = video; video.src = item.url; video.play();
         } else {
-            document.getElementById('img-ui').style.display = 'block';
-            document.getElementById('img-ui').src = item.url;
+            document.getElementById('img-p').style.display = 'block';
+            document.getElementById('img-p').src = item.url;
+            active = { paused: true, play: ()=>{}, pause: ()=>{} };
         }
-        document.getElementById('play-btn').innerText = '⏸';
+        document.getElementById('play-trigger').innerText = '⏸';
     }
 
-    function togglePlay() {
-        if(currentActive.paused) { currentActive.play(); document.getElementById('play-btn').innerText = '⏸'; }
-        else { currentActive.pause(); document.getElementById('play-btn').innerText = '▶'; }
+    function handlePlay() {
+        if(active.paused) { active.play(); document.getElementById('play-trigger').innerText = '⏸'; }
+        else { active.pause(); document.getElementById('play-trigger').innerText = '▶'; }
     }
 
-    function nextT() { if(trackIdx < playlist.length-1) playT(trackIdx+1); }
-    function prevT() { if(trackIdx > 0) playT(trackIdx-1); }
-
-    // --- Utility ---
-    function changeView(v) {
-        const frame = document.getElementById('main-frame');
-        frame.className = 'phone ' + (v === 'laptop' ? 'laptop-view' : '');
+    function changeTrack(dir) {
+        cursor += dir;
+        if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor);
     }
 
-    function toggleSupport(e) {
-        e.stopPropagation();
-        const m = document.getElementById('support-menu');
-        m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+    // --- System & UI ---
+    function setView(v) {
+        const f = document.getElementById('frame');
+        v === 'laptop' ? f.classList.add('laptop-mode') : f.classList.remove('laptop-mode');
+        document.getElementById('mobile-playlist').style.display = v === 'laptop' ? 'none' : 'block';
     }
 
-    function shareApp() {
-        if (navigator.share) {
-            navigator.share({ title: 'MI PLAYER PRO', url: window.location.href });
-        } else {
-            alert("Copy Link: " + window.location.href);
-        }
-    }
+    function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
+    function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
+    function hidePop() { document.querySelectorAll('.overlay').forEach(o => { if(o.id !== 'auth-box') o.style.display='none'; }); }
 
+    // Battery & Clock
     setInterval(() => {
-        document.getElementById('live-time').innerText = new Date().toLocaleTimeString();
+        const d = new Date();
+        document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2,'0');
+        if(navigator.getBattery) {
+            navigator.getBattery().then(b => {
+                document.getElementById('bat-val').innerText = "BAT: " + Math.round(b.level * 100) + "%";
+            });
+        }
     }, 1000);
 
-    window.onclick = () => document.getElementById('support-menu').style.display='none';
-</script>
+    function shareApp() {
+        if(navigator.share) navigator.share({ title: 'MI PLAYER PRO', url: window.location.href });
+        else alert("Link: " + window.location.href);
+    }
 
+    window.onclick = () => document.getElementById('drop-menu').style.display='none';
+    
+    // Seek Bar Logic
+    active.ontimeupdate = () => {
+        const s = document.getElementById('seek');
+        if(active.duration) {
+            s.max = active.duration;
+            s.value = active.currentTime;
+        }
+    };
+    document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
+</script>
 </body>
 </html>
