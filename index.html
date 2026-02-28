@@ -58,41 +58,41 @@
     /* --- FORM STYLING --- */
     .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; backdrop-filter: blur(5px); }
     .card { 
-        background: #111; padding: 30px; border-radius: 25px; 
+        background: #111; padding: 20px; border-radius: 25px; 
         border: 1px solid rgba(0,255,204,0.3); width: 100%; max-width: 300px; 
         box-shadow: 0 0 20px rgba(0,255,204,0.15); text-align: center;
-        position: relative;
+        position: relative; max-height: 90vh; overflow-y: auto;
     }
-    .card h3 { color: var(--main); margin-top: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
-    .input-box { position: relative; margin: 15px 0; }
+    .card h3 { color: var(--main); margin-top: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; }
+    .input-box { position: relative; margin: 10px 0; }
     .input-box input { 
-        width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.05); 
+        width: 100%; padding: 10px; background: rgba(255,255,255,0.05); 
         border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box;
-        transition: 0.3s;
+        transition: 0.3s; font-size: 14px;
     }
     .input-box input:focus { border-color: var(--main); outline: none; box-shadow: 0 0 10px rgba(0,255,204,0.2); }
     
     .profile-upload {
-        width: 80px; height: 80px; border-radius: 50%; border: 2px dashed var(--main);
-        margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
+        width: 70px; height: 70px; border-radius: 50%; border: 2px dashed var(--main);
+        margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;
         cursor: pointer; overflow: hidden; position: relative; color: var(--main); font-size: 24px;
     }
     .profile-upload input { position: absolute; opacity: 0; width: 100%; height: 100%; }
 
     .forgot-link { 
         font-size: 12px; color: #aaa; text-align: right; display: block; 
-        margin-top: -10px; margin-bottom: 10px; cursor: pointer; text-decoration: none;
+        margin-top: -5px; margin-bottom: 10px; cursor: pointer; text-decoration: none;
     }
     .forgot-link:hover { color: var(--main); }
 
     .btn-submit { 
-        width: 100%; padding: 12px; background: var(--gradient); border: none; 
-        border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; 
-        color: #000; margin-top: 10px; transition: 0.3s;
+        width: 100%; padding: 10px; background: var(--gradient); border: none; 
+        border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; 
+        color: #000; margin-top: 5px; transition: 0.3s;
     }
     .btn-submit:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(0,255,204,0.4); }
     
-    .btn-close { background: none; border: none; color: #555; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; }
+    .btn-close { background: none; border: none; color: #555; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px; }
     .btn-close:hover { color: #fff; }
 
     /* --- END FORM STYLING --- */
@@ -160,6 +160,7 @@
             <div class="input-box"><input type="text" id="r-name" placeholder="Full Name"></div>
             <div class="input-box"><input type="number" id="r-phone" placeholder="Phone Number"></div>
             <div class="input-box"><input type="password" id="r-pass" placeholder="Create Password"></div>
+            <div class="input-box"><input type="password" id="r-pass-confirm" placeholder="Confirm Password"></div>
             
             <button class="btn-submit" onclick="handleRegister()">SIGN UP</button>
             <button class="btn-close" onclick="hidePop()">Close</button>
@@ -281,12 +282,17 @@
         });
     }
 
+    // --- Registration Logic (Updated) ---
     async function handleRegister() {
         const n = document.getElementById('r-name').value;
         const p = document.getElementById('r-phone').value;
         const pw = document.getElementById('r-pass').value;
+        const pwConfirm = document.getElementById('r-pass-confirm').value;
         const img = document.getElementById('r-img').files[0];
+        
         if(!p || !pw) return alert("Phone & Password required!");
+        if(pw !== pwConfirm) return alert("Passwords do not match!");
+        
         const b64Img = img ? await toBase64(img) : "";
         const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img };
         await db.ref('users/' + p).set(user);
