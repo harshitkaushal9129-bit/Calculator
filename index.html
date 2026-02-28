@@ -356,28 +356,11 @@
     <script>
     // PWA Offline Logic in Single File
     const swCode = `
-        const CACHE_NAME = 'mi-player-v1';
-        const assets = ['./', window.location.href];
-
-        self.addEventListener('install', (e) => {
-            e.waitUntil(
-                caches.open(CACHE_NAME).then(cache => cache.addAll(assets))
-            );
-            self.skipWaiting();
-        });
-
-        self.addEventListener('fetch', (e) => {
-            e.respondWith(
-                caches.match(e.request).then(res => res || fetch(e.request))
-            );
-        });
-    `;
-
+    <script>
+    // PWA Offline Logic - अब यह sw.js फाइल को रजिस्टर करेगा
     if ('serviceWorker' in navigator) {
-        const blob = new Blob([swCode], { type: 'text/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        
-        navigator.serviceWorker.register(swUrl).then(() => {
+        navigator.serviceWorker.register('sw.js')
+        .then(() => {
             console.log("MI Player: Offline mode enabled!");
         }).catch(err => console.log("PWA Error", err));
     }
