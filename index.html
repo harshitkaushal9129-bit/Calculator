@@ -48,9 +48,27 @@
     .p-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); border: none; font-size: 25px; cursor: pointer; color: #000; }
     .seek-bar { width: 90%; margin: 15px 0; accent-color: var(--main); }
 
-    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
-    .f-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
-    
+    .btn-group {
+    display: flex;                
+    gap: 5px;                     /* Gap thoda kam kiya */
+    flex-wrap: wrap;              
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;                  /* Pura width le */
+    padding: 0 5px;               /* Side se thoda jagah */
+}
+
+.f-btn {
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 8px 10px;            /* Padding kam ki */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;              /* Font size thoda chhota kiya */
+    white-space: nowrap;          /* Text wrap na ho */
+}
+
     .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.96); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; }
     .card { background: #111; padding: 25px; border-radius: 20px; border: 1px solid var(--main); width: 100%; max-width: 280px; }
     input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
