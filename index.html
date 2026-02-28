@@ -169,12 +169,25 @@
 
     <div id="forgot-box" class="overlay">
         <div class="card">
-            <h3>Update Password</h3>
-            <div class="input-box"><input type="number" id="f-phone" placeholder="Username (Phone Number)"></div>
-            <div class="input-box"><input type="password" id="f-old-pass" placeholder="Old Password"></div>
+            <h3>Reset Password</h3>
+            <div class="input-box"><input type="text" id="f-username" placeholder="Username (Phone Number)"></div>
+            <div class="input-box"><input type="number" id="f-phone" placeholder="Registered Phone Number"></div>
             <div class="input-box"><input type="password" id="f-new-pass" placeholder="New Password"></div>
-            <button class="btn-submit" onclick="handleUpdatePassword()">UPDATE</button>
+            <button class="btn-submit" onclick="handleForgot()">UPDATE</button>
             <button class="btn-close" onclick="hidePop()">Back</button>
+        </div>
+    </div>
+
+    <div id="delete-box" class="overlay">
+        <div class="card">
+            <h3>Delete Account</h3>
+            <p style="font-size:12px; color:#aaa;">Account delete karne ke liye verify karein.</p>
+            <div id="delete-auth-fields">
+                <div class="input-box"><input type="text" id="d-username" placeholder="Username (Phone Number)"></div>
+                <div class="input-box"><input type="password" id="d-pass" placeholder="Password"></div>
+            </div>
+            <button class="btn-submit" style="background:red;" onclick="confirmDeleteUser()">DELETE</button>
+            <button class="btn-close" onclick="hidePop()">Close</button>
         </div>
     </div>
 
@@ -243,7 +256,7 @@
                 <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
             </div>
             
-            <div class="delete-user-icon" onclick="deleteUserAccount()" title="Permanently Delete Account">
+            <div class="delete-user-icon" onclick="showDeleteAccount()" title="Delete Account">
                 🗑️
             </div>
 
@@ -282,7 +295,7 @@
         });
     }
 
-    // --- Registration Logic (Updated) ---
+    // --- Registration Logic ---
     async function handleRegister() {
         const n = document.getElementById('r-name').value;
         const p = document.getElementById('r-phone').value;
@@ -310,37 +323,61 @@
         } else { alert("Invalid Credentials!"); }
     }
 
-    // --- Update Password Logic (with Username) ---
-    async function handleUpdatePassword() {
-        const p = document.getElementById('f-phone').value;
-        const oldPw = document.getElementById('f-old-pass').value;
+    // --- Update Password Logic (No Old Password) ---
+    async function handleForgot() {
+        const username = document.getElementById('f-username').value;
+        const phone = document.getElementById('f-phone').value;
         const newPw = document.getElementById('f-new-pass').value;
         
-        if(!p || !oldPw || !newPw) return alert("All fields required!");
+        if(!username || !phone || !newPw) return alert("All fields required!");
         
-        const snap = await db.ref('users/' + p).once('value');
-        if(snap.exists() && snap.val().password === oldPw) {
-            await db.ref('users/' + p + '/password').set(newPw);
-            alert("Password Updated Successfully!");
+        const snap = await db.ref('users/' + username).once('value');
+        if(snap.exists() && snap.val().phone === phone) {
+            await db.ref('users/' + username + '/password').set(newPw);
+            alert("Password Reset Successfully!");
             hidePop();
         } else {
-            alert("Invalid Username or Old Password!");
+            alert("Username or Phone Number does not match our records!");
         }
     }
 
-    // --- Delete User Account Logic ---
-    async function deleteUserAccount() {
-        if(!currentUser) return alert("Please login first to delete account.");
+    // --- Delete Account Logic ---
+    function showDeleteAccount() {
+        if(currentUser) {
+            // User is signed in
+            document.getElementById('delete-auth-fields').style.display = 'none';
+            document.getElementById('delete-box').style.display = 'flex';
+        } else {
+            // User not signed in
+            document.getElementById('delete-auth-fields').style.display = 'block';
+            document.getElementById('delete-box').style.display = 'flex';
+        }
+    }
+
+    async function confirmDeleteUser() {
+        let username, password;
         
-        const confirmDelete = confirm("⚠️ WARNING: Kya aap apne account ko PERMANENTLY delete karna chahte hain? Yeh action wapas nahi ho sakta.");
+        if(currentUser) {
+            username = currentUser.phone;
+            password = currentUser.password;
+        } else {
+            username = document.getElementById('d-username').value;
+            password = document.getElementById('d-pass').value;
+            
+            // Verify credentials
+            const snap = await db.ref('users/' + username).once('value');
+            if(!snap.exists() || snap.val().password !== password) {
+                return alert("Invalid Credentials!");
+            }
+        }
+
+        const confirmDelete = confirm("⚠️ WARNING: Yeh action wapas nahi ho sakta. Kya aap account permanently delete karna chahte hain?");
         
         if(confirmDelete) {
-            // Delete user data and playlist from Firebase
-            await db.ref('users/' + currentUser.phone).remove();
-            await db.ref('playlists/' + currentUser.phone).remove();
-            
-            alert("Account permanently delete kar diya gaya hai.");
-            location.reload(); // Refresh page to logout
+            await db.ref('users/' + username).remove();
+            await db.ref('playlists/' + username).remove();
+            alert("Account deleted permanently.");
+            location.reload();
         }
     }
 
