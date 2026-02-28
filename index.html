@@ -31,7 +31,7 @@
     .icon-label { font-size: 8px; color: var(--main); display: block; margin-top: 2px; }
 
     .main-container { display: flex; flex: 1; overflow: hidden; }
-    .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; }
+    .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; position: relative; }
 
     .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
     .laptop-mode .playlist-side { display: block !important; }
@@ -104,6 +104,27 @@
     #drop-menu { position: absolute; top: 60px; right: 20px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 150px; }
     .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
     .m-item:hover { background: rgba(0,255,204,0.1); }
+
+    /* --- DELETE ICON STYLING --- */
+    .delete-user-icon {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: #ff4444;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        border: 2px solid white;
+        z-index: 100;
+    }
+    .delete-user-icon:hover { transform: scale(1.1); }
 </style>
 </head>
 <body>
@@ -147,10 +168,11 @@
 
     <div id="forgot-box" class="overlay">
         <div class="card">
-            <h3>Reset</h3>
-            <div class="input-box"><input type="number" id="f-phone" placeholder="Your Phone Number"></div>
+            <h3>Update Password</h3>
+            <div class="input-box"><input type="number" id="f-phone" placeholder="Username (Phone Number)"></div>
+            <div class="input-box"><input type="password" id="f-old-pass" placeholder="Old Password"></div>
             <div class="input-box"><input type="password" id="f-new-pass" placeholder="New Password"></div>
-            <button class="btn-submit" onclick="handleForgot()">UPDATE</button>
+            <button class="btn-submit" onclick="handleUpdatePassword()">UPDATE</button>
             <button class="btn-close" onclick="hidePop()">Back</button>
         </div>
     </div>
@@ -220,6 +242,10 @@
                 <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
             </div>
             
+            <div class="delete-user-icon" onclick="deleteUserAccount()" title="Permanently Delete Account">
+                🗑️
+            </div>
+
             <div id="mobile-playlist" style="width:100%; margin-top:20px; text-align:left;">
                 <b style="font-size:11px; color:var(--main);">Current Playlist</b>
                 <div id="m-list-cont"></div>
@@ -278,20 +304,37 @@
         } else { alert("Invalid Credentials!"); }
     }
 
-    // --- Forgot Password Logic ---
-    async function handleForgot() {
+    // --- Update Password Logic (with Username) ---
+    async function handleUpdatePassword() {
         const p = document.getElementById('f-phone').value;
-        const pw = document.getElementById('f-new-pass').value;
-        if(!p || !pw) return alert("All fields required!");
+        const oldPw = document.getElementById('f-old-pass').value;
+        const newPw = document.getElementById('f-new-pass').value;
+        
+        if(!p || !oldPw || !newPw) return alert("All fields required!");
         
         const snap = await db.ref('users/' + p).once('value');
-        if(snap.exists()) {
-            await db.ref('users/' + p + '/password').set(pw);
-            alert("Password Updated!");
+        if(snap.exists() && snap.val().password === oldPw) {
+            await db.ref('users/' + p + '/password').set(newPw);
+            alert("Password Updated Successfully!");
             hidePop();
-            showLogin();
         } else {
-            alert("User not found!");
+            alert("Invalid Username or Old Password!");
+        }
+    }
+
+    // --- Delete User Account Logic ---
+    async function deleteUserAccount() {
+        if(!currentUser) return alert("Please login first to delete account.");
+        
+        const confirmDelete = confirm("⚠️ WARNING: Kya aap apne account ko PERMANENTLY delete karna chahte hain? Yeh action wapas nahi ho sakta.");
+        
+        if(confirmDelete) {
+            // Delete user data and playlist from Firebase
+            await db.ref('users/' + currentUser.phone).remove();
+            await db.ref('playlists/' + currentUser.phone).remove();
+            
+            alert("Account permanently delete kar diya gaya hai.");
+            location.reload(); // Refresh page to logout
         }
     }
 
