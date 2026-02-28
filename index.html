@@ -120,7 +120,7 @@
             <div class="input-box"><input type="number" id="l-phone" placeholder="Phone Number"></div>
             <div class="input-box"><input type="password" id="l-pass" placeholder="Password"></div>
             
-            <span class="forgot-link" onclick="alert('Contact Kaushal Ji for Password Reset')">🔑 Forgot Password?</span>
+            <span class="forgot-link" onclick="showForgot()">🔑 Forgot Password?</span>
             
             <button class="btn-submit" onclick="handleLogin()">SIGN IN</button>
             <button class="btn-close" onclick="hidePop()">Close</button>
@@ -142,6 +142,16 @@
             
             <button class="btn-submit" onclick="handleRegister()">SIGN UP</button>
             <button class="btn-close" onclick="hidePop()">Close</button>
+        </div>
+    </div>
+
+    <div id="forgot-box" class="overlay">
+        <div class="card">
+            <h3>Reset</h3>
+            <div class="input-box"><input type="number" id="f-phone" placeholder="Your Phone Number"></div>
+            <div class="input-box"><input type="password" id="f-new-pass" placeholder="New Password"></div>
+            <button class="btn-submit" onclick="handleForgot()">UPDATE</button>
+            <button class="btn-close" onclick="hidePop()">Back</button>
         </div>
     </div>
 
@@ -266,6 +276,23 @@
         if(snap.exists() && snap.val().password === pw) {
             startSession(snap.val());
         } else { alert("Invalid Credentials!"); }
+    }
+
+    // --- Forgot Password Logic ---
+    async function handleForgot() {
+        const p = document.getElementById('f-phone').value;
+        const pw = document.getElementById('f-new-pass').value;
+        if(!p || !pw) return alert("All fields required!");
+        
+        const snap = await db.ref('users/' + p).once('value');
+        if(snap.exists()) {
+            await db.ref('users/' + p + '/password').set(pw);
+            alert("Password Updated!");
+            hidePop();
+            showLogin();
+        } else {
+            alert("User not found!");
+        }
     }
 
     function startSession(user) {
@@ -397,6 +424,7 @@
 
     function showLogin() { document.getElementById('login-box').style.display = 'flex'; }
     function showReg() { document.getElementById('reg-box').style.display = 'flex'; }
+    function showForgot() { document.getElementById('forgot-box').style.display = 'flex'; }
     function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
     function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
     function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
