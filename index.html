@@ -154,6 +154,9 @@
             </div>
 
             <div class="btn-group">
+             <label class="f-btn">📄 Document <input type="file" hidden multiple accept=".pdf,.html,.txt" onchange="importFiles(event, 'doc')"></label>
+
+                
                 <label class="f-btn">🎵 Audio <input type="file" hidden multiple accept="audio/*" onchange="importFiles(event, 'audio')"></label>
                 <label class="f-btn">🎥 Video <input type="file" hidden multiple accept="video/*" onchange="importFiles(event, 'video')"></label>
                 <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
@@ -295,27 +298,47 @@
     }
 
     function loadTrack(i) {
-        cursor = i;
-        const item = playlist[i];
-        audio.pause(); video.pause();
-        document.getElementById('music-ui').style.display = 'none';
-        document.getElementById('vid-p').style.display = 'none';
-        document.getElementById('img-p').style.display = 'none';
-        document.getElementById('track-title').innerText = item.name;
-
-        if(item.type === 'audio') {
-            document.getElementById('music-ui').style.display = 'flex';
-            active = audio; audio.src = item.url; audio.play();
-        } else if(item.type === 'video') {
-            document.getElementById('vid-p').style.display = 'block';
-            active = video; video.src = item.url; video.play();
-        } else {
-            document.getElementById('img-p').style.display = 'block';
-            document.getElementById('img-p').src = item.url;
-            active = { paused: true, play: ()=>{}, pause: ()=>{} };
-        }
-        document.getElementById('play-trigger').innerText = '⏸';
+    cursor = i;
+    const item = playlist[i];
+    audio.pause(); 
+    video.pause();
+    
+    // Sabhi display elements ko hide karein
+    document.getElementById('music-ui').style.display = 'none';
+    document.getElementById('vid-p').style.display = 'none';
+    document.getElementById('img-p').style.display = 'none';
+    
+    // Naya iframe element banayein document display ke liye
+    let docViewer = document.getElementById('doc-viewer');
+    if(!docViewer) {
+        docViewer = document.createElement('iframe');
+        docViewer.id = 'doc-viewer';
+        docViewer.style.cssText = "width:100%; height:100%; border:none; display:none;";
+        document.querySelector('.display-area').appendChild(docViewer);
     }
+    docViewer.style.display = 'none';
+
+    document.getElementById('track-title').innerText = item.name;
+
+    if(item.type === 'audio') {
+        document.getElementById('music-ui').style.display = 'flex';
+        active = audio; audio.src = item.url; audio.play();
+    } else if(item.type === 'video') {
+        document.getElementById('vid-p').style.display = 'block';
+        active = video; video.src = item.url; video.play();
+    } else if(item.type === 'image') {
+        document.getElementById('img-p').style.display = 'block';
+        document.getElementById('img-p').src = item.url;
+        active = { paused: true, play: ()=>{}, pause: ()=>{} };
+    } else if(item.type === 'doc') {
+        // Document (PDF/HTML) ko iframe mein dikhayein
+        docViewer.src = item.url;
+        docViewer.style.display = 'block';
+        active = { paused: true, play: ()=>{}, pause: ()=>{} };
+    }
+    
+    document.getElementById('play-trigger').innerText = '⏸';
+}
 
     function handlePlay() {
         if(active.paused) { active.play(); document.getElementById('play-trigger').innerText = '⏸'; }
