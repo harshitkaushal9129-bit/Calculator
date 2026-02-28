@@ -8,7 +8,26 @@
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --red: #ff3333; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 20px; }
-        
+        /* 1. पासवर्ड को डिफ़ॉल्ट रूप से 99% ब्लर (धुंधला) रखें */
+.pass-text { 
+    color: #ffcc00; 
+    filter: blur(10px); /* तगड़ा ब्लर */
+    transition: filter 0.2s ease;
+    user-select: none; /* कॉपी न हो पाए */
+}
+
+/* 2. जिस Row (tr) पर क्लिक हो, सिर्फ उसका पासवर्ड साफ दिखे */
+tr:focus .pass-text { 
+    filter: blur(0); 
+    color: var(--neon); /* हाईलाइट करने के लिए रंग बदल दिया */
+}
+
+/* 3. Row को क्लिक करने लायक बनाने के लिए जरूरी सेटिंग */
+tr { 
+    outline: none; 
+    cursor: pointer; 
+}
+
         /* लॉक स्क्रीन स्टाइल */
         #lock-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; border: 5px solid #111; }
         .lock-card { background: #111; padding: 40px; border-radius: 20px; border: 1px solid var(--neon); text-align: center; box-shadow: 0 0 30px rgba(0,255,204,0.1); }
@@ -110,23 +129,28 @@
     }
 
     function renderTable(data) {
-        const container = document.getElementById('user-rows');
-        const countBadge = document.getElementById('count');
-        container.innerHTML = "";
-        countBadge.innerText = data.length;
+    const container = document.getElementById('user-rows');
+    const countBadge = document.getElementById('count');
+    container.innerHTML = "";
+    countBadge.innerText = data.length;
 
-        data.forEach(user => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><img src="${user.profilePic || 'https://via.placeholder.com/35'}" class="user-pic"></td>
-                <td><b>${user.name}</b></td>
-                <td>${user.phone}</td>
-                <td class="pass-text">${user.password}</td>
-                <td><button class="btn-del" onclick="deleteUser('${user.phone}')">PERMANENT DELETE</button></td>
-            `;
-            container.appendChild(tr);
-        });
-    }
+    data.forEach(user => {
+        const tr = document.createElement('tr');
+        
+        // --- बस यह एक लाइन यहाँ जोड़नी है ---
+        tr.setAttribute('tabindex', '0'); 
+        // ----------------------------------
+
+        tr.innerHTML = `
+            <td><img src="${user.profilePic || 'https://via.placeholder.com/35'}" class="user-pic"></td>
+            <td><b>${user.name}</b></td>
+            <td>${user.phone}</td>
+            <td><span class="pass-text">${user.password}</span></td>
+            <td><button class="btn-del" onclick="event.stopPropagation(); deleteUser('${user.phone}')">PERMANENT DELETE</button></td>
+        `;
+        container.appendChild(tr);
+    });
+}
 
     // सर्च फ़ंक्शन
     function filterUsers() {
