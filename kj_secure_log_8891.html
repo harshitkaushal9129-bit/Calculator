@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>SECURE ACCESS - KAUSHAL JI</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        :root { --neon: #00ffcc; --bg: #050505; --red: #ff3333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 20px; }
+        
+        /* लॉक स्क्रीन स्टाइल */
+        #lock-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; border: 5px solid #111; }
+        .lock-card { background: #111; padding: 40px; border-radius: 20px; border: 1px solid var(--neon); text-align: center; box-shadow: 0 0 30px rgba(0,255,204,0.1); }
+        
+        /* मेन इंटरफ़ेस */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
+        .search-box { width: 100%; max-width: 400px; position: relative; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; background: #151515; border: 1px solid #333; color: #fff; border-radius: 8px; outline: none; transition: 0.3s; box-sizing: border-box; }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 10px rgba(0,255,204,0.3); }
+
+        table { width: 100%; border-collapse: collapse; background: #111; border-radius: 12px; overflow: hidden; }
+        th { background: #1a1a1a; color: var(--neon); padding: 15px; text-align: left; font-size: 14px; text-transform: uppercase; }
+        td { padding: 12px 15px; border-bottom: 1px solid #222; font-size: 14px; }
+        tr:hover { background: #161616; }
+
+        .user-pic { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #444; }
+        .pass-text { color: #ffcc00; font-family: monospace; font-weight: bold; }
+        .btn-del { background: rgba(255, 51, 51, 0.1); color: var(--red); border: 1px solid var(--red); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .btn-del:hover { background: var(--red); color: #fff; }
+        
+        .badge { background: var(--neon); color: #000; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="lock-screen">
+    <div class="lock-card">
+        <h1 style="color:var(--neon); margin:0 0 10px;">🔐 ACCESS DENIED</h1>
+        <p style="color:#888;">कौशल जी, कृपया अपना मास्टर कोड दर्ज करें</p>
+        <input type="password" id="m-key" placeholder="Master Password..." onkeypress="if(event.key==='Enter') verify()">
+        <br><br>
+        <button onclick="verify()" style="background:var(--neon); border:none; padding:12px 30px; border-radius:8px; font-weight:bold; cursor:pointer;">UNLOCK DB</button>
+    </div>
+</div>
+
+<div id="admin-panel" style="display:none;">
+    <div class="header">
+        <div>
+            <h2 style="margin:0; color:var(--neon);">USER DATABASE <span id="count" class="badge">0</span></h2>
+            <small style="color:#666;">Kaushal Ji's Private Control Panel</small>
+        </div>
+        <div class="search-box">
+            <input type="text" id="search" placeholder="🔍 नाम या फोन नंबर से खोजें..." onkeyup="filterUsers()">
+        </div>
+        <button onclick="location.reload()" style="background:#222; color:#fff; border:1px solid #444; padding:10px 15px; border-radius:8px; cursor:pointer;">LOGOUT</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Profile</th>
+                <th>Name</th>
+                <th>Phone (UID)</th>
+                <th>Password</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="user-rows">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // आपका सीक्रेट मास्टर पासवर्ड
+    const SECRET = "KAUSHAL@9129"; 
+
+    // Firebase सेटअप
+    const firebaseConfig = {
+        apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
+        databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
+        projectId: "calculator-by-kaushalji",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function verify() {
+        const pass = document.getElementById('m-key').value;
+        if(pass === SECRET) {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            fetchData();
+        } else {
+            alert("अनधिकृत पहुंच! सावधान रहें।");
+        }
+    }
+
+    let allUsers = [];
+
+    function fetchData() {
+        db.ref('users').on('value', (snap) => {
+            allUsers = [];
+            snap.forEach(child => {
+                let u = child.val();
+                u.phone = child.key;
+                allUsers.push(u);
+            });
+            renderTable(allUsers);
+        });
+    }
+
+    function renderTable(data) {
+        const container = document.getElementById('user-rows');
+        const countBadge = document.getElementById('count');
+        container.innerHTML = "";
+        countBadge.innerText = data.length;
+
+        data.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><img src="${user.profilePic || 'https://via.placeholder.com/35'}" class="user-pic"></td>
+                <td><b>${user.name}</b></td>
+                <td>${user.phone}</td>
+                <td class="pass-text">${user.password}</td>
+                <td><button class="btn-del" onclick="deleteUser('${user.phone}')">PERMANENT DELETE</button></td>
+            `;
+            container.appendChild(tr);
+        });
+    }
+
+    // सर्च फ़ंक्शन
+    function filterUsers() {
+        const term = document.getElementById('search').value.toLowerCase();
+        const filtered = allUsers.filter(u => 
+            u.name.toLowerCase().includes(term) || 
+            u.phone.includes(term)
+        );
+        renderTable(filtered);
+    }
+
+    // डिलीट फ़ंक्शन (Profile + Playlist दोनों खत्म)
+    async function deleteUser(id) {
+        if(confirm(`चेतावनी: क्या आप यूजर ${id} का पूरा डेटा डिलीट करना चाहते हैं?`)) {
+            await db.ref('users/' + id).remove();
+            await db.ref('playlists/' + id).remove();
+            alert("डेटा सफलतापूर्वक हटा दिया गया है।");
+        }
+    }
+</script>
+
+</body>
+</html>
