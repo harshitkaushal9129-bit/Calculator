@@ -132,10 +132,11 @@
         border: 2px solid white;
     }
     
-    .google-icon {
+    .eq-icon {
         left: 20px;
-        background-color: white;
-        border: 2px solid #aaa;
+        background-color: #333;
+        border: 2px solid var(--main);
+        color: white;
     }
 </style>
 </head>
@@ -147,68 +148,23 @@
         <span id="bat-val">BAT: --%</span>
     </div>
 
-    <div id="login-box" class="overlay">
+    <div id="login-box" class="overlay"><div class="card"><h3>Login</h3><div class="input-box"><input type="number" id="l-phone" placeholder="Phone Number"></div><div class="input-box"><input type="password" id="l-pass" placeholder="Password"></div><span class="forgot-link" onclick="showForgot()">🔑 Forgot Password?</span><button class="btn-submit" onclick="handleLogin()">SIGN IN</button><button class="btn-close" onclick="hidePop()">Close</button></div></div>
+    <div id="reg-box" class="overlay"><div class="card"><h3>Register</h3><label class="profile-upload">+<input type="file" id="r-img" accept="image/*"></label><div class="input-box"><input type="text" id="r-name" placeholder="Full Name"></div><div class="input-box"><input type="number" id="r-phone" placeholder="Phone Number"></div><div class="input-box"><input type="password" id="r-pass" placeholder="Create Password"></div><div class="input-box"><input type="password" id="r-pass-confirm" placeholder="Confirm Password"></div><button class="btn-submit" onclick="handleRegister()">SIGN UP</button><button class="btn-close" onclick="hidePop()">Close</button></div></div>
+    <div id="forgot-box" class="overlay"><div class="card"><h3>Reset Password</h3><div class="input-box"><input type="text" id="f-username" placeholder="Username (Phone Number)"></div><div class="input-box"><input type="number" id="f-phone" placeholder="Registered Phone Number"></div><div class="input-box"><input type="password" id="f-new-pass" placeholder="New Password"></div><button class="btn-submit" onclick="handleForgot()">UPDATE</button><button class="btn-close" onclick="hidePop()">Back</button></div></div>
+    <div id="delete-box" class="overlay"><div class="card"><h3>Delete Account</h3><p style="font-size:12px; color:#aaa;">Account delete karne ke liye verify karein.</p><div id="delete-auth-fields"><div class="input-box"><input type="text" id="d-username" placeholder="Username (Phone Number)"></div><div class="input-box"><input type="password" id="d-pass" placeholder="Password"></div></div><button class="btn-submit" style="background:red;" onclick="confirmDeleteUser()">DELETE</button><button class="btn-close" onclick="hidePop()">Close</button></div></div>
+    <div id="upi-box" class="overlay"><div class="card" style="text-align: center;"><h3 style="color:var(--main); font-size:18px;">Support Kaushal Ji</h3><p style="font-size:11px; color:#aaa;">mandavikaushal913@okaxis</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis" width="140"><button class="btn-submit" style="padding:8px;" onclick="hidePop()">Close</button></div></div>
+    
+    <div id="eq-box" class="overlay">
         <div class="card">
-            <h3>Login</h3>
-            <div class="input-box"><input type="number" id="l-phone" placeholder="Phone Number"></div>
-            <div class="input-box"><input type="password" id="l-pass" placeholder="Password"></div>
-            
-            <span class="forgot-link" onclick="showForgot()">🔑 Forgot Password?</span>
-            
-            <button class="btn-submit" onclick="handleLogin()">SIGN IN</button>
-            <button class="btn-close" onclick="hidePop()">Close</button>
-        </div>
-    </div>
-
-    <div id="reg-box" class="overlay">
-        <div class="card">
-            <h3>Register</h3>
-            
-            <label class="profile-upload">
-                +
-                <input type="file" id="r-img" accept="image/*">
-            </label>
-
-            <div class="input-box"><input type="text" id="r-name" placeholder="Full Name"></div>
-            <div class="input-box"><input type="number" id="r-phone" placeholder="Phone Number"></div>
-            <div class="input-box"><input type="password" id="r-pass" placeholder="Create Password"></div>
-            <div class="input-box"><input type="password" id="r-pass-confirm" placeholder="Confirm Password"></div>
-            
-            <button class="btn-submit" onclick="handleRegister()">SIGN UP</button>
-            <button class="btn-close" onclick="hidePop()">Close</button>
-        </div>
-    </div>
-
-    <div id="forgot-box" class="overlay">
-        <div class="card">
-            <h3>Reset Password</h3>
-            <div class="input-box"><input type="text" id="f-username" placeholder="Username (Phone Number)"></div>
-            <div class="input-box"><input type="number" id="f-phone" placeholder="Registered Phone Number"></div>
-            <div class="input-box"><input type="password" id="f-new-pass" placeholder="New Password"></div>
-            <button class="btn-submit" onclick="handleForgot()">UPDATE</button>
-            <button class="btn-close" onclick="hidePop()">Back</button>
-        </div>
-    </div>
-
-    <div id="delete-box" class="overlay">
-        <div class="card">
-            <h3>Delete Account</h3>
-            <p style="font-size:12px; color:#aaa;">Account delete karne ke liye verify karein.</p>
-            <div id="delete-auth-fields">
-                <div class="input-box"><input type="text" id="d-username" placeholder="Username (Phone Number)"></div>
-                <div class="input-box"><input type="password" id="d-pass" placeholder="Password"></div>
+            <h3>Equalizer</h3>
+            <p style="color: #aaa; font-size: 12px;">Bass & Treble Control</p>
+            <div style="margin: 20px 0;">
+                <label style="font-size: 12px;">Bass</label>
+                <input type="range" min="-10" max="10" value="0" style="width: 100%; accent-color: var(--main);">
+                <label style="font-size: 12px;">Treble</label>
+                <input type="range" min="-10" max="10" value="0" style="width: 100%; accent-color: var(--main);">
             </div>
-            <button class="btn-submit" style="background:red;" onclick="confirmDeleteUser()">DELETE</button>
-            <button class="btn-close" onclick="hidePop()">Close</button>
-        </div>
-    </div>
-
-    <div id="upi-box" class="overlay">
-        <div class="card" style="text-align: center;">
-            <h3 style="color:var(--main); font-size:18px;">Support Kaushal Ji</h3>
-            <p style="font-size:11px; color:#aaa;">mandavikaushal913@okaxis</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis" width="140">
-            <button class="btn-submit" style="padding:8px;" onclick="hidePop()">Close</button>
+            <button class="btn-submit" onclick="hidePop()">Apply</button>
         </div>
     </div>
 
@@ -268,8 +224,8 @@
                 <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
             </div>
             
-            <div class="icon-box google-icon" onclick="googleSignIn()" title="Sign in with Google">
-                <img src="https://img.icons8.com/color/48/google-logo.png" width="24" height="24" alt="Google">
+            <div class="icon-box eq-icon" onclick="showEQ()" title="Equalizer">
+                🎛️
             </div>
 
             <div class="icon-box delete-user-icon" onclick="showDeleteAccount()" title="Delete Account">
@@ -290,10 +246,10 @@
 </div>
 
 <script>
-    // UPDATED FIREBASE CONFIGURATION
+    // FIREBASE CONFIGURATION
     const firebaseConfig = {
         apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-        authDomain: "calculator-by-kaushalji.firebaseapp.com", //
+        authDomain: "calculator-by-kaushalji.firebaseapp.com",
         databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
         projectId: "calculator-by-kaushalji",
         storageBucket: "calculator-by-kaushalji.firebasestorage.app",
@@ -312,27 +268,8 @@
     let video = document.getElementById('vid-p');
     let active = audio;
 
-    // --- Google Sign-In ---
-    function googleSignIn() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then((result) => {
-            const user = result.user;
-            startSession({
-                name: user.displayName,
-                phone: user.uid, // Using UID as unique identifier
-                profilePic: user.photoURL,
-                isGoogle: true
-            });
-            alert("Google Sign-In Successful!");
-        }).catch((error) => {
-            alert("Google Sign-In Failed: " + error.message);
-        });
-    }
-
+    // --- Logout ---
     function logout() {
-        if(currentUser && currentUser.isGoogle) {
-            auth.signOut();
-        }
         location.reload();
     }
 
@@ -344,7 +281,7 @@
         });
     }
 
-    // --- Registration Logic ---
+    // --- Registration & Login Logic ---
     async function handleRegister() {
         const n = document.getElementById('r-name').value;
         const p = document.getElementById('r-phone').value;
@@ -356,7 +293,7 @@
         if(pw !== pwConfirm) return alert("Passwords do not match!");
         
         const b64Img = img ? await toBase64(img) : "";
-        const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img, isGoogle: false };
+        const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img };
         await db.ref('users/' + p).set(user);
         alert("Registration Successful!");
         hidePop();
@@ -392,35 +329,23 @@
 
     // --- Delete Account Logic ---
     function showDeleteAccount() {
-        if(currentUser) {
-            document.getElementById('delete-auth-fields').style.display = 'none';
-            document.getElementById('delete-box').style.display = 'flex';
-        } else {
-            document.getElementById('delete-auth-fields').style.display = 'block';
-            document.getElementById('delete-box').style.display = 'flex';
-        }
+        document.getElementById('delete-auth-fields').style.display = 'block';
+        document.getElementById('delete-box').style.display = 'flex';
     }
 
     async function confirmDeleteUser() {
-        let userId;
-        
-        if(currentUser) {
-            userId = currentUser.phone;
-        } else {
-            const username = document.getElementById('d-username').value;
-            const password = document.getElementById('d-pass').value;
-            const snap = await db.ref('users/' + username).once('value');
-            if(!snap.exists() || snap.val().password !== password) {
-                return alert("Invalid Credentials!");
-            }
-            userId = username;
+        const username = document.getElementById('d-username').value;
+        const password = document.getElementById('d-pass').value;
+        const snap = await db.ref('users/' + username).once('value');
+        if(!snap.exists() || snap.val().password !== password) {
+            return alert("Invalid Credentials!");
         }
 
         const confirmDelete = confirm("⚠️ WARNING: Yeh action wapas nahi ho sakta. Kya aap account permanently delete karna chahte hain?");
         
         if(confirmDelete) {
-            await db.ref('users/' + userId).remove();
-            await db.ref('playlists/' + userId).remove();
+            await db.ref('users/' + username).remove();
+            await db.ref('playlists/' + username).remove();
             alert("Account deleted permanently.");
             location.reload();
         }
@@ -553,10 +478,12 @@
         if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor);
     }
 
+    // Popup Handlers
     function showLogin() { document.getElementById('login-box').style.display = 'flex'; }
     function showReg() { document.getElementById('reg-box').style.display = 'flex'; }
     function showForgot() { document.getElementById('forgot-box').style.display = 'flex'; }
     function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
+    function showEQ() { document.getElementById('eq-box').style.display = 'flex'; } // New
     function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
     function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
     function setView(v) {
