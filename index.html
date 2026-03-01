@@ -7,6 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
     :root { 
         --main: #00ffcc; --bg: #0a0a0a; --panel: #151515;
@@ -105,15 +106,13 @@
     .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
     .m-item:hover { background: rgba(0,255,204,0.1); }
 
-    /* --- DELETE ICON STYLING --- */
-    .delete-user-icon {
+    /* --- ICONS STYLING --- */
+    .icon-box {
         position: absolute;
         bottom: 20px;
-        right: 20px;
         width: 40px;
         height: 40px;
-        background-color: #ff4444;
-        color: white;
+        background-color: #222;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -121,10 +120,23 @@
         font-size: 20px;
         cursor: pointer;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        border: 2px solid white;
+        border: 2px solid var(--main);
         z-index: 100;
+        transition: 0.3s;
     }
-    .delete-user-icon:hover { transform: scale(1.1); }
+    .icon-box:hover { transform: scale(1.1); }
+    
+    .delete-user-icon {
+        right: 20px;
+        background-color: #ff4444;
+        border: 2px solid white;
+    }
+    
+    .google-icon {
+        left: 20px;
+        background-color: white;
+        border: 2px solid #aaa;
+    }
 </style>
 </head>
 <body>
@@ -227,7 +239,7 @@
         <div class="m-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp</div>
         <div class="m-item" onclick="window.location.href='tel:9129191898'">📞 Call Support</div>
         <div class="m-item" onclick="showUPI()">💰 Support (UPI)</div>
-        <div class="m-item" style="color:red;" onclick="location.reload()">📴 Logout</div>
+        <div class="m-item" style="color:red;" onclick="logout()">📴 Logout</div>
     </div>
 
     <div class="main-container">
@@ -256,7 +268,11 @@
                 <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
             </div>
             
-            <div class="delete-user-icon" onclick="showDeleteAccount()" title="Delete Account">
+            <div class="icon-box google-icon" onclick="googleSignIn()" title="Sign in with Google">
+                <img src="https://img.icons8.com/color/48/google-logo.png" width="24" height="24" alt="Google">
+            </div>
+
+            <div class="icon-box delete-user-icon" onclick="showDeleteAccount()" title="Delete Account">
                 🗑️
             </div>
 
@@ -281,11 +297,36 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const auth = firebase.auth();
 
     let playlist = [], cursor = 0, currentUser = null;
     let audio = new Audio();
     let video = document.getElementById('vid-p');
     let active = audio;
+
+    // --- Google Sign-In ---
+    function googleSignIn() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then((result) => {
+            const user = result.user;
+            startSession({
+                name: user.displayName,
+                phone: user.uid, // Using UID as unique identifier
+                profilePic: user.photoURL,
+                isGoogle: true
+            });
+            alert("Google Sign-In Successful!");
+        }).catch((error) => {
+            alert("Google Sign-In Failed: " + error.message);
+        });
+    }
+
+    function logout() {
+        if(currentUser && currentUser.isGoogle) {
+            auth.signOut();
+        }
+        location.reload();
+    }
 
     function toBase64(file) {
         return new Promise((r) => {
@@ -307,7 +348,7 @@
         if(pw !== pwConfirm) return alert("Passwords do not match!");
         
         const b64Img = img ? await toBase64(img) : "";
-        const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img };
+        const user = { name: n||"User", phone: p, password: pw, profilePic: b64Img, isGoogle: false };
         await db.ref('users/' + p).set(user);
         alert("Registration Successful!");
         hidePop();
@@ -323,7 +364,7 @@
         } else { alert("Invalid Credentials!"); }
     }
 
-    // --- Update Password Logic (No Old Password) ---
+    // --- Update Password Logic ---
     async function handleForgot() {
         const username = document.getElementById('f-username').value;
         const phone = document.getElementById('f-phone').value;
@@ -344,38 +385,34 @@
     // --- Delete Account Logic ---
     function showDeleteAccount() {
         if(currentUser) {
-            // User is signed in
             document.getElementById('delete-auth-fields').style.display = 'none';
             document.getElementById('delete-box').style.display = 'flex';
         } else {
-            // User not signed in
             document.getElementById('delete-auth-fields').style.display = 'block';
             document.getElementById('delete-box').style.display = 'flex';
         }
     }
 
     async function confirmDeleteUser() {
-        let username, password;
+        let userId;
         
         if(currentUser) {
-            username = currentUser.phone;
-            password = currentUser.password;
+            userId = currentUser.phone;
         } else {
-            username = document.getElementById('d-username').value;
-            password = document.getElementById('d-pass').value;
-            
-            // Verify credentials
+            const username = document.getElementById('d-username').value;
+            const password = document.getElementById('d-pass').value;
             const snap = await db.ref('users/' + username).once('value');
             if(!snap.exists() || snap.val().password !== password) {
                 return alert("Invalid Credentials!");
             }
+            userId = username;
         }
 
         const confirmDelete = confirm("⚠️ WARNING: Yeh action wapas nahi ho sakta. Kya aap account permanently delete karna chahte hain?");
         
         if(confirmDelete) {
-            await db.ref('users/' + username).remove();
-            await db.ref('playlists/' + username).remove();
+            await db.ref('users/' + userId).remove();
+            await db.ref('playlists/' + userId).remove();
             alert("Account deleted permanently.");
             location.reload();
         }
