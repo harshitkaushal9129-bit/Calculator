@@ -290,19 +290,19 @@
 </div>
 
 <script>
-const firebaseConfig = {
-    apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-    // नीचे वाली लाइन जोड़ें
-    authDomain: "calculator-by-kaushalji.firebaseapp.com", 
-    databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
-    projectId: "calculator-by-kaushalji",
-    storageBucket: "calculator-by-kaushalji.firebasestorage.app",
-    messagingSenderId: "156130281294",
-    appId: "1:156130281294:web:73b80a5f344daeabdd001f",
-    measurementId: "G-TKRF2YK924"
-};
-
-
+    // UPDATED FIREBASE CONFIGURATION
+    const firebaseConfig = {
+        apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
+        authDomain: "calculator-by-kaushalji.firebaseapp.com", //
+        databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
+        projectId: "calculator-by-kaushalji",
+        storageBucket: "calculator-by-kaushalji.firebasestorage.app",
+        messagingSenderId: "156130281294",
+        appId: "1:156130281294:web:73b80a5f344daeabdd001f",
+        measurementId: "G-TKRF2YK924"
+    };
+    
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
