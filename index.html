@@ -290,9 +290,10 @@
 </div>
 
 <script>
-    const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-    authDomain: "calculator-by-kaushalji.firebaseapp.com", // यह Missing था
+    // नीचे वाली लाइन जोड़ें
+    authDomain: "calculator-by-kaushalji.firebaseapp.com", 
     databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
     projectId: "calculator-by-kaushalji",
     storageBucket: "calculator-by-kaushalji.firebasestorage.app",
@@ -300,6 +301,7 @@
     appId: "1:156130281294:web:73b80a5f344daeabdd001f",
     measurementId: "G-TKRF2YK924"
 };
+
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
