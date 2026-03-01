@@ -224,9 +224,10 @@
                 <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
             </div>
             
-            <div class="icon-box eq-icon" onclick="showEQ()" title="Equalizer">
-                🎛️
-            </div>
+            <div class="icon-box eq-icon" onclick="downloadCurrentFile()" title="Download Current File">
+    📥
+</div>
+
 
             <div class="icon-box delete-user-icon" onclick="showDeleteAccount()" title="Delete Account">
                 🗑️
@@ -483,7 +484,27 @@
     function showReg() { document.getElementById('reg-box').style.display = 'flex'; }
     function showForgot() { document.getElementById('forgot-box').style.display = 'flex'; }
     function showUPI() { document.getElementById('upi-box').style.display = 'flex'; }
-    function showEQ() { document.getElementById('eq-box').style.display = 'flex'; } // New
+    function downloadCurrentFile() {
+    if (playlist.length === 0 || !playlist[cursor]) {
+        alert("Pehle koi file play karein!");
+        return;
+    }
+
+    const currentItem = playlist[cursor];
+    const link = document.createElement('a');
+    
+    // File ki URL aur Name set karna
+    link.href = currentItem.url;
+    link.download = "MI_Player_" + currentItem.name;
+    
+    // Download trigger karna
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Success feedback (Optional)
+    console.log("Downloading: " + currentItem.name);
+}
     function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
     function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
     function setView(v) {
