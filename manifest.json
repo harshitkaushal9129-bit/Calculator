@@ -2,7 +2,7 @@
   "name": "MI PLAYER PRO",
   "short_name": "MIPlayer",
   "description": "Premium Player by Kaushal Ji",
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a0a",
