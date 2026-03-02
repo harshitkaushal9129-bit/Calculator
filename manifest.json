@@ -18,18 +18,5 @@
       "sizes": "512x512",
       "type": "image/jpeg"
     }
-  ],
-  "share_target": {
-    "action": "/index.html",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "files": [
-        {
-          "name": "media",
-          "accept": ["image/*", "video/*", "audio/*"]
-        }
-      ]
-    }
-  }
+  ]
 }
