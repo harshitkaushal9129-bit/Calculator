@@ -1,24 +1,15 @@
 {
-  "name": "MI Player Pro",
+  "name": "MI PLAYER PRO",
   "short_name": "MI Player",
-  "description": "Media Player by Kaushal Ji",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#00ffcc",
-  "orientation": "portrait",
   "icons": [
     {
-      "src": "kaushalji.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
-      "src": "kaushalji.jpg",
+      "src": "https://img.icons8.com/color/512/google-pixel-4-xl.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any"
+      "type": "image/png"
     }
   ]
 }
