@@ -1,12 +1,12 @@
 {
-  "name": "Kaushal Calculator Pro",
-  "short_name": "KaushalCalc",
-  "description": "Premium Futuristic Calculator with Secure Vault",
+  "name": "MI PLAYER PRO",
+  "short_name": "MIPlayer",
+  "description": "Premium Player by Kaushal Ji",
   "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#050b18",
-  "theme_color": "#00d2ff",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00ffcc",
   "icons": [
     {
       "src": "kaushalji.jpg",
@@ -18,5 +18,15 @@
       "sizes": "512x512",
       "type": "image/jpeg"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "index.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "name",
+      "text": "description",
+      "url": "link"
+    }
+  }
 }
