@@ -1,11 +1,12 @@
 {
   "name": "MI Player Pro",
   "short_name": "MI Player",
-  "description": "Personal Media Player by Kaushal Ji",
-  "start_url": "./",
+  "description": "Media Player by Kaushal Ji",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#000000",
   "theme_color": "#00ffcc",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "kaushalji.jpg",
