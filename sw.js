@@ -1,38 +1,24 @@
-// sw.js - Simple Service Worker for MI Player Pro
-
-const CACHE_NAME = 'mi-player-v2';
+const CACHE_NAME = 'mi-player-v1';
 const ASSETS = [
-    './',
-    './index.html',
-    './manifest.json',
-    './kaushalji.jpg'
+  './',
+  './index.html',
+  'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js',
+  'https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js'
 ];
 
-// Install: Cache save karo
-self.addEventListener('install', (e) => {
-    e.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-    );
+// Install Service Worker
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(ASSETS))
+  );
 });
 
-// Fetch: Offline chalne ke liye files do
-self.addEventListener('fetch', (e) => {
-    e.respondWith(
-        caches.match(e.request).then((response) => {
-            return response || fetch(e.request);
-        })
-    );
-});
-
-// Activate: Purana cache hatao
-self.addEventListener('activate', (e) => {
-    e.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.map((key) => {
-                    if (key !== CACHE_NAME) return caches.delete(key);
-                })
-            );
-        })
-    );
+// Fetch Assets
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
 });
