@@ -1,11 +1,11 @@
 // sw.js - Service Worker Code for MI Player Pro
 
-const CACHE_NAME = 'mi-player-v1';
+const CACHE_NAME = 'mi-player-v2';
 const ASSETS = [
     './',
     './index.html',
     './manifest.json',
-    // Agar koi CSS ya alag JS file hai toh yahan add karein
+    './kaushalji.jpg'
 ];
 
 // Install event - Files ko cache mein save karne ke liye
@@ -19,8 +19,16 @@ self.addEventListener('install', (e) => {
     self.skipWaiting();
 });
 
-// Fetch event - Offline support ke liye files serve karna
+// Fetch event - Offline support aur Share Target handle karne ke liye
 self.addEventListener('fetch', (e) => {
+    const url = new URL(e.request.url);
+
+    // Share Target handling: Jab app share ke through open ho
+    if (url.searchParams.has('link')) {
+        console.log('Shared file received:', url.searchParams.get('link'));
+        // Yahan aap shared file ko index.html mein process kar sakte hain
+    }
+
     e.respondWith(
         caches.match(e.request).then((response) => {
             return response || fetch(e.request);
