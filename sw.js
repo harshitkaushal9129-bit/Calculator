@@ -1,11 +1,11 @@
-// sw.js - Service Worker Code for MI PLAYER PRO
+// sw.js - Service Worker Code for Kaushal Calculator Pro with File Sharing
 
-const CACHE_NAME = 'mi-player-v1';
+const CACHE_NAME = 'kaushal-pro-v2'; // Manifest file se match karne ke liye update kiya
 const ASSETS = [
     './',
-    './index.html', // यहाँ सुनिश्चित करें कि आपकी HTML फाइल का नाम index.html ही है
-    './manifest.json'
-    // यदि आपके पास कोई लोगो या CSS फाइल है तो आप उसे यहाँ जोड़ सकते हैं
+    './index.html',
+    './manifest.json',
+    './kaushalji.jpg'
 ];
 
 // Install event - फाइलें कैश (save) करने के लिए
@@ -19,11 +19,28 @@ self.addEventListener('install', (e) => {
     self.skipWaiting();
 });
 
-// Fetch event - ऑफलाइन होने पर कैश से फाइलें लोड करने के लिए
+// Fetch event - Share Target API aur Offline support ke liye
 self.addEventListener('fetch', (e) => {
+    const url = new URL(e.request.url);
+
+    // Agar app files handle kar raha hai (POST request to index.html)
+    if (e.request.method === 'POST' && url.pathname.endsWith('index.html')) {
+        e.respondWith(
+            e.request.formData().then((formData) => {
+                const file = formData.get('media'); // 'media' wo name hai jo manifest mein set kiya
+                console.log('File received:', file);
+
+                // Yahan aap IndexedDB mein file save karne ka logic daal sakte hain
+                // For now, redirect back to index
+                return Response.redirect('./index.html?shared=true');
+            })
+        );
+        return;
+    }
+
+    // Default: Offline hone par cache se files load karna
     e.respondWith(
         caches.match(e.request).then((response) => {
-            // अगर कैश में फाइल है, तो उसे दिखाओ, नहीं तो इंटरनेट से लाओ
             return response || fetch(e.request);
         })
     );
