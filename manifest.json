@@ -1,25 +1,24 @@
 {
+  "name": "MI PLAYER PRO",
   "short_name": "MI Player",
-  "name": "MI PLAYER PRO - Kaushal Ji",
   "description": "Premium Media Player by Kaushal Ji",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00ffcc",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/727/727218.png",
+      "src": "kaushalji.jpg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/727/727218.png",
+      "src": "kaushalji.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
-  ],
-  "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#00ffcc",
-  "background_color": "#0a0a0a",
-  "orientation": "portrait",
-  "scope": "./"
+  ]
 }
