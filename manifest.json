@@ -1,23 +1,16 @@
 {
   "name": "MI PLAYER PRO",
-  "short_name": "MI Player",
-  "description": "Premium Media Player by Kaushal Ji",
+  "short_name": "MI-Player",
+  "description": "Full Elite Media Player with Shadow OS Mode",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#080808",
   "theme_color": "#00ffcc",
-  "orientation": "portrait",
   "icons": [
     {
-      "src": "kaushalji.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "kaushalji.jpg",
+      "src": "https://cdn-icons-png.flaticon.com/512/727/727218.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
