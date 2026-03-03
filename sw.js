@@ -1,11 +1,11 @@
 const CACHE_NAME = 'mi-player-v1';
 const ASSETS = [
-  'https://harshitkaushal9129-bit.github.io/Calculator/index.html',
-  'https://harshitkaushal9129-bit.github.io/Calculator/kaushalji.jpg',
-  'https://harshitkaushal9129-bit.github.io/Calculator/manifest.json'
+  './',
+  './index.html',
+  './manifest.json',
+  'https://harshitkaushal9129-bit.github.io/Calculator/kaushalji.jpg'
 ];
 
-// Install Event - Files ko cache mein save karna
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -14,7 +14,15 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Fetch Event - Offline hone par cache se file dena
+// Purane cache ko delete karne ke liye
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
+    })
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
