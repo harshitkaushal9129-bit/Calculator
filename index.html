@@ -143,27 +143,6 @@
     let video = document.getElementById('vid-p');
     let active = audio;
 
-    // --- PWA Logic ---
-    let defPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        defPrompt = e;
-        document.getElementById('install-btn').classList.remove('hidden');
-    });
-
-    function installApp() {
-        if (defPrompt) {
-            defPrompt.prompt();
-            defPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') document.getElementById('install-btn').classList.add('hidden');
-                defPrompt = null;
-            });
-        }
-    }
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Error", err));
-    }
 
     // --- Battery & Clock ---
     setInterval(() => {
@@ -296,5 +275,35 @@
     document.getElementById('seek').oninput = (e) => active.currentTime = e.target.value;
     window.onclick = () => document.getElementById('drop-menu').style.display='none';
 </script>
+
+<script>
+
+    // --- PWA Logic ---
+    let defPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        defPrompt = e;
+        document.getElementById('install-btn').classList.remove('hidden');
+    });
+
+    function installApp() {
+        if (defPrompt) {
+            defPrompt.prompt();
+            defPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') document.getElementById('install-btn').classList.add('hidden');
+                defPrompt = null;
+            });
+        }
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Error", err));
+    }
+
+    
+</script>
+
+
+    
 </body>
 </html>
