@@ -3,63 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNT Pro Player v5 - Kaushal Ji</title>
+    <title>SNT Pro Player v6 - Kaushal Ji</title>
     
     <link rel="manifest" href='data:application/manifest+json,{"name":"SNT Pro Player","short_name":"SNT Player","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#00d4ff","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/716/716429.png","sizes":"512x512","type":"image/png"}]}'>
 
     <style>
         :root { --primary: #00d4ff; --danger: #ff4d4d; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        header { background: var(--card); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); flex-shrink: 0; z-index: 10; }
+        header { background: var(--card); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); flex-shrink: 0; }
         .logo { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
 
         .main-layout { display: grid; grid-template-columns: 1fr 350px; flex: 1; overflow: hidden; }
 
         /* Left side: Media Viewport */
-        #viewport { background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 20px; }
+        #viewport { background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 10px; }
         
-        video, img { max-width: 100%; max-height: 80%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        iframe { width: 100%; height: 100%; border: none; background: #fff; border-radius: 8px; }
+        video, img { max-width: 100%; max-height: 85%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        
+        /* PDF Fix: Object tag works better than iframe for local blobs */
+        .pdf-viewer { width: 100%; height: 100%; border: none; background: #333; }
 
         /* Custom Video Controls */
         .v-controls { 
-            margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; 
-            background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 50px; backdrop-filter: blur(10px);
+            margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; 
+            background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 50px; backdrop-filter: blur(10px);
         }
-        .v-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; transition: 0.3s; padding: 5px; }
-        .v-btn:hover { color: var(--primary); transform: scale(1.2); }
-        .v-select { background: #334155; color: white; border: none; border-radius: 5px; padding: 5px; cursor: pointer; }
+        .v-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+        .v-btn:hover { color: var(--primary); transform: scale(1.1); }
+        .v-select { background: #334155; color: white; border: none; border-radius: 5px; padding: 4px; cursor: pointer; font-size: 0.8rem; }
 
-        /* Right side: Sidebar with Scroll Fix */
+        /* Right side: Sidebar with FIXED SCROLL */
         .sidebar { background: var(--card); border-left: 1px solid #334155; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-        .sidebar-header { padding: 20px; flex-shrink: 0; border-bottom: 1px solid #475569; }
+        .sidebar-header { padding: 15px; flex-shrink: 0; border-bottom: 1px solid #475569; }
         
-        .playlist-area { flex: 1; overflow-y: auto; padding: 15px; scroll-behavior: smooth; }
+        .playlist-area { 
+            flex: 1; 
+            overflow-y: auto !important; /* Force Scroll */
+            padding: 15px; 
+            max-height: calc(100vh - 250px);
+        }
         
         .media-item { 
-            background: rgba(255,255,255,0.05); padding: 12px; margin-bottom: 10px; border-radius: 8px; 
+            background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 8px; border-radius: 6px; 
             display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;
         }
         .media-item:hover { background: #334155; border-left: 4px solid var(--primary); }
         .media-item.active { background: rgba(0, 212, 255, 0.2); border-left: 4px solid var(--primary); }
 
-        .btn-add { width: 100%; background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .btn-clear { width: 100%; background: var(--danger); color: #fff; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-add { width: 100%; background: var(--primary); color: #000; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
+        .btn-clear { width: 100%; background: var(--danger); color: #fff; border: none; padding: 6px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
 
-        #installBtn { display: none; background: var(--primary); color: #000; border: none; padding: 5px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        #installBtn { display: none; background: var(--primary); color: #000; border: none; padding: 4px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
 
-        .footer { padding: 15px; text-align: center; border-top: 1px solid #334155; flex-shrink: 0; font-size: 0.8rem; }
+        .footer { padding: 10px; text-align: center; border-top: 1px solid #334155; flex-shrink: 0; font-size: 0.75rem; }
         .footer a { color: var(--primary); text-decoration: none; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        /* Scrollbar Styling */
+        .playlist-area::-webkit-scrollbar { width: 5px; }
+        .playlist-area::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
         @media (max-width: 900px) {
-            .main-layout { grid-template-columns: 1fr; grid-template-rows: 1fr 300px; }
+            .main-layout { grid-template-columns: 1fr; grid-template-rows: 1.2fr 1fr; }
             .sidebar { border-left: none; border-top: 2px solid var(--primary); }
         }
     </style>
@@ -68,9 +74,9 @@
 
 <header>
     <div class="logo">SNT PRO PLAYER</div>
-    <div style="display: flex; gap: 15px; align-items: center;">
+    <div style="display: flex; gap: 10px; align-items: center;">
         <button id="installBtn">Install App</button>
-        <span style="opacity: 0.8;">Welcome, Kaushal ji</span>
+        <span style="opacity: 0.8; font-size: 0.9rem;">Kaushal ji</span>
     </div>
 </header>
 
@@ -78,7 +84,7 @@
     <div id="viewport">
         <div style="text-align: center; color: #64748b;">
             <h2>SNT Media Hub</h2>
-            <p>Select files to start the experience</p>
+            <p>PDF, Video ya Photo add karein</p>
         </div>
     </div>
 
@@ -87,22 +93,17 @@
             <button class="btn-add" onclick="document.getElementById('fileInput').click()">+ Add Media Files</button>
             <button class="btn-clear" onclick="clearPlaylist()">Clear Playlist</button>
             <input type="file" id="fileInput" hidden multiple accept="video/*,image/*,audio/*,application/pdf">
-            <h3 style="margin-top: 15px; color: var(--primary);">Playlist</h3>
+            <h4 style="margin-top: 10px; color: var(--primary);">Playlist</h4>
         </div>
 
-        <div class="playlist-area" id="playlist"></div>
+        <div class="playlist-area" id="playlist">
+            </div>
 
         <div class="footer">
             <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank">Official Portal</a>
         </div>
     </div>
 </div>
-
-<script id="sw-code" type="application/javascript">
-    const CACHE_NAME = 'snt-player-cache-v1';
-    self.addEventListener('install', (e) => self.skipWaiting());
-    self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-</script>
 
 <script>
     const fileInput = document.getElementById('fileInput');
@@ -128,10 +129,10 @@
             div.className = 'media-item';
             const icon = { video: '🎬', image: '🖼️', audio: '🎵', pdf: '📄' }[item.type] || '📁';
             div.innerHTML = `
-                <div onclick="playMedia(${index})" style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                <div onclick="playMedia(${index})" style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size: 0.85rem;">
                     ${icon} ${item.name}
                 </div>
-                <button onclick="removeItem(${index})" style="background:none; border:none; color:#ff4d4d; cursor:pointer;">✖</button>
+                <button onclick="removeItem(event, ${index})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; font-size:1.1rem;">×</button>
             `;
             playlistDiv.appendChild(div);
         });
@@ -146,61 +147,54 @@
             viewport.innerHTML = `
                 <video id="v-player" src="${item.url}" autoplay controls></video>
                 <div class="v-controls">
-                    <button class="v-btn" onclick="videoSkip(-10)">⏪</button>
-                    <button class="v-btn" onclick="togglePlay()">⏯️</button>
-                    <button class="v-btn" onclick="videoSkip(10)">⏩</button>
-                    <button class="v-btn" onclick="toggleMute()">🔇</button>
+                    <button class="v-btn" onclick="videoSkip(-10)" title="Rewind 10s">⏪</button>
+                    <button class="v-btn" onclick="videoSkip(10)" title="Forward 10s">⏩</button>
                     <select class="v-select" onchange="setSpeed(this.value)">
                         <option value="1" selected>1.0x</option>
                         <option value="1.5">1.5x</option>
                         <option value="2">2.0x</option>
-                        <option value="0.5">0.5x</option>
                     </select>
-                    <button class="v-btn" onclick="openPiP()">🖼️</button>
-                    <button class="v-btn" onclick="fullScreen()">⛶</button>
+                    <button class="v-btn" onclick="openPiP()" title="Mini Player">🖼️</button>
+                    <button class="v-btn" onclick="fullScreen()" title="Full Screen">⛶</button>
+                    <a href="${item.url}" download="${item.name}" class="v-btn" style="text-decoration:none">⬇️</a>
                 </div>
             `;
         } else if (item.type === 'image') {
             viewport.innerHTML = `<img src="${item.url}">`;
         } else if (item.type === 'pdf') {
-            viewport.innerHTML = `<iframe src="${item.url}"></iframe>`;
+            // PDF FIX: Using object tag with data type
+            viewport.innerHTML = `<object data="${item.url}" type="application/pdf" class="pdf-viewer">
+                <p>PDF open nahi ho raha? <a href="${item.url}" target="_blank">Yahan click karke dekhein</a></p>
+            </object>`;
         } else if (item.type === 'audio') {
             viewport.innerHTML = `<h3 style="margin-bottom:20px;">🎵 ${item.name}</h3><audio controls autoplay src="${item.url}" style="width:80%"></audio>`;
         }
     }
 
-    // Video Player Functions
+    // Advanced Functions
     function videoSkip(val) { const v = document.getElementById('v-player'); if(v) v.currentTime += val; }
     function setSpeed(val) { const v = document.getElementById('v-player'); if(v) v.playbackRate = val; }
-    function togglePlay() { const v = document.getElementById('v-player'); if(v) v.paused ? v.play() : v.pause(); }
-    function toggleMute() { const v = document.getElementById('v-player'); if(v) v.muted = !v.muted; }
     function fullScreen() { const v = document.getElementById('v-player'); if(v.requestFullscreen) v.requestFullscreen(); }
     async function openPiP() { const v = document.getElementById('v-player'); if(v) await v.requestPictureInPicture(); }
 
-    function removeItem(index) { mediaList.splice(index, 1); renderPlaylist(); }
-    function clearPlaylist() { mediaList = []; renderPlaylist(); viewport.innerHTML = '<h2>Playlist Cleared</h2>'; }
+    function removeItem(e, index) { e.stopPropagation(); mediaList.splice(index, 1); renderPlaylist(); }
+    function clearPlaylist() { if(confirm("Clear All?")) { mediaList = []; renderPlaylist(); viewport.innerHTML = '<h2>Playlist Cleared</h2>'; } }
 
-    // --- PWA INSTALLATION LOGIC ---
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('installBtn').style.display = 'block';
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+        const v = document.getElementById('v-player');
+        if(!v) return;
+        if(e.code === 'Space') { e.preventDefault(); v.paused ? v.play() : v.pause(); }
+        if(e.code === 'ArrowRight') videoSkip(5);
+        if(e.code === 'ArrowLeft') videoSkip(-5);
+        if(e.code === 'KeyF') fullScreen();
+        if(e.code === 'KeyM') v.muted = !v.muted;
     });
-    document.getElementById('installBtn').onclick = async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt = null;
-            document.getElementById('installBtn').style.display = 'none';
-        }
-    };
 
-    // --- AUTOMATIC INTERNAL SW REGISTRATION ---
+    // Internal PWA Service Worker
     if ('serviceWorker' in navigator) {
-        const swContent = document.getElementById('sw-code').textContent;
-        const swBlob = new Blob([swContent], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob))
-            .then(() => console.log("SNT SW Registered Successfully"));
+        const swBlob = new Blob([`self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));`], { type: 'text/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob));
     }
 </script>
 
