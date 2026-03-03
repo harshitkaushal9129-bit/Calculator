@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MI PLAYER PRO - Kaushal Ji</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk1JIFBMQVlFUiBQUk8iLAogICJzaG9ydF9uYW1lIjogIk1JIFBsYXllciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGEwYTBhIiwKICAidGhlbWVfY29sb3IiOiAiIzAwZmZjYyIKfQ==">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -14,88 +14,86 @@
         --gradient: linear-gradient(135deg, #00ffcc, #0099ff);
         --text: #fff;
     }
-    body { margin: 0; background: #000; color: var(--text); font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
+    body { margin: 0; background: #000; color: var(--text); font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     
-    .hidden { display: none !important; }
-    
-    #install-btn { 
-        position: absolute; top: 10px; z-index: 10000;
-        background: var(--main); color: #000; border: none; 
-        padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;
-        box-shadow: 0 0 15px var(--main);
-    }
-
-    .device { width: 360px; height: 740px; background: var(--bg); border: 8px solid #222; border-radius: 40px; position: relative; display: flex; flex-direction: column; transition: 0.4s ease; box-shadow: 0 0 50px rgba(0,255,204,0.2); }
+    .device { width: 360px; height: 740px; background: var(--bg); border: 8px solid #222; border-radius: 40px; position: relative; display: flex; flex-direction: column; transition: 0.4s ease; box-shadow: 0 0 50px rgba(0,255,204,0.2); overflow: hidden; }
     .laptop-mode { width: 95% !important; max-width: 1100px; height: 85% !important; border-radius: 15px !important; }
+    
     .status-bar { display: flex; justify-content: space-between; padding: 15px 25px 5px; font-size: 11px; color: var(--main); }
-    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); position: relative; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #222; background: rgba(255,255,255,0.03); }
+    
     .icon-btn { width: 35px; height: 35px; border-radius: 50%; background: #222; border: 1px solid var(--main); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 14px; }
-    .icon-label { font-size: 8px; color: var(--main); display: block; margin-top: 2px; text-align: center;}
+    .icon-label { font-size: 8px; color: var(--main); display: block; margin-top: 2px; }
+
     .main-container { display: flex; flex: 1; overflow: hidden; }
-    .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; text-align: center; position: relative; }
+    .player-side { flex: 2; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto; text-align: center; }
     .playlist-side { flex: 1; background: var(--panel); border-left: 1px solid #222; display: none; overflow-y: auto; padding: 15px; }
     .laptop-mode .playlist-side { display: block !important; }
-    .display-area { width: 100%; max-width: 450px; height: 230px; background: #000; border-radius: 15px; margin: 15px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
+
+    .display-area { width: 100%; height: 210px; min-height: 210px; background: #000; border-radius: 15px; margin: 10px 0; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
     #vid-p, #img-p, #doc-viewer { width: 100%; height: 100%; object-fit: contain; display: none; border:none; }
-    .music-anim { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--main); animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    
+    .music-anim { width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--main); animation: pulse 2s infinite; display: none; align-items: center; justify-content: center; font-size: 40px; }
     @keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(0,255,204,0.7);} 70% {box-shadow: 0 0 0 20px rgba(0,255,204,0);} 100% {box-shadow: 0 0 0 0 rgba(0,255,204,0);} }
-    .controls { display: flex; align-items: center; gap: 25px; margin-top: 15px; }
+
+    .controls { display: flex; align-items: center; gap: 20px; margin: 10px 0; }
     .p-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); border: none; font-size: 25px; cursor: pointer; color: #000; font-weight:bold; }
-    .seek-bar { width: 90%; margin: 15px 0; accent-color: var(--main); }
-    .btn-group { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 10px; width: 100%; }
+    .seek-bar { width: 90%; accent-color: var(--main); margin: 10px 0; }
+
+    .btn-group { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin: 10px 0; width: 100%; }
     .f-btn { background: #222; border: 1px solid #444; color: #fff; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; }
-    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; border-radius: 32px; backdrop-filter: blur(5px); }
-    .card { background: #111; padding: 20px; border-radius: 25px; border: 1px solid rgba(0,255,204,0.3); width: 100%; max-width: 300px; text-align: center; }
-    .input-box input { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 10px; margin: 5px 0; }
-    .btn-submit { width: 100%; padding: 10px; background: var(--gradient); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; }
-    #drop-menu { position: absolute; top: 60px; right: 20px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 160px; }
-    .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; }
-    .icon-box { position: absolute; bottom: 20px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--main); z-index: 100; }
-    .delete-user-icon { right: 20px; background: #ff4444; color: white; border:none; }
-    .eq-icon { left: 20px; background: #333; color: white; }
-</style>
+
+    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.96); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+    .card { background: #111; padding: 20px; border-radius: 25px; border: 1px solid var(--main); width: 100%; max-width: 280px; text-align: center; max-height: 90vh; overflow-y: auto; }
+    .input-box input { width: 100%; padding: 10px; margin: 8px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+    .profile-upload { width: 60px; height: 60px; border-radius: 50%; border: 2px dashed var(--main); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; color: var(--main); overflow: hidden; }
+
+    .list-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; font-size: 12px; display: flex; justify-content: space-between; align-items: center; color: #ddd; }
+    .list-item:hover { background: rgba(0,255,204,0.1); }
+    .del-icon { color: #ff4444; padding: 5px; font-weight: bold; font-size: 14px; }
+    
+    #drop-menu { position: absolute; top: 60px; right: 20px; background: #111; border: 1px solid var(--main); border-radius: 10px; display: none; flex-direction: column; z-index: 9999; width: 190px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .m-item { padding: 12px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; color: #fff; }
+    .m-item:hover { background: #222; color: var(--main); }
+    </style>
 </head>
 <body>
 
-<button onclick="installApp()" id="install-btn" class="hidden">📲 INSTALL APP</button>
-
 <div class="device" id="frame">
-    <div class="status-bar"><span id="clock">00:00</span><span id="bat-val">BAT: --%</span></div>
+    <div class="status-bar"><span id="clock">00:00</span><span id="bat-val">BAT: 100%</span></div>
     
-    <div id="login-box" class="overlay"><div class="card"><h3>Login</h3><div class="input-box"><input type="number" id="l-phone" placeholder="Phone"></div><div class="input-box"><input type="password" id="l-pass" placeholder="Password"></div><button class="btn-submit" onclick="handleLogin()">SIGN IN</button><button onclick="hidePop()" style="background:none; color:gray; border:none; margin-top:10px;">Close</button></div></div>
-    <div id="reg-box" class="overlay"><div class="card"><h3>Register</h3><div class="input-box"><input type="text" id="r-name" placeholder="Name"></div><div class="input-box"><input type="number" id="r-phone" placeholder="Phone"></div><div class="input-box"><input type="password" id="r-pass" placeholder="Password"></div><button class="btn-submit" onclick="handleRegister()">SIGN UP</button><button onclick="hidePop()" style="background:none; color:gray; border:none; margin-top:10px;">Close</button></div></div>
-    <div id="upi-box" class="overlay"><div class="card"><h3>Support Kaushal Ji</h3><img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis" width="140"><p>mandavikaushal913@okaxis</p><button class="btn-submit" onclick="hidePop()">Close</button></div></div>
+    <div id="login-box" class="overlay"><div class="card"><h3>Login</h3><div class="input-box"><input type="number" id="l-phone" placeholder="Phone Number"><input type="password" id="l-pass" placeholder="Password"></div><button class="p-btn" style="width:100%; border-radius:10px; height:45px;" onclick="handleLogin()">SIGN IN</button><p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--main);" onclick="showReg()">New Account? Register</p><button onclick="hidePop()" style="background:none; border:none; color:#888; margin-top:5px;">Close</button></div></div>
+    
+    <div id="reg-box" class="overlay"><div class="card"><h3>Register</h3><label class="profile-upload" id="profile-label">+<input type="file" id="r-img" accept="image/*" hidden onchange="previewRegImg(this)"></label><div id="reg-img-name" style="font-size:10px; color:var(--main); margin-bottom:5px;">Upload Profile Pic</div><div class="input-box"><input type="text" id="r-name" placeholder="Full Name"><input type="number" id="r-phone" placeholder="Phone Number"><input type="password" id="r-pass" placeholder="Create Password"></div><button class="p-btn" style="width:100%; border-radius:10px; height:45px;" onclick="handleRegister()">SIGN UP</button><button onclick="hidePop()" style="background:none; border:none; color:#888; margin-top:10px;">Back</button></div></div>
+    
+    <div id="upi-box" class="overlay"><div class="card"><h3>Support Kaushal Ji</h3><img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=mandavikaushal913@okaxis" width="140"><p style="font-size:12px;">mandavikaushal913@okaxis</p><button onclick="hidePop()" style="background:var(--main); border:none; padding:10px 20px; border-radius:5px; color:#000; font-weight:bold;">Close</button></div></div>
 
     <div class="header">
-        <div onclick="showLogin()"><div class="icon-btn" id="login-trigger">🔐</div><span class="icon-label">Login</span></div>
-        <div style="text-align:center;"><b style="color:var(--main);">MI PLAYER PRO</b>
-            <select onchange="setView(this.value)" style="background:none; color:#888; border:none; font-size:10px; display:block; margin:auto;">
-                <option value="mobile">Mobile</option>
-                <option value="laptop">Laptop</option>
-            </select>
-        </div>
-        <div onclick="shareApp()"><div class="icon-btn">📤</div><span class="icon-label">Share</span></div>
-        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-size:20px;">⋮</div>
+        <div style="text-align:center;"><div class="icon-btn" id="login-trigger" onclick="showLogin()">🔐</div><span class="icon-label">User</span></div>
+        <div style="text-align:center;"><b style="font-size:12px; color:var(--main);">MI PLAYER PRO</b><select onchange="setView(this.value)" style="background:none; border:none; color:#888; font-size:10px; display:block; margin:auto;"><option value="mobile">Mobile View</option><option value="laptop">Laptop View</option></select></div>
+        <div style="text-align:center;" onclick="shareApp()"><div class="icon-btn">📤</div><span class="icon-label">Share</span></div>
+        <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main); font-size:22px; padding:5px; font-weight:bold;">⋮</div>
     </div>
 
     <div id="drop-menu">
+        <div class="m-item" onclick="window.open('https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/', '_blank')" style="color:var(--main); font-weight:bold;">🌐 Official Portal</div>
         <div class="m-item" onclick="showReg()">🆔 Register Account</div>
-        <div class="m-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp</div>
         <div class="m-item" onclick="showUPI()">💰 Support (UPI)</div>
-        <div class="m-item" style="color:red;" onclick="location.reload()">📴 Logout</div>
+        <div class="m-item" onclick="window.open('https://wa.me/919129191898')">💬 WhatsApp Support</div>
+        <div class="m-item" onclick="clearPlaylist()" style="color:#ff4444;">🗑️ Clear Master List</div>
+        <div class="m-item" onclick="location.reload()">📴 Logout</div>
     </div>
 
     <div class="main-container">
         <div class="player-side">
-            <div id="user-welcome" style="color:var(--main); font-weight:bold;">Guest Mode</div>
-            <div id="track-title" style="color:#888; font-size:11px; margin-top:5px;">No Media</div>
+            <div id="user-welcome" style="font-weight:bold; font-size:15px; color:var(--main);">Guest Mode</div>
+            <div id="track-title" style="color:#888; font-size:10px; margin-top:5px; height:15px; width:90%; overflow:hidden;">Ready to Play</div>
             
             <div class="display-area">
                 <div id="music-ui" class="music-anim">🎵</div>
                 <video id="vid-p" controls></video>
-                <img id="img-p">
-                <iframe id="doc-viewer"></iframe>
+                <img id="img-p" alt="view">
+                <iframe id="doc-viewer" style="width:100%; height:100%; display:none; background:#fff;"></iframe>
             </div>
 
             <input type="range" id="seek" class="seek-bar" value="0">
@@ -109,201 +107,166 @@
             <div class="btn-group">
                 <label class="f-btn">🎵 Audio <input type="file" hidden multiple accept="audio/*" onchange="importFiles(event, 'audio')"></label>
                 <label class="f-btn">🎥 Video <input type="file" hidden multiple accept="video/*" onchange="importFiles(event, 'video')"></label>
-                <label class="f-btn">📄 Doc <input type="file" hidden multiple accept=".pdf,.txt" onchange="importFiles(event, 'doc')"></label>
+                <label class="f-btn">🖼 Image <input type="file" hidden multiple accept="image/*" onchange="importFiles(event, 'image')"></label>
+                <label class="f-btn">📄 Doc <input type="file" hidden multiple accept=".pdf,.txt,.html" onchange="importFiles(event, 'doc')"></label>
             </div>
 
-            <div class="icon-box eq-icon" onclick="downloadCurrentFile()">📥</div>
-            <div class="icon-box delete-user-icon" onclick="alert('Account feature coming soon!')">🗑️</div>
-            
             <div id="mobile-playlist" style="width:100%; margin-top:20px; text-align:left;">
-                <b style="font-size:11px; color:var(--main);">Current Playlist</b>
+                <b style="font-size:11px; color:var(--main);">Master Playlist (Permanent)</b>
                 <div id="m-list-cont"></div>
             </div>
         </div>
-        <div class="playlist-side" id="side-list"><b style="color:var(--main);">Master Playlist</b><div id="l-list-cont"></div></div>
+        <div class="playlist-side" id="side-list"><b>Master List</b><div id="l-list-cont"></div></div>
     </div>
 </div>
 
 <script>
-    // Firebase Init (Aapki keys)
-    const firebaseConfig = {
-        apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-        authDomain: "calculator-by-kaushalji.firebaseapp.com",
-        databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
-        projectId: "calculator-by-kaushalji",
-        storageBucket: "calculator-by-kaushalji.firebasestorage.app",
-        messagingSenderId: "156130281294",
-        appId: "1:156130281294:web:73b80a5f344daeabdd001f"
+    // --- Database Initialization ---
+    let dbIdx;
+    const request = indexedDB.open("KaushalMasterDB", 1);
+    request.onupgradeneeded = e => {
+        dbIdx = e.target.result;
+        if (!dbIdx.objectStoreNames.contains("playlist")) {
+            dbIdx.createObjectStore("playlist", { keyPath: "id", autoIncrement: true });
+        }
     };
+    request.onsuccess = e => { 
+        dbIdx = e.target.result; 
+        loadFromDB(); 
+    };
+
+    // Firebase (Original)
+    const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com" };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    
+    const fdb = firebase.database();
+
     let playlist = [], cursor = 0, currentUser = null;
-    let audio = new Audio();
-    let video = document.getElementById('vid-p');
-    let active = audio;
+    let audio = new Audio(), video = document.getElementById('vid-p'), img = document.getElementById('img-p'), doc = document.getElementById('doc-viewer'), active = audio;
 
-
-    // --- Battery & Clock ---
-    setInterval(() => {
-        const d = new Date();
-        document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2,'0');
-    }, 1000);
-
-    navigator.getBattery().then(bat => {
-        const update = () => document.getElementById('bat-val').innerText = `BAT: ${Math.round(bat.level * 100)}%`;
-        update(); bat.onlevelchange = update;
-    });
-
-    // --- Functions ---
-    function toBase64(file) {
-        return new Promise((r) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => r(reader.result);
-        });
+    async function toBase64(file) {
+        return new Promise(r => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => r(reader.result); });
     }
 
-    async function handleRegister() {
-        const n = document.getElementById('r-name').value, p = document.getElementById('r-phone').value, pw = document.getElementById('r-pass').value;
-        if(!p || !pw) return alert("Fill all fields!");
-        await db.ref('users/' + p).set({ name: n, phone: p, password: pw });
-        alert("Success!"); hidePop();
-    }
-
-    async function handleLogin() {
-        const p = document.getElementById('l-phone').value, pw = document.getElementById('l-pass').value;
-        const snap = await db.ref('users/' + p).once('value');
-        if(snap.exists() && snap.val().password === pw) {
-            currentUser = snap.val();
-            document.getElementById('user-welcome').innerText = "Namaste, " + currentUser.name;
-            hidePop(); syncCloud();
-        } else alert("Wrong details!");
-    }
-
+    // --- Media Core Logic ---
     async function importFiles(e, type) {
         const files = Array.from(e.target.files);
+        const tx = dbIdx.transaction("playlist", "readwrite");
+        const store = tx.objectStore("playlist");
         for(let file of files) {
             const b64 = await toBase64(file);
-            const item = { name: file.name, url: b64, type: type };
-            if(currentUser) db.ref('playlists/' + currentUser.phone).push(item);
-            else { playlist.push(item); renderLists(); }
+            store.add({ name: file.name, url: b64, type: type });
         }
+        tx.oncomplete = () => loadFromDB();
     }
 
-    function syncCloud() {
-        db.ref('playlists/' + currentUser.phone).on('value', snap => {
-            playlist = [];
-            snap.forEach(child => { let d = child.val(); d.id = child.key; playlist.push(d); });
+    function loadFromDB() {
+        if(!dbIdx) return;
+        const tx = dbIdx.transaction("playlist", "readonly");
+        const store = tx.objectStore("playlist");
+        store.getAll().onsuccess = e => {
+            playlist = e.target.result;
             renderLists();
-        });
+        };
     }
 
     function renderLists() {
         const conts = [document.getElementById('m-list-cont'), document.getElementById('l-list-cont')];
-        conts.forEach(c => {
-            if(!c) return; c.innerHTML = "";
+        conts.forEach(c => { if(c) {
+            c.innerHTML = "";
             playlist.forEach((item, i) => {
-                c.innerHTML += `<div class="list-item"><span onclick="loadTrack(${i})">${item.name}</span><b onclick="deleteTrack('${item.id}', ${i})">🗑️</b></div>`;
+                const icon = item.type==='audio'?'🎵':item.type==='video'?'🎥':item.type==='image'?'🖼️':'📄';
+                c.innerHTML += `<div class="list-item" onclick="loadTrack(${i})">
+                    <span>${icon} ${item.name}</span>
+                    <span class="del-icon" onclick="deleteFile(${item.id}, event)">✖</span>
+                </div>`;
             });
-        });
+        }});
     }
 
     function loadTrack(i) {
         cursor = i; const item = playlist[i];
-        audio.pause(); video.pause();
-        document.getElementById('music-ui').style.display = 'none';
-        document.getElementById('vid-p').style.display = 'none';
-        document.getElementById('img-p').style.display = 'none';
-        document.getElementById('doc-viewer').style.display = 'none';
-        
+        [audio, video, img, doc, document.getElementById('music-ui')].forEach(el => { 
+            if(el.pause) el.pause(); 
+            el.style.display='none'; 
+        });
         document.getElementById('track-title').innerText = item.name;
 
         if(item.type === 'audio') { 
             document.getElementById('music-ui').style.display = 'flex'; 
             active = audio; audio.src = item.url; audio.play(); 
-        } else if(item.type === 'video') { 
-            document.getElementById('vid-p').style.display = 'block'; 
-            active = video; video.src = item.url; video.play(); 
-        } else if(item.type === 'image') {
-            document.getElementById('img-p').style.display = 'block';
-            document.getElementById('img-p').src = item.url;
-        } else if(item.type === 'doc') {
-            document.getElementById('doc-viewer').style.display = 'block';
-            document.getElementById('doc-viewer').src = item.url;
+        } 
+        else if(item.type === 'video') { 
+            video.style.display = 'block'; active = video; video.src = item.url; video.play(); 
+        } 
+        else if(item.type === 'image') { 
+            img.style.display = 'block'; img.src = item.url; active = {paused:true,play:()=>{},pause:()=>{}}; 
+        }
+        else if(item.type === 'doc') { 
+            doc.style.display = 'block'; doc.src = item.url; active = {paused:true,play:()=>{},pause:()=>{}}; 
         }
         document.getElementById('play-trigger').innerText = '⏸';
     }
 
-    function handlePlay() {
-        if(active.paused) { active.play(); document.getElementById('play-trigger').innerText = '⏸'; }
-        else { active.pause(); document.getElementById('play-trigger').innerText = '▶'; }
+    function deleteFile(id, e) { 
+        e.stopPropagation(); 
+        const tx = dbIdx.transaction("playlist", "readwrite"); 
+        tx.objectStore("playlist").delete(id); 
+        tx.oncomplete = () => loadFromDB(); 
     }
 
-    function changeTrack(dir) {
-        cursor += dir;
-        if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor);
+    function clearPlaylist() { 
+        if(confirm("Poori master list saaf karein?")) { 
+            const tx = dbIdx.transaction("playlist", "readwrite"); 
+            tx.objectStore("playlist").clear(); 
+            tx.oncomplete = () => loadFromDB(); 
+        } 
     }
 
-    function deleteTrack(id, index) {
-        if(currentUser && id) db.ref('playlists/' + currentUser.phone + '/' + id).remove();
-        else { playlist.splice(index, 1); renderLists(); }
+    // --- Auth & Profile ---
+    async function handleRegister() {
+        const n = document.getElementById('r-name').value, p = document.getElementById('r-phone').value, pw = document.getElementById('r-pass').value, imgFile = document.getElementById('r-img').files[0];
+        if(!p || !pw || !n) return alert("Poori jaankari bhariye!");
+        const b64 = imgFile ? await toBase64(imgFile) : "";
+        await fdb.ref('users/' + p).set({ name: n, phone: p, password: pw, profilePic: b64 });
+        alert("Account ban gaya, Kaushal Ji!");
+        hidePop(); showLogin();
     }
 
-    function downloadCurrentFile() {
-        if (!playlist[cursor]) return;
-        const a = document.createElement('a'); a.href = playlist[cursor].url;
-        a.download = playlist[cursor].name; a.click();
+    async function handleLogin() {
+        const p = document.getElementById('l-phone').value, pw = document.getElementById('l-pass').value;
+        const snap = await fdb.ref('users/' + p).once('value');
+        if(snap.exists() && snap.val().password === pw) {
+            currentUser = snap.val();
+            document.getElementById('user-welcome').innerText = "Namaste, " + currentUser.name;
+            if(currentUser.profilePic) document.getElementById('login-trigger').innerHTML = `<img src="${currentUser.profilePic}" style="width:100%;height:100%;object-fit:cover;">`;
+            hidePop();
+        } else alert("Galat number ya password!");
     }
 
-    function shareApp() { 
-        if(navigator.share) navigator.share({title:'MI Player', url: window.location.href});
-        else alert(window.location.href);
-    }
-
-    function showLogin() { document.getElementById('login-box').style.display='flex'; }
-    function showReg() { document.getElementById('reg-box').style.display='flex'; }
-    function showUPI() { document.getElementById('upi-box').style.display='flex'; }
-    function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
-    function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
-    function setView(v) { const f = document.getElementById('frame'); v === 'laptop' ? f.classList.add('laptop-mode') : f.classList.remove('laptop-mode'); }
-    
-    audio.ontimeupdate = video.ontimeupdate = () => {
-        const s = document.getElementById('seek');
-        if(active.duration) { s.max = active.duration; s.value = active.currentTime; }
-    };
-    document.getElementById('seek').oninput = (e) => active.currentTime = e.target.value;
-    window.onclick = () => document.getElementById('drop-menu').style.display='none';
-</script>
-
-<script>
-
-    // --- PWA Logic ---
-    let defPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        defPrompt = e;
-        document.getElementById('install-btn').classList.remove('hidden');
-    });
-
-    function installApp() {
-        if (defPrompt) {
-            defPrompt.prompt();
-            defPrompt.userChoice.then((choice) => {
-                if (choice.outcome === 'accepted') document.getElementById('install-btn').classList.add('hidden');
-                defPrompt = null;
-            });
+    function previewRegImg(input) {
+        if(input.files && input.files[0]) {
+            document.getElementById('reg-img-name').innerText = input.files[0].name;
+            const reader = new FileReader();
+            reader.onload = e => { document.getElementById('profile-label').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`; };
+            reader.readAsDataURL(input.files[0]);
         }
     }
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Error", err));
-    }
+    // --- UI UI UI ---
+    function shareApp() { alert("Official Portal: https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/"); }
+    function showUPI() { hidePop(); document.getElementById('upi-box').style.display='flex'; }
+    function showLogin() { hidePop(); document.getElementById('login-box').style.display='flex'; }
+    function showReg() { hidePop(); document.getElementById('reg-box').style.display='flex'; }
+    function hidePop() { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); }
+    function toggleMenu(e) { e.stopPropagation(); const m = document.getElementById('drop-menu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
+    function setView(v) { const f = document.getElementById('frame'); v === 'laptop' ? f.classList.add('laptop-mode') : f.classList.remove('laptop-mode'); }
+    function handlePlay() { if(active.paused) { active.play(); document.getElementById('play-trigger').innerText = '⏸'; } else { active.pause(); document.getElementById('play-trigger').innerText = '▶'; } }
+    function changeTrack(dir) { cursor += dir; if(cursor >= 0 && cursor < playlist.length) loadTrack(cursor); }
 
-    
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
+    audio.ontimeupdate = video.ontimeupdate = () => { if(active.duration) { document.getElementById('seek').max = active.duration; document.getElementById('seek').value = active.currentTime; } };
+    document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
+    window.onclick = () => { document.getElementById('drop-menu').style.display='none'; };
 </script>
-
-
-    
 </body>
 </html>
