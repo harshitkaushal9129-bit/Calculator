@@ -190,7 +190,8 @@
         if(e.code === 'KeyF') fullScreen();
         if(e.code === 'KeyM') v.muted = !v.muted;
     });
-
+</script>
+<script>
     // Internal PWA Service Worker
     if ('serviceWorker' in navigator) {
         const swBlob = new Blob([`self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));`], { type: 'text/javascript' });
