@@ -64,11 +64,10 @@
 </head>
 <body>
 
-    <div style="text-align:center; margin-top: 10px;">
-    <button id="installBtn" class="f-btn" style="display:none; background: var(--gradient); color: #000; font-weight: bold; border: none;">
-        📲 Install App
-    </button>
-</div>
+<button onclick="installApp()" id="install-btn" class="hidden" style="background: var(--main); color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-weight: bold; cursor: pointer;">
+    <i class="fas fa-download"></i> INSTALL APP
+</button>
+
 
     
     <div class="device" id="frame">
@@ -241,47 +240,8 @@
     document.getElementById('seek').oninput = (e) => { active.currentTime = e.target.value; };
 
 
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Yahan aap apna koi button show kar sakte hain
-  console.log("App install hone ke liye taiyar hai!");
-});
 
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
 
-// 1. Browser se 'install' event ko pakadna
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Browser ka default prompt rokein
-    e.preventDefault();
-    // Event ko save karein
-    deferredPrompt = e;
-    // Button ko screen par dikhayein
-    installBtn.style.display = 'block';
-});
-
-// 2. Button click hone par kya hoga
-installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        // Browser ka install prompt dikhayein
-        deferredPrompt.prompt();
-        // User ka choice check karein
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response: ${outcome}`);
-        // Prompt sirf ek baar use ho sakta hai, isliye reset karein
-        deferredPrompt = null;
-        // Button ko wapas chhupa dein
-        installBtn.style.display = 'none';
-    }
-});
-
-// 3. Agar app pehle se installed hai toh button chhupayein
-window.addEventListener('appinstalled', (evt) => {
-    console.log('MI PLAYER PRO successfully installed!');
-    installBtn.style.display = 'none';
-});
 
 
 
@@ -293,13 +253,39 @@ window.addEventListener('appinstalled', (evt) => {
 </script>
 
     <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.log('Registration Failed', err));
+    // --- PWA Installation Logic ---
+let defPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Browser ka default prompt rokein
+    e.preventDefault();
+    defPrompt = e;
+    // Apna custom install button dikhayein
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) installBtn.classList.remove('hidden');
+});
+
+function installApp() {
+    if (defPrompt) {
+        defPrompt.prompt();
+        defPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User ne app install kar liya');
+            }
+            document.getElementById('install-btn').classList.add('hidden');
+            defPrompt = null;
         });
     }
+}
+
+// Service Worker Register karein
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered!'))
+            .catch(err => console.log('Service Worker Failed!', err));
+    });
+}
+
 </script>
 
 </body>
