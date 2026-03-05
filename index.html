@@ -24,13 +24,50 @@
         .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
         .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
         
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 600; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); transition: 0.3s; }
-        .card { background: #111; padding: 25px; border-radius: 25px; width: 85%; border: 1px solid var(--main-clr); box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--main-clr); box-shadow: 0 0 10px rgba(0,255,204,0.3); }
-        .btn-main { width: 100%; padding: 14px; background: var(--accent-gradient); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        
+        .overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 1000;
+    display: none; /* Default hidden */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.card {
+    background: #111;
+    padding: 25px;
+    border-radius: 25px;
+    width: 85%;
+    max-width: 320px;
+    border: 1px solid #00ffcc;
+    box-shadow: 0 10px 40px rgba(0,255,204,0.2);
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.btn-main {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+}
+ 
         .header { padding: 50px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border); z-index: 10; }
         
         .video-box { width: 95%; height: 210px; background: #000; border-radius: 20px; margin: 10px auto; border: 1px solid #222; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -121,8 +158,27 @@
         </div>
 
         <div id="anim-selector-overlay" class="overlay"><div class="card"><h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3><div class="anim-grid" id="anim-grid-box"></div><button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip</button></div></div>
-        <div id="reg-overlay" class="overlay"><div class="card"><h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">Registration</h3><input type="text" id="reg-name" placeholder="Name"><input type="password" id="reg-pass" placeholder="Password"><div style="font-size: 10px; color: #666;">Profile Pic:</div><input type="file" id="reg-pic" accept="image/*"><button class="btn-main" onclick="saveNewUser()">Create</button></div></div>
-        <div id="login-overlay" class="overlay"><div class="card"><h3 style="color:var(--main-clr); text-align:center;">Secure Login</h3><p id="login-user-name" style="font-size:12px; color:#888; text-align:center;"></p><input type="password" id="login-pass" placeholder="Enter Password"><button class="btn-main" onclick="verifyLogin()">Login</button></div></div>
+<div id="reg-overlay" class="overlay">
+    <div class="card">
+        <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3>
+        
+        <input type="text" id="reg-name" placeholder="अपना नाम लिखें">
+        <input type="number" id="reg-phone" placeholder="मोबाइल नंबर">
+        <input type="email" id="reg-email" placeholder="ईमेल आईडी">
+        <input type="password" id="reg-pass" placeholder="पासवर्ड सेट करें">
+        
+        <div style="font-size: 11px; color: #888; margin: 5px 0;">प्रोफ़ाइल फोटो चुनें:</div>
+        <input type="file" id="reg-pic" accept="image/*" style="font-size: 11px; border: 1px dashed #444;">
+        
+        <button class="btn-main" onclick="saveNewUser()" style="margin-top:15px;">अकाउंट बनाएं</button>
+        
+        <button onclick="document.getElementById('reg-overlay').style.display='none'" 
+                style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">
+            बंद करें
+        </button>
+    </div>
+</div>
+      <div id="login-overlay" class="overlay"><div class="card"><h3 style="color:var(--main-clr); text-align:center;">Secure Login</h3><p id="login-user-name" style="font-size:12px; color:#888; text-align:center;"></p><input type="password" id="login-pass" placeholder="Enter Password"><button class="btn-main" onclick="verifyLogin()">Login</button></div></div>
         
         <div class="header">
             <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
@@ -266,16 +322,46 @@
     }
 
     function saveNewUser() {
-        const name = document.getElementById('reg-name').value;
-        const pass = document.getElementById('reg-pass').value;
-        const newUser = { name, pass, img: null };
-        const pic = document.getElementById('reg-pic').files[0];
-        if(pic) {
-            const r = new FileReader();
-            r.onload = (e) => { newUser.img = e.target.result; users.push(newUser); saveAll(); };
-            r.readAsDataURL(pic);
-        } else { users.push(newUser); saveAll(); }
+    const name = document.getElementById('reg-name').value;
+    const phone = document.getElementById('reg-phone').value;
+    const email = document.getElementById('reg-email').value;
+    const pass = document.getElementById('reg-pass').value;
+    const picFile = document.getElementById('reg-pic').files[0];
+
+    // Basic Validation
+    if(!name || !pass || !phone) {
+        alert("कृपया नाम, मोबाइल और पासवर्ड भरें!");
+        return;
     }
+
+    let users = JSON.parse(localStorage.getItem('secureUsers')) || [];
+
+    const newUser = {
+        name: name,
+        phone: phone,
+        email: email,
+        pass: pass,
+        img: null
+    };
+
+    if (picFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            newUser.img = e.target.result; // Base64 image data
+            users.push(newUser);
+            localStorage.setItem('secureUsers', JSON.stringify(users));
+            alert("रजिस्ट्रेशन सफल रहा!");
+            location.reload(); // Refresh to update UI
+        };
+        reader.readAsDataURL(picFile);
+    } else {
+        users.push(newUser);
+        localStorage.setItem('secureUsers', JSON.stringify(users));
+        alert("रजिस्ट्रेशन सफल रहा (बिना फोटो के)!");
+        location.reload();
+    }
+}
+
     function saveAll() { localStorage.setItem('secureUsers', JSON.stringify(users)); location.reload(); }
     function promptLogin(i) { attemptingIdx = i; document.getElementById('login-user-name').textContent = users[i].name; document.getElementById('login-overlay').style.display = 'flex'; }
     function verifyLogin() { if(document.getElementById('login-pass').value === users[attemptingIdx].pass) switchUser(attemptingIdx); else alert("Wrong!"); }
