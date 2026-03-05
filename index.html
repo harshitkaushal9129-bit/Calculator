@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/727/727218.png">
 
     <style>
-        /* Aapka purana saara CSS yahan rahega */
+        /* --- Aapka purana saara CSS --- */
         :root { 
             --p-width: 350px; --p-height: 700px; 
             --main-clr: #00ffcc; --bg-dark: #080808;
@@ -18,7 +18,6 @@
             --hacker-green: #00ff41;
             --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
         }
-        /* ... baki CSS ... */
         body { margin: 0; background: radial-gradient(circle at center, #1a1a1a, #000); display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; color: #fff; overflow: hidden; }
         .phone { width: var(--p-width); height: var(--p-height); background: rgba(8, 8, 8, 0.95); border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 50px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(255,255,255,0.02); backdrop-filter: blur(20px); }
         .laptop-view { width: 90% !important; max-width: 1100px; height: 85% !important; border-radius: 20px !important; }
@@ -40,9 +39,27 @@
         .full-immersive #close-vid { display: flex; }
         .playlist-sidebar { width: 0; background: #050505; border-left: 1px solid #111; transition: 0.4s; overflow-y: auto; display: none; }
         .laptop-view .playlist-sidebar { width: 320px; display: block; }
-        .playlist-item { padding: 15px; border-bottom: 1px solid #111; font-size: 13px; cursor: pointer; color: #888; transition: 0.2s; }
-        .playlist-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .playlist-item.active { color: var(--main-clr); background: rgba(0,255,204,0.08); border-left: 4px solid var(--main-clr); font-weight: bold; }
+
+        /* --- New Code Styled Playlist Items --- */
+        .playlist-item { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #111; 
+            font-size: 11px; 
+            cursor: pointer; 
+            color: #888; 
+            transition: 0.2s; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-family: 'Courier New', monospace;
+        }
+        .playlist-item:hover { background: rgba(255,255,255,0.05); color: var(--main-clr); }
+        .playlist-item.active { color: var(--main-clr); background: rgba(0,255,204,0.08); border-left: 4px solid var(--main-clr); }
+        .item-code { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-cut { color: #ff3333; margin-left: 10px; font-weight: bold; padding: 0 5px; opacity: 0.6; transition: 0.3s; }
+        .item-cut:hover { opacity: 1; transform: scale(1.2); }
+
+        /* ... baki CSS ... */
         .visualizer-container { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
         #v-canvas { position: absolute; width: 100%; height: 100%; }
         .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; transition: 0.1s ease; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
@@ -76,7 +93,7 @@
         
         <div class="header">
             <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
-            <div style="text-align:center;"><span style="font-weight: 900; font-size: 14px; color:var(--main-clr); letter-spacing: 1px;">MI PLAYER PRO</span><div style="display:flex; gap:8px; margin-top:8px;"><select id="speed-ctrl" class="tool-select" onchange="changeSpeed()"><option value="1">1.0x</option><option value="1.5">1.5x</option><option value="2">2.0x</option></select><button onclick="toggleView()" class="tool-select">🖥️ View</button></div></div>
+            <div style="text-align:center;"><span style="font-weight: 900; font-size: 14px; color:var(--main-clr); letter-spacing: 1px;">MI PLAYER PRO</span><div style="display:flex; gap:8px; margin-top:8px;"><select id="speed-ctrl" class="tool-select" onchange="changeSpeed()"><option value="1">1.0x</option><option value="1.5">1.5x</option><option value="2.0">2.0x</option></select><button onclick="toggleView()" class="tool-select">🖥️ View</button></div></div>
             <div onclick="openRegister()" style="cursor: pointer; font-size: 22px; filter: drop-shadow(0 0 5px var(--main-clr));">⚙️</div>
         </div>
         <div id="user-list"><div id="user-ul"></div></div>
@@ -94,7 +111,7 @@
                 <div style="display:flex; gap:12px; flex-wrap: wrap; justify-content: center; margin-top: 10px;"><label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; background:rgba(255,255,255,0.03);"><input type="file" multiple accept="audio/*" style="display:none;" onchange="loadFiles(event, 'music')">Music</label><label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; background:rgba(255,255,255,0.03);"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event, 'video')">Video</label><label style="border:1px solid var(--main-clr); padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; color:var(--main-clr); background:rgba(0,255,204,0.05);"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event, 'pdf')">Images</label></div>
                 <div style="font-size: 9px; color: #444; margin-top: 20px;">v16.0 Elite Edition | Protected by MI-Encryption</div>
             </div>
-            <div class="playlist-sidebar" id="playlist-side"><div style="padding:20px; color:var(--main-clr); font-weight:bold; border-bottom:1px solid #111; letter-spacing: 1px;">UP NEXT</div><div id="side-list-items"></div></div>
+            <div class="playlist-sidebar" id="playlist-side"><div style="padding:20px; color:var(--main-clr); font-weight:bold; border-bottom:1px solid #111; letter-spacing: 1px;">UP NEXT [CODE]</div><div id="side-list-items"></div></div>
         </div>
     </div>
 </div>
@@ -105,17 +122,6 @@
 </div>
 
 <script>
-    // --- PWA Service Worker Registration ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.log('SW Registration Failed', err));
-        });
-    }
-</script>
-    <script>
-    // --- Aapka Purana Sara JS Yahan Rahega ---
     let users = JSON.parse(localStorage.getItem('secureUsers')) || [{ name: "Guest", phone: "Offline", email: "none", pass: "", img: null }];
     let activeIdx = parseInt(localStorage.getItem('secureActiveIdx')) || 0;
     let playlist = [], trackIdx = 0, currentMode = 'music', rotation = 0;
@@ -162,11 +168,46 @@
             if (touchendX < touchstartX - 80) nextT(); 
             if (touchendX > touchstartX + 80) prevT(); 
         });
-        frame.addEventListener('dblclick', (e) => {
-            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
-                togglePlay();
-            }
+    }
+
+    // --- Updated Playlist Rendering Logic ---
+    function renderPlaylist() {
+        const list = document.getElementById('side-list-items'); 
+        list.innerHTML = '';
+        playlist.forEach((f, i) => {
+            const d = document.createElement('div'); 
+            d.className = `playlist-item ${i===trackIdx?'active':''}`;
+            
+            // Logic: Generate a simple pseudo-code from name
+            const fakeCode = `0x${Math.abs(f.name.hashCode()).toString(16).toUpperCase().substring(0, 8)}_${i}`;
+            
+            d.innerHTML = `
+                <div class="item-code" onclick="playT(${i})">> MI_${currentMode.toUpperCase()}::${fakeCode}</div>
+                <div class="item-cut" onclick="removeFromPlaylist(${i}, event)">✕</div>
+            `;
+            list.appendChild(d);
         });
+    }
+
+    // Helper for generating code-like string
+    String.prototype.hashCode = function() {
+        let hash = 0;
+        for (let i = 0; i < this.length; i++) {
+            hash = ((hash << 5) - hash) + this.charCodeAt(i);
+            hash |= 0;
+        }
+        return hash;
+    };
+
+    function removeFromPlaylist(idx, event) {
+        event.stopPropagation();
+        playlist.splice(idx, 1);
+        if(idx === trackIdx) {
+            activeMedia.pause();
+            document.getElementById('track-name').textContent = "Media Terminated";
+        }
+        if(trackIdx >= playlist.length) trackIdx = 0;
+        renderPlaylist();
     }
 
     function initVisualizer() {
@@ -293,15 +334,8 @@
         renderPlaylist(); if(playlist.length > 0) { playT(0); if(mode === 'pdf') document.getElementById('anim-selector-overlay').style.display = 'flex'; }
     }
 
-    function renderPlaylist() {
-        const list = document.getElementById('side-list-items'); list.innerHTML = '';
-        playlist.forEach((f, i) => {
-            const d = document.createElement('div'); d.className = `playlist-item ${i===trackIdx?'active':''}`;
-            d.textContent = f.name; d.onclick = () => playT(i); list.appendChild(d);
-        });
-    }
-
     function playT(i) {
+        if(i < 0 || i >= playlist.length) return;
         trackIdx = i; const url = URL.createObjectURL(playlist[i]);
         document.getElementById('track-name').textContent = playlist[i].name;
         if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); btnUpdate('⏸'); } 
