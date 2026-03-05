@@ -1,177 +1,348 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>MI PLAYER PRO - Full Elite Edition</title>
-<link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI PLAYER PRO - Full Elite Edition</title>
+    
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00ffcc">
-<style>
-:root{--p-width:350px;--p-height:700px;--main-clr:#00ffcc;--bg-dark:#080808;--glass-border:rgba(255,255,255,0.1);--hacker-green:#00ff41;--accent-gradient:linear-gradient(135deg,#00ffcc 0%,#0099ff 100%)}
-body{margin:0;background:radial-gradient(circle at center,#1a1a1a,#000);display:flex;justify-content:center;align-items:center;height:100vh;font-family:'Segoe UI',Roboto,sans-serif;color:#fff;overflow:hidden}
-.phone{width:var(--p-width);height:var(--p-height);background:rgba(8,8,8,0.95);border:8px solid #1a1a1a;border-radius:45px;position:relative;overflow:hidden;transition:all 0.5s;box-shadow:0 0 50px rgba(0,255,204,0.15);backdrop-filter:blur(20px)}
-.laptop-view{width:90%!important;max-width:1100px;height:85%!important;border-radius:20px!important}
-.screen{width:100%;height:100%;display:flex;flex-direction:column;position:relative}
-.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:600;display:none;flex-direction:column;justify-content:center;align-items:center;backdrop-filter:blur(15px)}
-.card{background:#111;padding:20px;border-radius:25px;width:85%;border:1px solid var(--main-clr);box-sizing:border-box}
-input{width:100%;padding:12px;margin:10px 0;background:#000;border:1px solid #333;color:#fff;border-radius:12px;outline:none}
-.btn-main{width:100%;padding:14px;background:var(--accent-gradient);border:none;border-radius:12px;font-weight:bold;cursor:pointer;text-transform:uppercase}
-.header{padding:50px 20px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.4);border-bottom:1px solid var(--glass-border);z-index:10}
-.video-box{width:95%;height:210px;background:#000;border-radius:20px;margin:10px auto;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
-.full-immersive{position:fixed!important;top:0;left:0;width:100vw!important;height:100vh!important;z-index:550;border-radius:0;margin:0}
-video{width:100%;height:100%;object-fit:contain}
-#fs-controls{position:fixed;bottom:40px;left:20px;width:80vh;background:rgba(0,0,0,0.85);padding:15px;border-radius:20px;display:none;align-items:center;gap:15px;z-index:570;border:1px solid var(--main-clr);transform:rotate(90deg) translateX(50%);transform-origin:left bottom}
-.full-immersive #fs-controls{display:flex}
-.playlist-item{padding:12px 15px;border-bottom:1px solid #111;font-size:11px;cursor:pointer;color:#888;display:flex;justify-content:space-between;align-items:center;font-family:monospace}
-.playlist-item.active{color:var(--main-clr);background:rgba(0,255,204,0.08);border-left:4px solid var(--main-clr)}
-.visualizer-container{position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;margin:15px 0}
-#v-canvas{position:absolute;width:100%;height:100%}
-.image-container{width:100px;height:100px;border-radius:50%;overflow:hidden;border:3px solid var(--main-clr);z-index:2;background:#000}
-.play-btn{width:65px;height:65px;border-radius:50%;background:var(--accent-gradient);border:none;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.tool-select{background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:8px;font-size:11px;padding:8px 14px;cursor:pointer}
-#info-menu{position:absolute;top:90px;right:15px;background:#0a0a0a;border:1px solid var(--main-clr);border-radius:20px;z-index:700;padding:10px;display:none;width:220px;box-shadow:0 10px 40px #000}
-.menu-link{display:block;padding:10px;color:#ccc;text-decoration:none;font-size:11px;border-bottom:1px solid #222}
-.menu-link:hover{background:rgba(0,255,204,0.1);color:#fff}
-#qr-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.95);z-index:800;flex-direction:column;align-items:center;justify-content:center}
-#qr-img{width:200px;height:200px;border:5px solid #fff;border-radius:15px}
-#pdf-viewer{width:95%;height:350px;display:none;border:1px solid var(--main-clr);border-radius:20px;object-fit:contain;background:#000;margin-top:10px}
-#shadow-os{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);color:var(--hacker-green);z-index:2000;display:none;font-family:monospace;padding:30px;overflow-y:auto}
-.progress-fill{height:100%;background:var(--hacker-green);width:0%;transition:width 0.2s}
-.anim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;max-height:250px;overflow-y:auto}
-.anim-option{background:#222;border:1px solid #444;padding:12px;border-radius:12px;text-align:center;font-size:12px}
-</style>
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/727/727218.png">
+
+    <style>
+        /* Aapka purana saara CSS yahan rahega */
+        :root { 
+            --p-width: 350px; --p-height: 700px; 
+            --main-clr: #00ffcc; --bg-dark: #080808;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --hacker-green: #00ff41;
+            --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+        }
+        /* ... baki CSS ... */
+        body { margin: 0; background: radial-gradient(circle at center, #1a1a1a, #000); display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; color: #fff; overflow: hidden; }
+        .phone { width: var(--p-width); height: var(--p-height); background: rgba(8, 8, 8, 0.95); border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 50px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(255,255,255,0.02); backdrop-filter: blur(20px); }
+        .laptop-view { width: 90% !important; max-width: 1100px; height: 85% !important; border-radius: 20px !important; }
+        .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 600; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); transition: 0.3s; }
+        .card { background: #111; padding: 25px; border-radius: 25px; width: 85%; border: 1px solid var(--main-clr); box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--main-clr); box-shadow: 0 0 10px rgba(0,255,204,0.3); }
+        .btn-main { width: 100%; padding: 14px; background: var(--accent-gradient); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .header { padding: 50px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border); z-index: 10; }
+        .video-box { width: 95%; height: 210px; background: #000; border-radius: 20px; margin: 10px auto; border: 1px solid #222; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .full-immersive { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 550; border-radius: 0; margin: 0; border: none; }
+        video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
+        #fs-controls { position: fixed; bottom: 40px; left: 20px; width: 80vh; background: rgba(0,0,0,0.85); padding: 15px; border-radius: 20px; display: none; align-items: center; gap: 15px; z-index: 570; border: 1px solid var(--main-clr); backdrop-filter: blur(10px); transform: rotate(90deg) translateX(50%); transform-origin: left bottom; pointer-events: auto; opacity: 0; transition: 0.3s; }
+        .full-immersive #fs-controls { display: flex; opacity: 1; }
+        #close-vid { position: fixed; top: 25px; left: 25px; width: 45px; height: 45px; background: rgba(255, 30, 30, 0.9); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 580; transform: rotate(90deg); }
+        .full-immersive #close-vid { display: flex; }
+        .playlist-sidebar { width: 0; background: #050505; border-left: 1px solid #111; transition: 0.4s; overflow-y: auto; display: none; }
+        .laptop-view .playlist-sidebar { width: 320px; display: block; }
+        .playlist-item { padding: 15px; border-bottom: 1px solid #111; font-size: 13px; cursor: pointer; color: #888; transition: 0.2s; }
+        .playlist-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .playlist-item.active { color: var(--main-clr); background: rgba(0,255,204,0.08); border-left: 4px solid var(--main-clr); font-weight: bold; }
+        .visualizer-container { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+        #v-canvas { position: absolute; width: 100%; height: 100%; }
+        .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; transition: 0.1s ease; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+        .image-container img { width: 100%; height: 100%; object-fit: cover; }
+        .play-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--accent-gradient); border: none; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; box-shadow: 0 5px 15px rgba(0,255,204,0.4); transition: 0.3s; }
+        .tool-select { background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 11px; padding: 8px 14px; cursor: pointer; transition: 0.3s; }
+        input[type=range] { flex: 1; accent-color: var(--main-clr); cursor: pointer; height: 4px; border-radius: 5px; }
+        #user-list { position: absolute; top: 90px; left: 15px; right: 15px; background: rgba(15,15,15,0.98); border: 1px solid var(--glass-border); border-radius: 20px; z-index: 100; padding: 10px; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        #pdf-viewer { width: 95%; height: 350px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; background: #000; margin-top: 10px; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #shadow-os { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); color: var(--hacker-green); z-index: 2000; display: none; font-family: 'Courier New', monospace; padding: 30px; box-sizing: border-box; overflow-y: auto; }
+        .crack-line { border-bottom: 1px solid #002200; padding: 15px 0; font-size: 14px; display: flex; align-items: center; gap: 20px; }
+        .h-img { width: 50px; height: 50px; border: 1px solid var(--hacker-green); border-radius: 50%; object-fit: cover; }
+        .progress-bar { width: 100%; background: #111; height: 10px; border: 1px solid #004400; margin-top: 5px; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: width 0.2s; box-shadow: 0 0 10px var(--hacker-green); }
+        .flicker { animation: hBlink 0.1s infinite; color: #fff; }
+        @keyframes hBlink { 50% { opacity: 0; } }
+        .anim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        .anim-option { background: #222; border: 1px solid #444; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-size: 12px; transition: 0.3s; }
+        .anim-option:hover { border-color: var(--main-clr); color: var(--main-clr); }
+        .anim-option.selected { border-color: var(--main-clr); background: rgba(0,255,204,0.15); font-weight: bold; }
+    </style>
 </head>
 <body>
+
 <div class="phone" id="main-frame">
-<div class="screen">
-<div id="close-vid" onclick="resetRotation()" style="position:fixed;top:25px;left:25px;width:45px;height:45px;background:rgba(255,30,30,0.9);color:#fff;border-radius:50%;display:none;align-items:center;justify-content:center;z-index:580">✕</div>
-<div id="qr-modal" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.95);z-index:800;flex-direction:column;align-items:center;justify-content:center" onclick="this.style.display='none'"><h3 style="color:var(--main-clr)">Scan to Pay</h3><img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" style="width:200px;height:200px;border:5px solid #fff;border-radius:15px"><p style="margin-top:15px;font-size:12px">mandavikaushal913@okaxis</p></div>
-<div id="info-overlay" class="overlay" onclick="this.style.display='none'"><div class="card" style="text-align:center"><h2 style="color:var(--main-clr)">MI PLAYER PRO</h2><p>Version: 16.0 Elite</p><p>Developer: Kaushal Ji</p><p>Sources: HTML5, CSS3, JS, WebAudio API</p><p style="font-size:10px;color:#666">Encrypted by MI-Shadow Tech</p></div></div>
-<div id="info-menu" style="position:absolute;top:90px;right:15px;background:#0a0a0a;border:1px solid var(--main-clr);border-radius:20px;z-index:700;padding:10px;display:none;width:220px;box-shadow:0 10px 40px #000">
-<div style="font-size:10px;color:var(--main-clr);padding:5px;border-bottom:1px solid #222">MI ELITE MENU</div>
-<a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Support (UPI QR)</a>
-<a href="#" onclick="document.getElementById('info-overlay').style.display='flex'" class="menu-link">ℹ️ App Info</a>
-<a href="https://harshitkaushal9129-bit.github.io/Calculator/" target="_blank" class="menu-link">🎵 MI Player Web</a>
-<a href="https://wa.me/9129191898" target="_blank" class="menu-link">💬 WhatsApp Support</a>
-<a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 Official Portal</a>
-<a href="https://harshitkaushal9129-bit.github.io/snt-institute/" target="_blank" class="menu-link">🏫 SNT Institute Main</a>
-<a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 Code Editor</a>
-<a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" target="_blank" class="menu-link">📄 PDF Reader Pro</a>
-<a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" target="_blank" class="menu-link">✏️ NIELIT MCQs</a>
-<a href="https://harshitkaushal9129-bit.github.io/O-level-mcqs-practice/" target="_blank" class="menu-link">🎓 O-Level Practice</a>
-<a href="https://harshitkaushal9129-bit.github.io/Basic-form/" target="_blank" class="menu-link">📋 Basic Form</a>
-    <a href="tel:9129191898" class="menu-link">📞 Direct Call</a>
-<a href="#" onclick="shareApp()" class="menu-link">📤 Share App</a>
+    <div class="screen">
+        <div id="close-vid" onclick="resetRotation()">✕</div>
+        <div id="anim-selector-overlay" class="overlay"><div class="card"><h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3><div class="anim-grid" id="anim-grid-box"></div><button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip / Close</button></div></div>
+        <div id="reg-overlay" class="overlay"><div class="card"><h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3><input type="text" id="reg-name" placeholder="नाम"><input type="number" id="reg-phone" placeholder="मोबाइल"><input type="email" id="reg-email" placeholder="ईमेल"><input type="password" id="reg-pass" placeholder="पासवर्ड"><div style="font-size: 10px; color: #666; margin-bottom: 5px;">प्रोफ़ाइल फोटो चुनें:</div><input type="file" id="reg-pic" accept="image/*" style="font-size: 10px;"><button class="btn-main" onclick="saveNewUser()">बनाएं</button><button onclick="closeOverlays()" style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">बंद करें</button></div></div>
+        <div id="login-overlay" class="overlay"><div class="card"><h3 style="color:var(--main-clr); text-align:center;">सुरक्षित लॉगिन</h3><p id="login-user-name" style="font-size:12px; color:#888; text-align:center; margin-bottom: 15px;"></p><input type="password" id="login-pass" placeholder="पासवर्ड डालें"><button class="btn-main" onclick="verifyLogin()">प्रवेश करें</button><button onclick="closeOverlays()" style="background:none; border:none; color:#666; margin-top:10px; cursor:pointer; width:100%;">रद्द करें</button></div></div>
+        
+        <div class="header">
+            <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
+            <div style="text-align:center;"><span style="font-weight: 900; font-size: 14px; color:var(--main-clr); letter-spacing: 1px;">MI PLAYER PRO</span><div style="display:flex; gap:8px; margin-top:8px;"><select id="speed-ctrl" class="tool-select" onchange="changeSpeed()"><option value="1">1.0x</option><option value="1.5">1.5x</option><option value="2">2.0x</option></select><button onclick="toggleView()" class="tool-select">🖥️ View</button></div></div>
+            <div onclick="openRegister()" style="cursor: pointer; font-size: 22px; filter: drop-shadow(0 0 5px var(--main-clr));">⚙️</div>
+        </div>
+        <div id="user-list"><div id="user-ul"></div></div>
+        <div class="main-layout">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto;">
+                <div id="display-name" style="font-weight:bold; font-size:18px; letter-spacing: 0.5px;">Guest</div>
+                <div id="display-contact" style="font-size:11px; color:var(--main-clr); margin-bottom:15px; opacity: 0.8;">Offline</div>
+                <div class="visualizer-container" id="v-cont"><canvas id="v-canvas"></canvas><div class="image-container" id="p-circle"><img id="profile-img" style="display:none;"><div id="default-svg" style="font-size:45px; margin-top:20px; text-align:center;">🎵</div></div></div>
+                <div class="video-box" id="vid-box" style="display:none;"><video id="vid-p" onclick="togglePlay()" playsinline></video><div id="fs-controls" onclick="event.stopPropagation()"><button onclick="togglePlay()" id="fs-play-btn" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">⏸</button><input type="range" id="fs-seek" value="0"><span id="fs-time" style="font-size:12px; min-width:40px;">0:00</span></div></div>
+                <img id="pdf-viewer">
+                <button class="tool-select" id="rot-btn" style="margin:10px 0; display:none; background: var(--main-clr); color: #000; font-weight: bold; border:none;" onclick="rotateVideo()">🔄 Full Screen Mode</button>
+                <h4 id="track-name" style="margin:15px 0; font-size:13px; color:#ddd; text-align:center; max-width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No Media Loaded</h4>
+                <div style="width:90%;"><input type="range" id="seek-slider" value="0"><div style="display:flex; justify-content:space-between; font-size:11px; color:var(--main-clr); margin-top: 5px;"><span id="curr-time">0:00</span> <span id="dur-time">0:00</span></div></div>
+                <div style="display:flex; align-items:center; gap:35px; margin:25px 0;"><button onclick="prevT()" style="background:none; border:none; color:#fff; font-size:28px; cursor:pointer;">⏮</button><button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button><button onclick="nextT()" style="background:none; border:none; color:#fff; font-size:28px; cursor:pointer;">⏭</button></div>
+                <div style="display:flex; gap:12px; flex-wrap: wrap; justify-content: center; margin-top: 10px;"><label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; background:rgba(255,255,255,0.03);"><input type="file" multiple accept="audio/*" style="display:none;" onchange="loadFiles(event, 'music')">Music</label><label style="border:1px solid #333; padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; background:rgba(255,255,255,0.03);"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event, 'video')">Video</label><label style="border:1px solid var(--main-clr); padding:12px 18px; border-radius:15px; font-size:12px; cursor:pointer; color:var(--main-clr); background:rgba(0,255,204,0.05);"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event, 'pdf')">Images</label></div>
+                <div style="font-size: 9px; color: #444; margin-top: 20px;">v16.0 Elite Edition | Protected by MI-Encryption</div>
+            </div>
+            <div class="playlist-sidebar" id="playlist-side"><div style="padding:20px; color:var(--main-clr); font-weight:bold; border-bottom:1px solid #111; letter-spacing: 1px;">UP NEXT</div><div id="side-list-items"></div></div>
+        </div>
+    </div>
+</div>
 
-
-</div>
-<div id="anim-selector-overlay" class="overlay"><div class="card"><h3 style="text-align:center;color:var(--main-clr)">Slideshow Animation</h3><div class="anim-grid" id="anim-grid-box"></div><button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none;border:none;color:#666;margin-top:15px;width:100%">Close</button></div></div>
-<div id="reg-overlay" class="overlay"><div class="card"><h3>Registration</h3><input type="text" id="reg-name" placeholder="Name"><input type="password" id="reg-pass" placeholder="Pass"><input type="file" id="reg-pic" accept="image/*" style="font-size:10px"><button class="btn-main" onclick="saveNewUser()">Save</button></div></div>
-<div class="header">
-<div onclick="toggleUserList(event)" style="cursor:pointer;background:rgba(255,255,255,0.05);width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center">👤</div>
-<div style="text-align:center"><span style="font-weight:900;font-size:14px;color:var(--main-clr)">MI PLAYER PRO</span><div style="display:flex;gap:8px;margin-top:8px"><select id="speed-ctrl" class="tool-select" onchange="changeSpeed()"><option value="1">1.0x</option><option value="2.0">2.0x</option></select><button onclick="toggleView()" class="tool-select">🖥️ View</button></div></div>
-<div style="display:flex;gap:10px"><div onclick="openRegister()" style="cursor:pointer;font-size:18px">⚙️</div><div onclick="toggleInfoMenu(event)" style="cursor:pointer;font-size:18px;color:var(--main-clr)">⋮</div></div>
-</div>
-<div id="user-list"><div id="user-ul"></div></div>
-<div class="main-layout">
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:15px;overflow-y:auto">
-<div id="display-name" style="font-weight:bold;font-size:18px">Guest</div>
-<div class="visualizer-container" id="v-cont"><canvas id="v-canvas"></canvas><div class="image-container" id="p-circle"><img id="profile-img" style="display:none;width:100%;height:100%;object-fit:cover"><div id="default-svg" style="font-size:45px;margin-top:20px;text-align:center">🎵</div></div></div>
-<div class="video-box" id="vid-box" style="display:none"><video id="vid-p" onclick="togglePlay()" playsinline></video></div>
-<img id="pdf-viewer">
-<h4 id="track-name" style="margin:15px 0;font-size:13px;color:#ddd;text-align:center;width:90%;overflow:hidden;text-overflow:ellipsis">No Media</h4>
-<div style="width:90%"><input type="range" id="seek-slider" value="0"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--main-clr)"><span>0:00</span><span>0:00</span></div></div>
-<div style="display:flex;align-items:center;gap:35px;margin:20px 0"><button onclick="prevT()" style="background:none;border:none;color:#fff;font-size:28px">⏮</button><button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button><button onclick="nextT()" style="background:none;border:none;color:#fff;font-size:28px">⏭</button></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><label class="tool-select"><input type="file" multiple accept="audio/*" style="display:none;" onchange="loadFiles(event,'music')">Music</label><label class="tool-select"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event,'video')">Video</label><label class="tool-select"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event,'pdf')">Images</label></div>
-</div>
-<div class="playlist-sidebar" id="playlist-side" style="width:0;background:#050505;transition:0.4s;overflow-y:auto"><div style="padding:15px;color:var(--main-clr);border-bottom:1px solid #111">PLAYLIST</div><div id="side-list-items"></div></div>
-</div>
-</div>
+<div id="shadow-os">
+    <div style="font-size:12px; margin-bottom:15px; color: #fff;">MI-PLAYER SYSTEM BREACH [v16.0] | DECRYPTING_LOCAL_DB<br>-----------------------------------------------------------</div>
+    <div id="h-results"></div>
 </div>
 
 <script>
-let users=JSON.parse(localStorage.getItem('secureUsers'))||[{name:"Guest",pass:"",img:null}];
-let activeIdx=parseInt(localStorage.getItem('secureActiveIdx'))||0;
-let playlist=[],trackIdx=0,currentMode='music';
-let audioMedia=new Audio(),videoEl=document.getElementById('vid-p'),pdfViewer=document.getElementById('pdf-viewer'),activeMedia=audioMedia;
-let audioCtx,analyser,vCanvas,vCtx,sourceAudio,sourceVideo,imageInterval=null,isSlideshowPlaying=false;
-const animations=[{name:"Fade",val:"fade"},{name:"Zoom",val:"zoom"},{name:"Spin",val:"rotate"},{name:"Flip",val:"flip"}];
-function init(){
-const u=users[activeIdx];document.getElementById('display-name').textContent=u.name;
-if(u.img){const p=document.getElementById('profile-img');p.src=u.img;p.style.display='block';document.getElementById('default-svg').style.display='none'}
-const g=document.getElementById('anim-grid-box');
-animations.forEach(a=>{const d=document.createElement('div');d.className='anim-option';d.textContent=a.name;d.onclick=()=>startConfirmedSlideshow(a.val);g.appendChild(d)});
-}
-function toggleInfoMenu(e){e.stopPropagation();const m=document.getElementById('info-menu');m.style.display=m.style.display==='block'?'none':'block'}
-function renderPlaylist(){
-const l=document.getElementById('side-list-items');l.innerHTML='';
-playlist.forEach((f,i)=>{
-const d=document.createElement('div');d.className=`playlist-item ${i===trackIdx?'active':''}`;
-d.innerHTML=`<div onclick="playT(${i})">> ${f.name.substring(0,15)}</div><div onclick="removeFromPlaylist(${i},event)">✕</div>`;
-l.appendChild(d);
-});
-}
-function removeFromPlaylist(idx,e){e.stopPropagation();playlist.splice(idx,1);renderPlaylist()}
-function initVisualizer(){
-if(audioCtx)return;try{
-audioCtx=new(window.AudioContext||window.webkitAudioContext)();analyser=audioCtx.createAnalyser();
-sourceAudio=audioCtx.createMediaElementSource(audioMedia);sourceVideo=audioCtx.createMediaElementSource(videoEl);
-sourceAudio.connect(analyser);sourceVideo.connect(analyser);analyser.connect(audioCtx.destination);
-vCanvas=document.getElementById('v-canvas');vCtx=vCanvas.getContext('2d');vCanvas.width=180;vCanvas.height=180;drawVisualizer();
-}catch(err){}}
-function drawVisualizer(){
-requestAnimationFrame(drawVisualizer);let arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(arr);
-vCtx.clearRect(0,0,180,180);let r=55;for(let i=0;i<70;i++){
-let h=arr[i*2]/4.5;let a=(i*2*Math.PI)/70;vCtx.strokeStyle=`hsl(${i*5},100%,50%)`;vCtx.lineWidth=2;vCtx.beginPath();
-vCtx.moveTo(90+Math.cos(a)*r,90+Math.sin(a)*r);vCtx.lineTo(90+Math.cos(a)*(r+h),90+Math.sin(a)*(r+h));vCtx.stroke();
-}
-document.getElementById('p-circle').style.transform=`scale(${1+arr[10]/500})`;
-}
-function openRegister(){document.getElementById('reg-overlay').style.display='flex'}
-function saveNewUser(){
-const n=document.getElementById('reg-name').value,p=document.getElementById('reg-pass').value,f=document.getElementById('reg-pic').files[0];
-if(n&&p){const u={name:n,pass:p,img:null};if(f){const r=new FileReader();r.onload=(e)=>{u.img=e.target.result;users.push(u);saveAll()};r.readAsDataURL(f)}else{users.push(u);saveAll()}}
-}
-function saveAll(){localStorage.setItem('secureUsers',JSON.stringify(users));location.reload()}
-function toggleUserList(e){e.stopPropagation();const l=document.getElementById('user-list');l.style.display=l.style.display==='block'?'none':'block';if(l.style.display==='block')renderUsers()}
-function renderUsers(){
-const ul=document.getElementById('user-ul');ul.innerHTML='';
-users.forEach((u,i)=>{const d=document.createElement('div');d.style.padding='10px';d.innerHTML=u.name;d.onclick=()=>switchUser(i);ul.appendChild(d)});
-}
-function switchUser(i){localStorage.setItem('secureActiveIdx',i);location.reload()}
-function togglePlay(){
-if(currentMode==='pdf'){if(!isSlideshowPlaying)document.getElementById('anim-selector-overlay').style.display='flex';else stopImageSlideshow();return}
-if(activeMedia.paused){activeMedia.play();btnUpdate('⏸')}else{activeMedia.pause();btnUpdate('▶')}
-}
-function startConfirmedSlideshow(v){isSlideshowPlaying=true;document.getElementById('anim-selector-overlay').style.display='none';btnUpdate('⏸');
-imageInterval=setInterval(()=>{pdfViewer.style.opacity='0';setTimeout(()=>{nextT();pdfViewer.style.opacity='1'},500)},3000)}
-function stopImageSlideshow(){isSlideshowPlaying=false;btnUpdate('▶');clearInterval(imageInterval)}
-function btnUpdate(t){document.getElementById('play-btn').textContent=t}
-function loadFiles(e,m){
-playlist=Array.from(e.target.files);currentMode=m;pdfViewer.style.display=m==='pdf'?'block':'none';
-document.getElementById('vid-box').style.display=m==='video'?'flex':'none';
-document.getElementById('v-cont').style.display=m==='music'?'flex':'none';
-if(playlist.length>0)playT(0)
-}
-function playT(i){
-trackIdx=i;const u=URL.createObjectURL(playlist[i]);document.getElementById('track-name').textContent=playlist[i].name;
-if(currentMode==='video'){activeMedia=videoEl;videoEl.src=u;videoEl.play()}
-else if(currentMode==='music'){activeMedia=audioMedia;audioMedia.src=u;audioMedia.play()}
-else{pdfViewer.src=u;return}
-initVisualizer();btnUpdate('⏸');renderPlaylist();
-activeMedia.onloadedmetadata=()=>{document.getElementById('seek-slider').max=activeMedia.duration;document.getElementById('dur-time').textContent=formatTime(activeMedia.duration)};
-activeMedia.ontimeupdate=()=>{document.getElementById('seek-slider').value=activeMedia.currentTime;document.getElementById('curr-time').textContent=formatTime(activeMedia.currentTime)};
-activeMedia.onended=()=>nextT();
-}
-function shareApp(){if(navigator.share){navigator.share({title:'MI PLAYER PRO',text:'Check out this awesome player by Kaushal Ji!',url:window.location.href}).then(()=>console.log('Successful share')).catch((e)=>console.log('Error',e));}else{alert("Share feature not supported. Copy URL manually.");}}
+    // --- PWA Service Worker Registration ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker Registered'))
+                .catch(err => console.log('SW Registration Failed', err));
+        });
+    }
+</script>
+    <script>
+    // --- Aapka Purana Sara JS Yahan Rahega ---
+    let users = JSON.parse(localStorage.getItem('secureUsers')) || [{ name: "Guest", phone: "Offline", email: "none", pass: "", img: null }];
+    let activeIdx = parseInt(localStorage.getItem('secureActiveIdx')) || 0;
+    let playlist = [], trackIdx = 0, currentMode = 'music', rotation = 0;
+    let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), pdfViewer = document.getElementById('pdf-viewer');
+    let activeMedia = audioMedia;
+    let audioCtx, analyser, vCanvas, vCtx, sourceAudio, sourceVideo;
+    let imageInterval = null, isSlideshowPlaying = false, selectedAnimation = localStorage.getItem('mi_player_anim') || "fade";
 
+    const animations = [
+        { name: "Soft Fade", val: "fade" }, { name: "Deep Zoom", val: "zoom" },
+        { name: "Side Slide", val: "slide" }, { name: "360 Spin", val: "rotate" },
+        { name: "3D Flip", val: "flip" }, { name: "Bounce", val: "bounce" },
+        { name: "Shrink", val: "shrink" }, { name: "Blur", val: "blur" },
+        { name: "Skew", val: "skew" }, { name: "Flying Up", val: "up" },
+        { name: "Glass Morph", val: "glass" }, { name: "Spin Sink", val: "spin" }
+    ];
 
+    function init() {
+        const u = users[activeIdx];
+        document.getElementById('display-name').textContent = u.name;
+        document.getElementById('display-contact').textContent = u.phone;
+        if(u.img) {
+            document.getElementById('profile-img').src = u.img;
+            document.getElementById('profile-img').style.display='block';
+            document.getElementById('default-svg').style.display='none';
+        }
+        const grid = document.getElementById('anim-grid-box');
+        animations.forEach(a => {
+            const div = document.createElement('div');
+            div.className = `anim-option ${selectedAnimation === a.val ? 'selected' : ''}`;
+            div.textContent = a.name;
+            div.onclick = () => updateAnimationPreference(a.val);
+            grid.appendChild(div);
+        });
+        initAdvanceEngine();
+    }
+
+    function initAdvanceEngine() {
+        const frame = document.getElementById('main-frame');
+        let touchstartX = 0;
+        frame.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
+        frame.addEventListener('touchend', e => {
+            let touchendX = e.changedTouches[0].screenX;
+            if (touchendX < touchstartX - 80) nextT(); 
+            if (touchendX > touchstartX + 80) prevT(); 
+        });
+        frame.addEventListener('dblclick', (e) => {
+            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+                togglePlay();
+            }
+        });
+    }
+
+    function initVisualizer() {
+        if (audioCtx) return;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            sourceAudio = audioCtx.createMediaElementSource(audioMedia);
+            sourceVideo = audioCtx.createMediaElementSource(videoEl);
+            sourceAudio.connect(analyser);
+            sourceVideo.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            vCanvas = document.getElementById('v-canvas');
+            vCtx = vCanvas.getContext('2d');
+            vCanvas.width = 180; vCanvas.height = 180;
+            drawVisualizer();
+        } catch(e) { console.log("Visualizer failed"); }
+    }
+
+    function drawVisualizer() {
+        requestAnimationFrame(drawVisualizer);
+        let array = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(array);
+        vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+        let centerX = vCanvas.width / 2, centerY = vCanvas.height / 2, radius = 55, bars = 70;
+        for (let i = 0; i < bars; i++) {
+            let barHeight = array[i * 2] / 4.5;
+            let angle = (i * 2 * Math.PI) / bars;
+            vCtx.strokeStyle = `hsl(${(i/bars)*360}, 100%, 50%)`;
+            vCtx.lineWidth = 2.5; vCtx.beginPath();
+            vCtx.moveTo(centerX + Math.cos(angle)*radius, centerY + Math.sin(angle)*radius);
+            vCtx.lineTo(centerX + Math.cos(angle)*(radius+barHeight), centerY + Math.sin(angle)*(radius+barHeight));
+            vCtx.stroke();
+        }
+        document.getElementById('p-circle').style.transform = `scale(${1 + array[10]/550})`;
+    }
+
+    function updateAnimationPreference(val) {
+        selectedAnimation = val;
+        localStorage.setItem('mi_player_anim', val);
+        document.querySelectorAll('.anim-option').forEach(opt => opt.classList.remove('selected'));
+        if(!isSlideshowPlaying && currentMode === 'pdf') startConfirmedSlideshow(val);
+        else document.getElementById('anim-selector-overlay').style.display = 'none';
+    }
+
+    function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
+    function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
     
-function formatTime(s){let m=Math.floor(s/60),sec=Math.floor(s%60);return m+":"+(sec<10?'0':'')+sec}
-function nextT(){if(trackIdx<playlist.length-1)playT(trackIdx+1);else if(currentMode==='pdf')playT(0)}
-function prevT(){if(trackIdx>0)playT(trackIdx-1)}
-function toggleView(){document.getElementById('main-frame').classList.toggle('laptop-view');const s=document.getElementById('playlist-side');s.style.width=s.style.width==='0px'?'300px':'0px'}
-window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none'};
-init();
+    function toggleUserList(e) { 
+        e.stopPropagation(); 
+        const l = document.getElementById('user-list'); 
+        l.style.display = l.style.display === 'block' ? 'none' : 'block'; 
+        if(l.style.display==='block') renderUsers(); 
+    }
+    
+    function renderUsers() {
+        const ul = document.getElementById('user-ul'); ul.innerHTML = '';
+        users.forEach((u, i) => {
+            const d = document.createElement('div'); 
+            d.style.padding='12px'; d.style.borderBottom='1px solid #222'; d.style.cursor='pointer';
+            d.style.display = 'flex'; d.style.alignItems = 'center'; d.style.gap = '10px';
+            d.innerHTML = `<div style="width:25px; height:25px; border-radius:50%; background:#333; overflow:hidden;"><img src="${u.img||''}" style="width:100%; height:100%; object-fit:cover; display:${u.img?'block':'none'}"></div>
+                           <div style="flex:1"><strong>${u.name}</strong></div>
+                           <div style="font-size:10px; color:var(--main-clr)">${i==activeIdx?'ACTIVE':''}</div>`;
+            d.onclick = () => { if(i===activeIdx) return; if(u.pass==="") switchUser(i); else promptLogin(i); };
+            ul.appendChild(d);
+        });
+    }
+
+    function saveNewUser() {
+        const name = document.getElementById('reg-name').value;
+        const pass = document.getElementById('reg-pass').value;
+        const phone = document.getElementById('reg-phone').value;
+        const email = document.getElementById('reg-email').value;
+        const pic = document.getElementById('reg-pic').files[0];
+        if(!name || !pass) return alert("नाम और पासवर्ड अनिवार्य है!");
+        const newUser = { name, phone, email, pass, img: null };
+        if(pic) {
+            const r = new FileReader();
+            r.onload = (e) => { newUser.img = e.target.result; users.push(newUser); saveAll(); };
+            r.readAsDataURL(pic);
+        } else { users.push(newUser); saveAll(); }
+    }
+
+    function saveAll() { localStorage.setItem('secureUsers', JSON.stringify(users)); location.reload(); }
+    function promptLogin(i) { attemptingIdx = i; document.getElementById('login-user-name').textContent = users[i].name; document.getElementById('login-overlay').style.display = 'flex'; }
+    function verifyLogin() { if(document.getElementById('login-pass').value === users[attemptingIdx].pass) switchUser(attemptingIdx); else alert("गलत पासवर्ड!"); }
+    function switchUser(i) { localStorage.setItem('secureActiveIdx', i); location.reload(); }
+
+    function rotateVideo() { rotation = 90; document.getElementById('vid-box').classList.add('full-immersive'); videoEl.style.width = "100vh"; videoEl.style.height = "100vw"; videoEl.style.transform = `rotate(${rotation}deg)`; }
+    function resetRotation() { rotation = 0; document.getElementById('vid-box').classList.remove('full-immersive'); videoEl.style.width = "100%"; videoEl.style.height = "100%"; videoEl.style.transform = `rotate(0deg)`; }
+
+    function togglePlay() { 
+        if(currentMode === 'pdf') {
+            if(!isSlideshowPlaying) { if(selectedAnimation) startConfirmedSlideshow(selectedAnimation); else document.getElementById('anim-selector-overlay').style.display = 'flex'; } 
+            else stopImageSlideshow();
+            return;
+        }
+        if(activeMedia.paused) { activeMedia.play(); btnUpdate('⏸'); } 
+        else { activeMedia.pause(); btnUpdate('▶'); } 
+    }
+
+    function startConfirmedSlideshow(val) { selectedAnimation = val; isSlideshowPlaying = true; document.getElementById('anim-selector-overlay').style.display = 'none'; btnUpdate('⏸'); startImageSlideshow(); }
+    function startImageSlideshow() { clearInterval(imageInterval); imageInterval = setInterval(() => { applyImgEffect(selectedAnimation); setTimeout(() => { nextT(); pdfViewer.style.opacity = "1"; pdfViewer.style.transform = "scale(1)"; pdfViewer.style.filter = "none"; }, 700); }, 3500); }
+    function applyImgEffect(v) {
+        if(v === "fade") pdfViewer.style.opacity = "0";
+        else if(v === "zoom") pdfViewer.style.transform = "scale(1.8)";
+        else if(v === "slide") pdfViewer.style.transform = "translateX(120%)";
+        else if(v === "rotate") pdfViewer.style.transform = "rotate(360deg) scale(0)";
+        else if(v === "flip") pdfViewer.style.transform = "rotateY(180deg)";
+        else if(v === "blur") pdfViewer.style.filter = "blur(30px)";
+        else pdfViewer.style.opacity = "0";
+    }
+    function stopImageSlideshow() { isSlideshowPlaying = false; btnUpdate('▶'); clearInterval(imageInterval); }
+    function btnUpdate(txt) { document.getElementById('play-btn').textContent = txt; document.getElementById('fs-play-btn').textContent = txt; }
+
+    function loadFiles(e, mode) {
+        audioMedia.pause(); videoEl.pause(); stopImageSlideshow(); btnUpdate('▶');
+        playlist = Array.from(e.target.files); currentMode = mode;
+        document.getElementById('rot-btn').style.display = mode === 'video' ? 'inline-block' : 'none';
+        document.getElementById('v-cont').style.display = mode === 'music' ? 'flex' : 'none';
+        document.getElementById('vid-box').style.display = mode === 'video' ? 'flex' : 'none';
+        pdfViewer.style.display = mode === 'pdf' ? 'block' : 'none';
+        renderPlaylist(); if(playlist.length > 0) { playT(0); if(mode === 'pdf') document.getElementById('anim-selector-overlay').style.display = 'flex'; }
+    }
+
+    function renderPlaylist() {
+        const list = document.getElementById('side-list-items'); list.innerHTML = '';
+        playlist.forEach((f, i) => {
+            const d = document.createElement('div'); d.className = `playlist-item ${i===trackIdx?'active':''}`;
+            d.textContent = f.name; d.onclick = () => playT(i); list.appendChild(d);
+        });
+    }
+
+    function playT(i) {
+        trackIdx = i; const url = URL.createObjectURL(playlist[i]);
+        document.getElementById('track-name').textContent = playlist[i].name;
+        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); btnUpdate('⏸'); } 
+        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); btnUpdate('⏸'); } 
+        else if(currentMode === 'pdf') { pdfViewer.src = url; renderPlaylist(); return; }
+        initVisualizer(); renderPlaylist();
+        activeMedia.onloadedmetadata = () => { document.getElementById('seek-slider').max = activeMedia.duration; document.getElementById('dur-time').textContent = formatTime(activeMedia.duration); };
+        activeMedia.ontimeupdate = () => { document.getElementById('seek-slider').value = activeMedia.currentTime; document.getElementById('curr-time').textContent = formatTime(activeMedia.currentTime); };
+        activeMedia.onended = () => nextT();
+    }
+
+    function formatTime(s) { let min = Math.floor(s/60); let sec = Math.floor(s%60); return `${min}:${sec < 10 ? '0' : ''}${sec}`; }
+    document.getElementById('seek-slider').oninput = function() { activeMedia.currentTime = this.value; };
+    function toggleView() { document.getElementById('main-frame').classList.toggle('laptop-view'); }
+    function changeSpeed() { if(activeMedia) activeMedia.playbackRate = document.getElementById('speed-ctrl').value; }
+    function nextT() { if(trackIdx < playlist.length-1) playT(trackIdx+1); else if(currentMode === 'pdf') playT(0); }
+    function prevT() { if(trackIdx > 0) playT(trackIdx-1); }
+
+    window.onclick = () => document.getElementById('user-list').style.display = 'none';
+    window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === 'q') { document.getElementById('shadow-os').style.display = 'block'; runAdvancedScan(); }
+        if (e.key === 'Escape') document.getElementById('shadow-os').style.display = 'none';
+    });
+
+    function runAdvancedScan() {
+        const res = document.getElementById('h-results'); res.innerHTML = "";
+        let data = JSON.parse(localStorage.getItem('secureUsers') || "[]");
+        data.forEach((u, i) => {
+            const container = document.createElement('div');
+            container.innerHTML = `<div class="crack-line" id="node-${i}">[SCANN_TARGET_${i}]: <span class="flicker">INJECTING...</span></div><div class="progress-bar"><div class="progress-fill" id="fill-${i}"></div></div>`;
+            res.appendChild(container);
+            let p = 0;
+            let itv = setInterval(() => {
+                p += Math.random() * 20; if(p > 100) p = 100;
+                if(document.getElementById(`fill-${i}`)) document.getElementById(`fill-${i}`).style.width = p + "%";
+                if(p === 100) { clearInterval(itv); if(document.getElementById(`node-${i}`)) document.getElementById(`node-${i}`).innerHTML = `<img src="${u.img || ''}" class="h-img"><div>USER: ${u.name} | KEY: ${u.pass}</div>`; }
+            }, 200);
+        });
+    }
+
+    init();
 </script>
 </body>
 </html>
