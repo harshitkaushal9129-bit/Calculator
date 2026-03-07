@@ -251,7 +251,31 @@ input {
     <div style="font-size:12px; margin-bottom:15px;">MI-PLAYER SYSTEM BREACH [v16.0] | DECRYPTING...<br>-----------------------------------------------------------</div>
     <div id="h-results"></div>
 </div>
+    <script>
+            
+    // Service Worker Register karna
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SNT Service Worker Registered!'))
+                .catch(err => console.log('Service Worker Error:', err));
+        });
+    }
+    
+    // Baaki ka purana code niche...
 
+        document.onkeydown = function(e) {
+            if(event.keyCode == 123) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+        };
+        // Disable Developer Tools loop
+        setInterval(function() {
+            debugger;
+        }, 100);
+    </script>
 <script>
     let users = JSON.parse(localStorage.getItem('secureUsers')) || [{ name: "Guest", phone: "Offline", pass: "", img: null }];
     let activeIdx = parseInt(localStorage.getItem('secureActiveIdx')) || 0;
