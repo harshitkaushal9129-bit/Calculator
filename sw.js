@@ -1,6 +1,6 @@
 const CACHE_NAME = 'mi-player-v1';
 const ASSETS = [
-  'https://harshitkaushal9129-bit.github.io/Calculator/manifest.json,
+  'https://harshitkaushal9129-bit.github.io/Calculator/manifest.json',
   'https://harshitkaushal9129-bit.github.io/Calculator/index.html',
   'https://cdn-icons-png.flaticon.com/512/727/727218.png'
 ];
