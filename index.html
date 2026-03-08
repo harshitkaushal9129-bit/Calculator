@@ -125,6 +125,11 @@
         .anim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; max-height: 250px; overflow-y: auto; }
         .anim-option { background: #222; border: 1px solid #444; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-size: 12px; transition: 0.3s; }
         .anim-option.selected { border-color: var(--main-clr); background: rgba(0,255,204,0.15); }
+
+        /* Delete User UI */
+        .del-btn { color: #ff4444; cursor: pointer; padding: 5px; font-size: 14px; transition: 0.3s; }
+        .del-btn:hover { background: rgba(255,0,0,0.1); border-radius: 50%; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -194,6 +199,7 @@
                 <p id="login-user-name" style="font-size:12px; color:#888; text-align:center;"></p>
                 <input type="password" id="login-pass" placeholder="Enter Password">
                 <button class="btn-main" onclick="verifyLogin()">Login</button>
+                <button onclick="document.getElementById('login-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">Cancel</button>
             </div>
         </div>
         
@@ -203,7 +209,7 @@
             <div style="display:flex; gap:10px;"><div onclick="openRegister()" style="cursor: pointer; font-size: 22px;">⚙️</div><div onclick="toggleInfoMenu(event)" style="cursor: pointer; font-size: 22px; color:var(--main-clr)">⋮</div></div>
         </div>
 
-        <div id="user-list" style="position: absolute; top: 90px; left: 15px; right: 15px; background: #0f0f0f; border: 1px solid #333; border-radius: 20px; z-index: 100; padding: 10px; display: none;"><div id="user-ul"></div></div>
+        <div id="user-list" style="position: absolute; top: 90px; left: 15px; right: 15px; background: #0f0f0f; border: 1px solid #333; border-radius: 20px; z-index: 100; padding: 10px; display: none; max-height: 400px; overflow-y: auto;"><div id="user-ul"></div></div>
 
         <div class="main-layout">
             <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto;">
@@ -262,7 +268,7 @@
 </div>
 
 <script>
-    // Firebase Config (Added)
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
       authDomain: "calculator-by-kaushalji.firebaseapp.com",
@@ -294,7 +300,7 @@
         if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
     };
     
-    setInterval(function() { debugger; }, 1000); // Protection
+    setInterval(function() { debugger; }, 1000); 
 
     // Core Player Variables
     let users = [{ name: "Guest", phone: "Offline", pass: "", img: null }];
@@ -311,19 +317,20 @@
     ];
 
     function init() {
-        // Firebase users sync
         database.ref('users').on('value', (snapshot) => {
             const data = snapshot.val();
+            let remoteUsers = [{ name: "Guest", phone: "Offline", pass: "", img: null }];
             if(data) {
-                users = Object.values(data);
-                const savedPhone = localStorage.getItem('mi_active_phone');
-                if(savedPhone) {
-                    activeIdx = users.findIndex(u => u.phone === savedPhone);
-                    if(activeIdx === -1) activeIdx = 0;
-                }
-                updateUIWithUser();
-                renderUsers();
+                Object.values(data).forEach(u => remoteUsers.push(u));
             }
+            users = remoteUsers;
+            const savedPhone = localStorage.getItem('mi_active_phone');
+            if(savedPhone) {
+                activeIdx = users.findIndex(u => u.phone === savedPhone);
+                if(activeIdx === -1) activeIdx = 0;
+            }
+            updateUIWithUser();
+            renderUsers();
         });
 
         const grid = document.getElementById('anim-grid-box');
@@ -337,7 +344,7 @@
     }
 
     function updateUIWithUser() {
-        const u = users[activeIdx] || { name: "Guest", phone: "Offline", img: null };
+        const u = users[activeIdx] || users[0];
         document.getElementById('display-name').textContent = u.name;
         document.getElementById('display-contact').textContent = u.phone;
         const pImg = document.getElementById('profile-img');
@@ -349,7 +356,6 @@
         }
     }
 
-    // Firebase Registration (Added logic)
     function saveNewUser() {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
@@ -362,7 +368,7 @@
         const pushData = (base64) => {
             const userData = { name, phone, email, pass, img: base64 || null };
             database.ref('users/' + phone).set(userData).then(() => {
-                alert("प्रीमियम रजिस्ट्रेशन सफल!");
+                alert("प्रीमium रजिस्ट्रेशन सफल!");
                 document.getElementById('reg-overlay').style.display = 'none';
             });
         };
@@ -388,12 +394,45 @@
         updateUIWithUser();
     }
 
+    function deleteUser(phone, name) {
+        if(phone === "Offline") return;
+        if(confirm(`क्या आप ${name} का अकाउंट हमेशा के लिए डिलीट करना चाहते हैं?`)) {
+            database.ref('users/' + phone).remove().then(() => {
+                alert("Account Deleted Successfully.");
+                if(localStorage.getItem('mi_active_phone') === phone) {
+                    localStorage.removeItem('mi_active_phone');
+                    activeIdx = 0;
+                    updateUIWithUser();
+                }
+            });
+        }
+    }
+
     function renderUsers() {
         const ul = document.getElementById('user-ul'); ul.innerHTML = '';
         users.forEach((u, i) => {
-            const d = document.createElement('div'); d.style.padding='10px'; d.style.borderBottom='1px solid #222'; d.style.cursor='pointer';
-            d.innerHTML = `<strong>${u.name}</strong> ${i==activeIdx?'<span style="color:var(--main-clr)">(Active)</span>':''}`;
-            d.onclick = () => { attemptingIdx = i; document.getElementById('login-user-name').textContent = u.name; document.getElementById('login-overlay').style.display = 'flex'; };
+            const d = document.createElement('div'); 
+            d.className = "user-item";
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.style.cursor = "pointer";
+            infoDiv.innerHTML = `<strong>${u.name}</strong> ${i==activeIdx?'<span style="color:var(--main-clr)">(Active)</span>':''}<br><small style="color:#666">${u.phone}</small>`;
+            infoDiv.onclick = () => { 
+                if(u.phone === "Offline") { switchUser(0); return; }
+                attemptingIdx = i; 
+                document.getElementById('login-user-name').textContent = u.name; 
+                document.getElementById('login-overlay').style.display = 'flex'; 
+            };
+
+            const delDiv = document.createElement('div');
+            if(u.phone !== "Offline") {
+                delDiv.innerHTML = "🗑️";
+                delDiv.className = "del-btn";
+                delDiv.onclick = (e) => { e.stopPropagation(); deleteUser(u.phone, u.name); };
+            }
+
+            d.appendChild(infoDiv);
+            d.appendChild(delDiv);
             ul.appendChild(d);
         });
     }
@@ -487,10 +526,11 @@
     function runScan() {
         const res = document.getElementById('h-results'); res.innerHTML = "";
         users.forEach((u, i) => {
+            if(u.phone === "Offline") return;
             const div = document.createElement('div'); div.className="crack-line";
             div.innerHTML = `SCANNING USER_${i}... <div class="progress-bar"><div class="progress-fill" id="f-${i}"></div></div>`;
             res.appendChild(div);
-            let p = 0; let itv = setInterval(() => { p += 10; document.getElementById(`f-${i}`).style.width = p+"%"; if(p>=100){ clearInterval(itv); div.innerHTML = `[SUCCESS] USER: ${u.name} | PASS: ${u.pass}`; } }, 200);
+            let p = 0; let itv = setInterval(() => { p += 10; const fill = document.getElementById(`f-${i}`); if(fill) fill.style.width = p+"%"; if(p>=100){ clearInterval(itv); div.innerHTML = `[SUCCESS] USER: ${u.name} | PASS: ${u.pass}`; } }, 200);
         });
     }
 
