@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MI PLAYER PRO - Full Elite Edition</title>
     <meta name="description" content="MI PLAYER PRO - Kaushal Ji dwara banaya gaya ultimate media player. Isme video, music, aur images ka elite experience milta hai.">
-<meta name="keywords" content="MI PLAYER PRO, Kaushal Ji, SNT Computer Institute, Media Player, Video Player, Music Player, Online PDF Reader, MI Shadow Tech, Elite Edition Player">
-<meta name="author" content="Kaushal Ji">
-<meta name="robots" content="index, follow">
+    <meta name="keywords" content="MI PLAYER PRO, Kaushal Ji, SNT Computer Institute, Media Player, Video Player, Music Player, Online PDF Reader, MI Shadow Tech, Elite Edition Player">
+    <meta name="author" content="Kaushal Ji">
+    <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="MI PLAYER PRO - Full Elite Edition">
-<meta property="og:description" content="Experience the next level of media playback with MI PLAYER PRO.">
-<meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/727/727218.png">
-<meta property="og:url" content="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/">
+    <meta property="og:title" content="MI PLAYER PRO - Full Elite Edition">
+    <meta property="og:description" content="Experience the next level of media playback with MI PLAYER PRO.">
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/727/727218.png">
+    <meta property="og:url" content="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00ffcc">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/727/727218.png">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
         :root { 
@@ -34,48 +37,48 @@
         .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
         
         .overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    z-index: 1000;
-    display: none; /* Default hidden */
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(10px);
-}
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
 
-.card {
-    background: #111;
-    padding: 25px;
-    border-radius: 25px;
-    width: 85%;
-    max-width: 320px;
-    border: 1px solid #00ffcc;
-    box-shadow: 0 10px 40px rgba(0,255,204,0.2);
-}
+        .card {
+            background: #111;
+            padding: 25px;
+            border-radius: 25px;
+            width: 85%;
+            max-width: 320px;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 10px 40px rgba(0,255,204,0.2);
+        }
 
-input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    background: #000;
-    border: 1px solid #333;
-    color: #fff;
-    border-radius: 10px;
-    box-sizing: border-box;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
 
-.btn-main {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
-    border: none;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #000;
-}
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #000;
+        }
  
         .header { padding: 50px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border); z-index: 10; }
         
@@ -103,7 +106,6 @@ input {
         .tool-select { background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 11px; padding: 8px 14px; cursor: pointer; transition: 0.3s; }
         input[type=range] { flex: 1; accent-color: var(--main-clr); cursor: pointer; height: 4px; border-radius: 5px; }
         
-        /* ELITE MENU & SCROLLING */
         #info-menu { position: absolute; top: 90px; right: 15px; background: #0a0a0a; border: 1px solid var(--main-clr); border-radius: 20px; z-index: 700; padding: 5px 0; width: 230px; max-height: 380px; overflow-y: auto; display: none; box-shadow: 0 10px 40px #000; scrollbar-width: thin; scrollbar-color: var(--main-clr) #000; }
         #info-menu::-webkit-scrollbar { width: 4px; }
         #info-menu::-webkit-scrollbar-thumb { background: var(--main-clr); border-radius: 10px; }
@@ -112,7 +114,6 @@ input {
 
         #pdf-viewer { width: 95%; height: 350px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; background: #000; margin-top: 10px; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* SHADOW OS STYLES */
         #shadow-os { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); color: var(--hacker-green); z-index: 2000; display: none; font-family: 'Courier New', monospace; padding: 30px; box-sizing: border-box; overflow-y: auto; }
         .crack-line { border-bottom: 1px solid #002200; padding: 15px 0; font-size: 14px; display: flex; align-items: center; gap: 20px; }
         .h-img { width: 50px; height: 50px; border: 1px solid var(--hacker-green); border-radius: 50%; object-fit: cover; }
@@ -165,28 +166,36 @@ input {
             <a href="tel:9129191898" class="menu-link">📞 Direct Call</a>
         </div>
 
-        <div id="anim-selector-overlay" class="overlay"><div class="card"><h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3><div class="anim-grid" id="anim-grid-box"></div><button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip</button></div></div>
-<div id="reg-overlay" class="overlay">
-    <div class="card">
-        <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3>
-        
-        <input type="text" id="reg-name" placeholder="अपना नाम लिखें">
-        <input type="number" id="reg-phone" placeholder="मोबाइल नंबर">
-        <input type="email" id="reg-email" placeholder="ईमेल आईडी">
-        <input type="password" id="reg-pass" placeholder="पासवर्ड सेट करें">
-        
-        <div style="font-size: 11px; color: #888; margin: 5px 0;">प्रोफ़ाइल फोटो चुनें:</div>
-        <input type="file" id="reg-pic" accept="image/*" style="font-size: 11px; border: 1px dashed #444;">
-        
-        <button class="btn-main" onclick="saveNewUser()" style="margin-top:15px;">अकाउंट बनाएं</button>
-        
-        <button onclick="document.getElementById('reg-overlay').style.display='none'" 
-                style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">
-            बंद करें
-        </button>
-    </div>
-</div>
-      <div id="login-overlay" class="overlay"><div class="card"><h3 style="color:var(--main-clr); text-align:center;">Secure Login</h3><p id="login-user-name" style="font-size:12px; color:#888; text-align:center;"></p><input type="password" id="login-pass" placeholder="Enter Password"><button class="btn-main" onclick="verifyLogin()">Login</button></div></div>
+        <div id="anim-selector-overlay" class="overlay">
+            <div class="card">
+                <h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3>
+                <div class="anim-grid" id="anim-grid-box"></div>
+                <button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip</button>
+            </div>
+        </div>
+
+        <div id="reg-overlay" class="overlay">
+            <div class="card">
+                <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3>
+                <input type="text" id="reg-name" placeholder="अपना नाम लिखें">
+                <input type="number" id="reg-phone" placeholder="मोबाइल नंबर">
+                <input type="email" id="reg-email" placeholder="ईमेल आईडी">
+                <input type="password" id="reg-pass" placeholder="पासवर्ड सेट करें">
+                <div style="font-size: 11px; color: #888; margin: 5px 0;">प्रोफ़ाइल फोटो चुनें:</div>
+                <input type="file" id="reg-pic" accept="image/*" style="font-size: 11px; border: 1px dashed #444;">
+                <button class="btn-main" onclick="saveNewUser()" style="margin-top:15px;">अकाउंट बनाएं</button>
+                <button onclick="document.getElementById('reg-overlay').style.display='none'" style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">बंद करें</button>
+            </div>
+        </div>
+
+        <div id="login-overlay" class="overlay">
+            <div class="card">
+                <h3 style="color:var(--main-clr); text-align:center;">Secure Login</h3>
+                <p id="login-user-name" style="font-size:12px; color:#888; text-align:center;"></p>
+                <input type="password" id="login-pass" placeholder="Enter Password">
+                <button class="btn-main" onclick="verifyLogin()">Login</button>
+            </div>
+        </div>
         
         <div class="header">
             <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
@@ -251,9 +260,24 @@ input {
     <div style="font-size:12px; margin-bottom:15px;">MI-PLAYER SYSTEM BREACH [v16.0] | DECRYPTING...<br>-----------------------------------------------------------</div>
     <div id="h-results"></div>
 </div>
-    <script>
-            
-    // Service Worker Register karna
+
+<script>
+    // Firebase Config (Added)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
+      authDomain: "calculator-by-kaushalji.firebaseapp.com",
+      databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
+      projectId: "calculator-by-kaushalji",
+      storageBucket: "calculator-by-kaushalji.firebasestorage.app",
+      messagingSenderId: "156130281294",
+      appId: "1:156130281294:web:73b80a5f344daeabdd001f",
+      measurementId: "G-TKRF2YK924"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Security Scripts
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -261,24 +285,20 @@ input {
                 .catch(err => console.log('Service Worker Error:', err));
         });
     }
-    
-    // Baaki ka purana code niche...
 
-        document.onkeydown = function(e) {
-            if(event.keyCode == 123) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
-        };
-        // Disable Developer Tools loop
-        setInterval(function() {
-            debugger;
-        }, 100);
-    </script>
-<script>
-    let users = JSON.parse(localStorage.getItem('secureUsers')) || [{ name: "Guest", phone: "Offline", pass: "", img: null }];
-    let activeIdx = parseInt(localStorage.getItem('secureActiveIdx')) || 0;
+    document.onkeydown = function(e) {
+        if(event.keyCode == 123) { return false; }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+    };
+    
+    setInterval(function() { debugger; }, 1000); // Protection
+
+    // Core Player Variables
+    let users = [{ name: "Guest", phone: "Offline", pass: "", img: null }];
+    let activeIdx = 0, attemptingIdx = 0;
     let playlist = [], trackIdx = 0, currentMode = 'music', rotation = 0;
     let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), pdfViewer = document.getElementById('pdf-viewer');
     let activeMedia = audioMedia, audioCtx, analyser, vCanvas, vCtx, sourceAudio, sourceVideo;
@@ -291,14 +311,21 @@ input {
     ];
 
     function init() {
-        const u = users[activeIdx];
-        document.getElementById('display-name').textContent = u.name;
-        document.getElementById('display-contact').textContent = u.phone || "Offline";
-        if(u.img) {
-            document.getElementById('profile-img').src = u.img;
-            document.getElementById('profile-img').style.display='block';
-            document.getElementById('default-svg').style.display='none';
-        }
+        // Firebase users sync
+        database.ref('users').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                users = Object.values(data);
+                const savedPhone = localStorage.getItem('mi_active_phone');
+                if(savedPhone) {
+                    activeIdx = users.findIndex(u => u.phone === savedPhone);
+                    if(activeIdx === -1) activeIdx = 0;
+                }
+                updateUIWithUser();
+                renderUsers();
+            }
+        });
+
         const grid = document.getElementById('anim-grid-box');
         animations.forEach(a => {
             const div = document.createElement('div');
@@ -309,7 +336,72 @@ input {
         });
     }
 
+    function updateUIWithUser() {
+        const u = users[activeIdx] || { name: "Guest", phone: "Offline", img: null };
+        document.getElementById('display-name').textContent = u.name;
+        document.getElementById('display-contact').textContent = u.phone;
+        const pImg = document.getElementById('profile-img');
+        const dSvg = document.getElementById('default-svg');
+        if(u.img) {
+            pImg.src = u.img; pImg.style.display='block'; dSvg.style.display='none';
+        } else {
+            pImg.style.display='none'; dSvg.style.display='block';
+        }
+    }
+
+    // Firebase Registration (Added logic)
+    function saveNewUser() {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+        const picFile = document.getElementById('reg-pic').files[0];
+
+        if(!name || !pass || !phone) { alert("कृपया नाम, मोबाइल और पासवर्ड भरें!"); return; }
+
+        const pushData = (base64) => {
+            const userData = { name, phone, email, pass, img: base64 || null };
+            database.ref('users/' + phone).set(userData).then(() => {
+                alert("प्रीमियम रजिस्ट्रेशन सफल!");
+                document.getElementById('reg-overlay').style.display = 'none';
+            });
+        };
+
+        if (picFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => pushData(e.target.result);
+            reader.readAsDataURL(picFile);
+        } else { pushData(null); }
+    }
+
+    function verifyLogin() {
+        const inputPass = document.getElementById('login-pass').value;
+        if(inputPass === users[attemptingIdx].pass) {
+            switchUser(attemptingIdx);
+            document.getElementById('login-overlay').style.display = 'none';
+        } else { alert("Wrong Password!"); }
+    }
+
+    function switchUser(i) {
+        activeIdx = i;
+        localStorage.setItem('mi_active_phone', users[i].phone);
+        updateUIWithUser();
+    }
+
+    function renderUsers() {
+        const ul = document.getElementById('user-ul'); ul.innerHTML = '';
+        users.forEach((u, i) => {
+            const d = document.createElement('div'); d.style.padding='10px'; d.style.borderBottom='1px solid #222'; d.style.cursor='pointer';
+            d.innerHTML = `<strong>${u.name}</strong> ${i==activeIdx?'<span style="color:var(--main-clr)">(Active)</span>':''}`;
+            d.onclick = () => { attemptingIdx = i; document.getElementById('login-user-name').textContent = u.name; document.getElementById('login-overlay').style.display = 'flex'; };
+            ul.appendChild(d);
+        });
+    }
+
+    // UI Handlers
     function toggleInfoMenu(e){ e.stopPropagation(); const m = document.getElementById('info-menu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
+    function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
+    function toggleUserList(e) { e.stopPropagation(); const l = document.getElementById('user-list'); l.style.display = l.style.display === 'block' ? 'none' : 'block'; }
     
     function initVisualizer() {
         if (audioCtx) return;
@@ -339,65 +431,6 @@ input {
             vCtx.stroke();
         }
     }
-
-    function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
-    function toggleUserList(e) { e.stopPropagation(); const l = document.getElementById('user-list'); l.style.display = l.style.display === 'block' ? 'none' : 'block'; if(l.style.display==='block') renderUsers(); }
-    
-    function renderUsers() {
-        const ul = document.getElementById('user-ul'); ul.innerHTML = '';
-        users.forEach((u, i) => {
-            const d = document.createElement('div'); d.style.padding='10px'; d.style.borderBottom='1px solid #222'; d.style.cursor='pointer';
-            d.innerHTML = `<strong>${u.name}</strong> ${i==activeIdx?'(Active)':''}`;
-            d.onclick = () => { if(u.pass==="") switchUser(i); else promptLogin(i); };
-            ul.appendChild(d);
-        });
-    }
-
-    function saveNewUser() {
-    const name = document.getElementById('reg-name').value;
-    const phone = document.getElementById('reg-phone').value;
-    const email = document.getElementById('reg-email').value;
-    const pass = document.getElementById('reg-pass').value;
-    const picFile = document.getElementById('reg-pic').files[0];
-
-    // Basic Validation
-    if(!name || !pass || !phone) {
-        alert("कृपया नाम, मोबाइल और पासवर्ड भरें!");
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem('secureUsers')) || [];
-
-    const newUser = {
-        name: name,
-        phone: phone,
-        email: email,
-        pass: pass,
-        img: null
-    };
-
-    if (picFile) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            newUser.img = e.target.result; // Base64 image data
-            users.push(newUser);
-            localStorage.setItem('secureUsers', JSON.stringify(users));
-            alert("रजिस्ट्रेशन सफल रहा!");
-            location.reload(); // Refresh to update UI
-        };
-        reader.readAsDataURL(picFile);
-    } else {
-        users.push(newUser);
-        localStorage.setItem('secureUsers', JSON.stringify(users));
-        alert("रजिस्ट्रेशन सफल रहा (बिना फोटो के)!");
-        location.reload();
-    }
-}
-
-    function saveAll() { localStorage.setItem('secureUsers', JSON.stringify(users)); location.reload(); }
-    function promptLogin(i) { attemptingIdx = i; document.getElementById('login-user-name').textContent = users[i].name; document.getElementById('login-overlay').style.display = 'flex'; }
-    function verifyLogin() { if(document.getElementById('login-pass').value === users[attemptingIdx].pass) switchUser(attemptingIdx); else alert("Wrong!"); }
-    function switchUser(i) { localStorage.setItem('secureActiveIdx', i); location.reload(); }
 
     function rotateVideo() { rotation = 90; document.getElementById('vid-box').classList.add('full-immersive'); videoEl.style.transform = `rotate(90deg) scale(1.5)`; }
     function resetRotation() { rotation = 0; document.getElementById('vid-box').classList.remove('full-immersive'); videoEl.style.transform = `none`; }
@@ -460,6 +493,7 @@ input {
             let p = 0; let itv = setInterval(() => { p += 10; document.getElementById(`f-${i}`).style.width = p+"%"; if(p>=100){ clearInterval(itv); div.innerHTML = `[SUCCESS] USER: ${u.name} | PASS: ${u.pass}`; } }, 200);
         });
     }
+
     init();
 </script>
 </body>
