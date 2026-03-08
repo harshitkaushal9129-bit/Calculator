@@ -210,8 +210,35 @@
             transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); 
             overflow-y: auto; display: none; 
         }
-        .laptop-view .playlist-sidebar { width: 380px; display: block; }
-        
+/* RESIZER BAR STYLE */
+.resizer {
+    width: 6px;
+    background: #111;
+    cursor: col-resize;
+    height: 100%;
+    transition: background 0.3s;
+    display: none; /* Mobile mein chhupa rahega */
+}
+
+.resizer:hover, .resizer.active {
+    background: var(--main-clr); /* Green color on hover */
+    box-shadow: 0 0 10px var(--main-clr);
+}
+
+/* Laptop view mein resizer dikhao */
+.laptop-view .resizer {
+    display: block;
+}
+
+/* Sidebar ki initial width fix karein laptop view ke liye */
+.laptop-view .playlist-sidebar {
+    width: 350px; 
+    min-width: 200px;
+    max-width: 600px;
+    display: block;
+    transition: none; /* Dragging ke waqt smooth rahega */
+}
+
         .sidebar-header {
             padding: 30px; font-weight: 900; color: var(--main-clr);
             font-size: 18px; border-bottom: 1px solid #111;
@@ -465,6 +492,7 @@
                 </div>
 
             </div>
+ <div class="resizer" id="drag-bar"></div>
 
             <div class="playlist-sidebar" id="sidebar">
                 <div class="sidebar-header">QUEUE DECRYPTION</div>
@@ -962,6 +990,39 @@ function updateAndroidSystem() {
 setInterval(updateAndroidSystem, 60000); 
 updateAndroidSystem();
 
+const resizer = document.getElementById("drag-bar");
+const sidebar = document.getElementById("sidebar");
+const mainFrame = document.getElementById("main-frame");
+
+let isResizing = false;
+
+resizer.addEventListener("mousedown", (e) => {
+    if (!mainFrame.classList.contains("laptop-view")) return;
+    isResizing = true;
+    resizer.classList.add("active");
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none"; // Drag ke waqt text select na ho
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (!isResizing) return;
+
+    // Sidebar ki nayi width calculate karein (right side se)
+    const containerRect = mainFrame.getBoundingClientRect();
+    const newWidth = containerRect.right - e.clientX;
+
+    // Limit set karein: min 200px aur max 600px
+    if (newWidth > 200 && newWidth < 600) {
+        sidebar.style.width = newWidth + "px";
+    }
+});
+
+document.addEventListener("mouseup", () => {
+    isResizing = false;
+    resizer.classList.remove("active");
+    document.body.style.cursor = "default";
+    document.body.style.userSelect = "auto";
+});
 
 
  
