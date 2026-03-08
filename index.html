@@ -22,318 +22,195 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 
-    <style>
-        /* CSS VARIABLE DEFINITIONS */
-        :root { 
-            --p-width: 350px; 
-            --p-height: 700px; 
-            --main-clr: #00ffcc; 
-            --bg-dark: #080808;
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --hacker-green: #00ff41;
-            --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
-            --shadow: 0 10px 40px rgba(0,255,204,0.2);
-            --card-bg: rgba(17, 17, 17, 0.95);
-        }
+   
+        <style>
+    /* 1. GLOBAL VARIABLES */
+    :root { 
+        --p-width: 400px; 
+        --p-height: 800px; 
+        --main-clr: #00ffcc; 
+        --bg-dark: #080808;
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --hacker-green: #00ff41;
+        --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+        --shadow: 0 10px 40px rgba(0,255,204,0.2);
+        --card-bg: rgba(17, 17, 17, 0.95);
+    }
 
+    /* 2. RESET & BASE STYLES */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+    
+    body { 
+        margin: 0; 
+        background: radial-gradient(circle at center, #1a1a1a, #000); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; 
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        color: #fff; 
+        overflow: hidden; 
+    }
 
-/* ANDROID UI ELEMENTS */
-.status-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 25px;
-    font-size: 12px;
-    font-weight: 600;
-    background: rgba(0,0,0,0.5);
-    z-index: 2000;
-    pointer-events: none;
-}
+    /* 3. ANDROID UI ELEMENTS (Status & Nav Bars) */
+    .status-bar {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 30px;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0 25px; font-size: 12px; font-weight: 600;
+        background: rgba(0,0,0,0.3); z-index: 2000; pointer-events: none;
+    }
 
-.nav-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 2000;
-    border-top: 1px solid rgba(255,255,255,0.05);
-}
+    .nav-bar {
+        position: absolute;
+        bottom: 0; left: 0; width: 100%; height: 55px;
+        background: rgba(0,0,0,0.9);
+        display: flex; justify-content: space-around; align-items: center;
+        z-index: 2000; border-top: 1px solid rgba(255,255,255,0.05);
+    }
 
-.nav-icon {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ccc;
-    cursor: pointer;
-    transition: 0.3s;
-}
+    .nav-icon { width: 18px; height: 18px; border: 2px solid #666; cursor: pointer; transition: 0.3s; }
+    .nav-back { border-top: none; border-right: none; transform: rotate(45deg); width: 12px; height: 12px; margin-left: 5px; }
+    .nav-home { border-radius: 50%; width: 20px; height: 20px; }
+    .nav-recent { border-radius: 4px; }
+    .nav-icon:hover { border-color: var(--main-clr); box-shadow: 0 0 10px var(--main-clr); }
 
-.nav-back { border-top: none; border-right: none; transform: rotate(45deg); width: 12px; height: 12px; margin-left: 5px; }
-.nav-home { border-radius: 50%; width: 20px; height: 20px; }
-.nav-recent { border-radius: 4px; }
+    /* 4. THE PHONE FRAME */
+    .phone { 
+        width: var(--p-width); 
+        height: var(--p-height); 
+        background: var(--bg-dark); 
+        border: 12px solid #1a1a1a; 
+        border-radius: 60px; 
+        position: relative; 
+        overflow: hidden; 
+        transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); 
+        box-shadow: 0 0 80px rgba(0, 255, 204, 0.15); 
+        backdrop-filter: blur(25px); 
+    }
 
-/* Adjust Header to sit below Status Bar */
-.header { padding-top: 40px !important; }
+    /* 5. LAPTOP VIEW & RESIZER */
+    .laptop-view { 
+        width: 95% !important; 
+        max-width: 1400px; 
+        height: 90% !important; 
+        border-radius: 20px !important; 
+        border: 6px solid #222;
+    }
 
-/* Hide bars in Laptop View */
-.laptop-view .status-bar, .laptop-view .nav-bar { display: none; }
+    .laptop-view .status-bar, .laptop-view .nav-bar { display: none !important; }
+    .laptop-view .header { padding-top: 25px !important; }
 
+    .resizer {
+        width: 8px; background: #111; cursor: col-resize; height: 100%;
+        transition: 0.3s; display: none; flex-shrink: 0; position: relative;
+    }
+    .resizer:hover, .resizer.active { background: var(--main-clr); box-shadow: 0 0 15px var(--main-clr); }
+    .laptop-view .resizer { display: block; }
 
-     
-        /* RESET & BASE STYLES */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; 
-            background: radial-gradient(circle at center, #1a1a1a, #000); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            color: #fff; 
-            overflow: hidden; 
-        }
-        
-        /* THE PHONE FRAME */
-        .phone { 
-            width:400px; 
-            height: 800px; 
-            background: rgba(8, 8, 8, 0.98); 
-            border: 10px solid #1a1a1a; 
-            border-radius: 50px; 
-            position: relative; 
-            overflow: hidden; 
-            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); 
-            box-shadow: 0 0 60px rgba(0, 255, 204, 0.15); 
-            backdrop-filter: blur(25px); 
-        }
-        
-        /* LAPTOP VIEW EXPANSION */
-        
+    /* 6. LAYOUT & SCREENS */
+    .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+    .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
 
-        /* SCREEN LAYOUT */
-        .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
-        .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
+    .header { 
+        padding: 50px 25px 20px; display: flex; 
+        justify-content: space-between; align-items: center; 
+        background: rgba(0,0,0,0.7); border-bottom: 1px solid var(--glass-border); 
+        z-index: 100; 
+    }
 
-        /* OVERLAYS (REGISTRATION, LOGIN, ETC) */
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.96); z-index: 1000;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px);
-            animation: fadeIn 0.3s ease;
-        }
+    /* 7. PLAYLIST SIDEBAR (Laptop Mode) */
+    .playlist-sidebar { 
+        width: 0; background: #050505; border-left: 1px solid #1a1a1a; 
+        transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); 
+        overflow-y: auto; display: none; 
+    }
+    .laptop-view .playlist-sidebar { 
+        width: 350px; min-width: 250px; max-width: 600px; 
+        display: block; transition: none; 
+    }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .sidebar-header {
+        padding: 25px; font-weight: 900; color: var(--main-clr);
+        font-size: 16px; border-bottom: 1px solid #111; letter-spacing: 2px;
+    }
 
-        .card {
-            background: var(--card-bg); 
-            padding: 35px; 
-            border-radius: 30px;
-            width: 88%; 
-            max-width: 360px; 
-            border: 1px solid var(--main-clr);
-            box-shadow: var(--shadow);
-        }
+    .playlist-item { 
+        padding: 15px 25px; border-bottom: 1px solid #0f0f0f; 
+        font-size: 13px; cursor: pointer; color: #666; transition: 0.3s; 
+        display: flex; align-items: center; gap: 12px;
+    }
+    .playlist-item:hover { background: rgba(0,255,204,0.05); color: #fff; }
+    .playlist-item.active { color: var(--main-clr); background: rgba(0,255,204,0.1); border-left: 4px solid var(--main-clr); }
 
-        /* FORM ELEMENTS */
-        input {
-            width: 100%; padding: 15px; margin: 12px 0;
-            background: #000; border: 1px solid #333;
-            color: #fff; border-radius: 14px; box-sizing: border-box;
-            outline: none; transition: 0.3s ease; font-size: 14px;
-        }
-        input:focus { border-color: var(--main-clr); box-shadow: 0 0 15px rgba(0,255,204,0.3); }
+    /* 8. PLAYER COMPONENTS */
+    .visualizer-container { 
+        position: relative; width: 240px; height: 240px; 
+        display: flex; align-items: center; justify-content: center; margin: 20px 0; 
+    }
+    #v-canvas { position: absolute; width: 100%; height: 100%; }
+    
+    .image-container { 
+        width: 140px; height: 140px; border-radius: 50%; 
+        overflow: hidden; border: 4px solid var(--main-clr); 
+        z-index: 10; background: #000; cursor: pointer; 
+        box-shadow: 0 0 35px rgba(0,255,204,0.4); transition: 0.4s;
+    }
 
-        .btn-main {
-            width: 100%; padding: 16px; background: var(--accent-gradient);
-            border: none; border-radius: 14px; font-weight: 800;
-            cursor: pointer; color: #000; transition: 0.4s;
-            text-transform: uppercase; letter-spacing: 1px;
-            margin-top: 10px;
-        }
-        .btn-main:hover { transform: translateY(-2px); filter: brightness(1.2); box-shadow: 0 5px 15px rgba(0,255,204,0.4); }
+    .video-box { 
+        width: 92%; height: 240px; background: #000; 
+        border-radius: 20px; margin: 20px auto; 
+        border: 1px solid #111; overflow: hidden; position: relative;
+        display: flex; align-items: center; justify-content: center;
+    }
 
-        /* APP HEADER */
-        .header { 
-            padding: 60px 25px 25px; display: flex; 
-            justify-content: space-between; align-items: center; 
-            background: rgba(0,0,0,0.7); border-bottom: 1px solid var(--glass-border); 
-            z-index: 100; 
-        }
-        
-        .profile-trigger { font-size: 24px; cursor: pointer; transition: 0.3s; }
-        .profile-trigger:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--main-clr)); }
+    /* 9. BUTTONS & INPUTS */
+    .btn-main {
+        width: 100%; padding: 16px; background: var(--accent-gradient);
+        border: none; border-radius: 14px; font-weight: 800;
+        cursor: pointer; color: #000; transition: 0.4s;
+        text-transform: uppercase; margin-top: 10px;
+    }
 
-        /* PLAYER COMPONENTS */
-        .video-box { 
-            width: 92%; height: 220px; background: #000; 
-            border-radius: 25px; margin: 20px auto; 
-            border: 1px solid #111; overflow: hidden; 
-            position: relative; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        .full-immersive { 
-            position: fixed !important; top: 0; left: 0; 
-            width: 100vw !important; height: 100vh !important; 
-            z-index: 2000; border-radius: 0; margin: 0; 
-        }
+    .play-btn { 
+        width: 70px; height: 70px; border-radius: 50%; 
+        background: var(--accent-gradient); border: none; 
+        font-size: 28px; cursor: pointer; display: flex; 
+        align-items: center; justify-content: center; color: #000; 
+        box-shadow: 0 8px 20px rgba(0,255,204,0.3); 
+    }
 
-        #close-vid { 
-            position: fixed; top: 40px; left: 40px; 
-            width: 50px; height: 50px; background: rgba(255, 30, 30, 0.9); 
-            border-radius: 50%; display: none; align-items: center; 
-            justify-content: center; cursor: pointer; z-index: 2100; 
-            transform: rotate(90deg); font-weight: bold; color: #fff;
-        }
-        .full-immersive #close-vid { display: flex; }
+    .tool-select { 
+        background: #1a1a1a; color: #fff; border: 1px solid #333; 
+        border-radius: 10px; font-size: 11px; padding: 8px 15px; cursor: pointer; 
+    }
 
-        /* SIDEBAR PLAYLIST (FOR LAPTOP VIEW) */
-        .playlist-sidebar { 
-            width: 0; background: #050505; border-left: 1px solid #1a1a1a; 
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); 
-            overflow-y: auto; display: none; 
-        }
-/* RESIZER BAR STYLE */
-.resizer {
-    width: 6px;
-    background: #111;
-    cursor: col-resize;
-    height: 100%;
-    transition: background 0.3s;
-    display: none; /* Mobile mein chhupa rahega */
-}
+    /* 10. OVERLAYS & CARDS */
+    .overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.95); z-index: 3000;
+        display: none; flex-direction: column; justify-content: center; align-items: center;
+        backdrop-filter: blur(20px); animation: fadeIn 0.3s ease;
+    }
 
-.resizer:hover, .resizer.active {
-    background: var(--main-clr); /* Green color on hover */
-    box-shadow: 0 0 10px var(--main-clr);
-}
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Laptop view mein resizer dikhao */
-.laptop-view .resizer {
-    display: block;
-}
+    .card {
+        background: var(--card-bg); padding: 30px; border-radius: 25px;
+        width: 85%; max-width: 350px; border: 1px solid var(--main-clr);
+        box-shadow: var(--shadow);
+    }
 
-/* Sidebar ki initial width fix karein laptop view ke liye */
-.laptop-view .playlist-sidebar {
-    width: 350px; 
-    min-width: 200px;
-    max-width: 600px;
-    display: block;
-    transition: none; /* Dragging ke waqt smooth rahega */
-}
+    /* 11. SCROLLBAR & SEEKER */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--main-clr); border-radius: 10px; }
 
-        .sidebar-header {
-            padding: 30px; font-weight: 900; color: var(--main-clr);
-            font-size: 18px; border-bottom: 1px solid #111;
-            letter-spacing: 2px;
-        }
-
-        .playlist-item { 
-            padding: 20px 30px; border-bottom: 1px solid #0f0f0f; 
-            font-size: 14px; cursor: pointer; color: #666; 
-            transition: 0.3s; display: flex; align-items: center; gap: 15px;
-        }
-        .playlist-item:hover { background: rgba(0,255,204,0.05); color: #fff; }
-        .playlist-item.active { 
-            color: var(--main-clr); background: rgba(0,255,204,0.1); 
-            border-left: 6px solid var(--main-clr); font-weight: bold; 
-        }
-
-        /* CIRCULAR VISUALIZER */
-        .visualizer-container { 
-            position: relative; width: 220px; height: 220px; 
-            display: flex; align-items: center; justify-content: center; margin: 25px 0; 
-        }
-        #v-canvas { position: absolute; width: 100%; height: 100%; z-index: 1; }
-        
-        .image-container { 
-            width: 125px; height: 125px; border-radius: 50%; 
-            overflow: hidden; border: 4px solid var(--main-clr); 
-            z-index: 10; background: #000; cursor: pointer; 
-            box-shadow: 0 0 35px rgba(0,255,204,0.4);
-            transition: 0.4s;
-        }
-        .image-container:hover { transform: scale(1.05); }
-        .image-container img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* PLAYER CONTROLS */
-        .play-btn { 
-            width: 75px; height: 75px; border-radius: 50%; 
-            background: var(--accent-gradient); border: none; 
-            font-size: 32px; cursor: pointer; display: flex; 
-            align-items: center; justify-content: center; color: #000; 
-            box-shadow: 0 10px 25px rgba(0,255,204,0.4); 
-            transition: 0.3s;
-        }
-        .play-btn:active { transform: scale(0.9); }
-
-        .tool-select { 
-            background: #1a1a1a; color: #fff; border: 1px solid #333; 
-            border-radius: 10px; font-size: 12px; padding: 10px 18px; cursor: pointer; 
-            transition: 0.3s;
-        }
-        .tool-select:hover { border-color: var(--main-clr); }
-
-        /* THE 3-DOTS TOPIC MENU */
-        #info-menu { 
-            position: absolute; top: 100px; right: 25px; 
-            background: #0a0a0a; border: 1px solid var(--main-clr); 
-            border-radius: 24px; z-index: 1500; width: 260px; 
-            display: none; box-shadow: 0 20px 60px #000; overflow-y: auto;
-            max-height: 500px; animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .menu-topic-head { 
-            padding: 15px 25px; font-size: 11px; font-weight: 900; 
-            color: var(--main-clr); background: #050505; 
-            border-bottom: 1px solid #1a1a1a; letter-spacing: 1px;
-        }
-        .menu-link { 
-            display: block; padding: 16px 25px; color: #ccc; 
-            text-decoration: none; font-size: 13px; border-bottom: 1px solid #111; 
-            transition: 0.3s;
-        }
-        .menu-link:hover { background: rgba(0,255,204,0.1); color: #fff; padding-left: 35px; }
-
-        /* HACKER MODE / SHADOW OS */
-        #shadow-os { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.99); color: var(--hacker-green); 
-            z-index: 5000; display: none; font-family: 'Consolas', 'Courier New', monospace; 
-            padding: 50px; box-sizing: border-box; overflow-y: auto; 
-        }
-        .crack-line { 
-            border-bottom: 1px solid #002b00; padding: 25px 0; 
-            font-size: 15px; display: flex; align-items: center; gap: 25px; 
-            animation: textGlitch 0.2s infinite alternate;
-        }
-        .h-img { width: 65px; height: 65px; border: 2px solid var(--hacker-green); border-radius: 50%; padding: 3px; }
-        .progress-bar { width: 100%; background: #050505; height: 14px; border: 1px solid #004400; margin-top: 10px; border-radius: 7px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: 0.1s; }
-
-        /* MEDIA UTILS */
-        #pdf-viewer { width: 94%; height: 400px; display: none; border: 1px solid var(--main-clr); border-radius: 25px; object-fit: contain; background: #000; transition: 0.8s; margin: 15px auto; }
-        
-        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; border-bottom: 1px solid #1a1a1a; transition: 0.3s; }
-        .user-item:hover { background: #111; }
-
-        /* SEEK BAR CUSTOM */
-        input[type="range"] { -webkit-appearance: none; background: #222; height: 6px; border-radius: 5px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--main-clr); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--main-clr); }
-    </style>
+    input[type="range"] { -webkit-appearance: none; background: #222; height: 5px; border-radius: 5px; }
+    input[type="range"]::-webkit-slider-thumb { 
+        -webkit-appearance: none; width: 15px; height: 15px; 
+        background: var(--main-clr); border-radius: 50%; cursor: pointer; 
+    }
+         </style>
 </head>
 <body>
 
