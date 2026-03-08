@@ -1,135 +1,253 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MI PLAYER PRO - Full Elite Edition</title>
-    <meta name="description" content="MI PLAYER PRO - Kaushal Ji dwara banaya gaya ultimate media player. Isme video, music, aur images ka elite experience milta hai.">
-    <meta name="keywords" content="MI PLAYER PRO, Kaushal Ji, SNT Computer Institute, Media Player, Video Player, Music Player, Online PDF Reader, MI Shadow Tech, Elite Edition Player">
+    <title>MI PLAYER PRO - Elite Developer Edition</title>
+    <meta name="description" content="MI PLAYER PRO - Kaushal Ji dwara banaya gaya ultimate media player.">
     <meta name="author" content="Kaushal Ji">
-    <meta name="robots" content="index, follow">
-
-    <meta property="og:title" content="MI PLAYER PRO - Full Elite Edition">
-    <meta property="og:description" content="Experience the next level of media playback with MI PLAYER PRO.">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/727/727218.png">
-    <meta property="og:url" content="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/">
-
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00ffcc">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/727/727218.png">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 
     <style>
+        /* CSS VARIABLE DEFINITIONS */
         :root { 
-            --p-width: 350px; --p-height: 700px; 
-            --main-clr: #00ffcc; --bg-dark: #080808;
+            --p-width: 350px; 
+            --p-height: 700px; 
+            --main-clr: #00ffcc; 
+            --bg-dark: #080808;
             --glass-border: rgba(255, 255, 255, 0.1);
             --hacker-green: #00ff41;
             --accent-gradient: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+            --shadow: 0 10px 40px rgba(0,255,204,0.2);
+            --card-bg: rgba(17, 17, 17, 0.95);
         }
-        body { margin: 0; background: radial-gradient(circle at center, #1a1a1a, #000); display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; color: #fff; overflow: hidden; }
+
+        /* RESET & BASE STYLES */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; 
+            background: radial-gradient(circle at center, #1a1a1a, #000); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            color: #fff; 
+            overflow: hidden; 
+        }
         
-        .phone { width: var(--p-width); height: var(--p-height); background: rgba(8, 8, 8, 0.95); border: 8px solid #1a1a1a; border-radius: 45px; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 50px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(255,255,255,0.02); backdrop-filter: blur(20px); }
-        .laptop-view { width: 90% !important; max-width: 1100px; height: 85% !important; border-radius: 20px !important; }
+        /* THE PHONE FRAME */
+        .phone { 
+            width: var(--p-width); 
+            height: var(--p-height); 
+            background: rgba(8, 8, 8, 0.98); 
+            border: 10px solid #1a1a1a; 
+            border-radius: 50px; 
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); 
+            box-shadow: 0 0 60px rgba(0, 255, 204, 0.15); 
+            backdrop-filter: blur(25px); 
+        }
+        
+        /* LAPTOP VIEW EXPANSION */
+        .laptop-view { 
+            width: 95% !important; 
+            max-width: 1250px; 
+            height: 90% !important; 
+            border-radius: 25px !important; 
+            border: 5px solid #222;
+        }
+
+        /* SCREEN LAYOUT */
         .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
         .main-layout { display: flex; flex: 1; overflow: hidden; width: 100%; }
-        
+
+        /* OVERLAYS (REGISTRATION, LOGIN, ETC) */
         .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
-            display: none; 
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(10px);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.96); z-index: 1000;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.3s ease;
         }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card {
-            background: #111;
-            padding: 25px;
-            border-radius: 25px;
-            width: 85%;
-            max-width: 320px;
-            border: 1px solid #00ffcc;
-            box-shadow: 0 10px 40px rgba(0,255,204,0.2);
+            background: var(--card-bg); 
+            padding: 35px; 
+            border-radius: 30px;
+            width: 88%; 
+            max-width: 360px; 
+            border: 1px solid var(--main-clr);
+            box-shadow: var(--shadow);
         }
 
+        /* FORM ELEMENTS */
         input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: #000;
-            border: 1px solid #333;
-            color: #fff;
-            border-radius: 10px;
-            box-sizing: border-box;
+            width: 100%; padding: 15px; margin: 12px 0;
+            background: #000; border: 1px solid #333;
+            color: #fff; border-radius: 14px; box-sizing: border-box;
+            outline: none; transition: 0.3s ease; font-size: 14px;
         }
+        input:focus { border-color: var(--main-clr); box-shadow: 0 0 15px rgba(0,255,204,0.3); }
 
         .btn-main {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #000;
+            width: 100%; padding: 16px; background: var(--accent-gradient);
+            border: none; border-radius: 14px; font-weight: 800;
+            cursor: pointer; color: #000; transition: 0.4s;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-top: 10px;
         }
- 
-        .header { padding: 50px 20px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border); z-index: 10; }
+        .btn-main:hover { transform: translateY(-2px); filter: brightness(1.2); box-shadow: 0 5px 15px rgba(0,255,204,0.4); }
+
+        /* APP HEADER */
+        .header { 
+            padding: 60px 25px 25px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            background: rgba(0,0,0,0.7); border-bottom: 1px solid var(--glass-border); 
+            z-index: 100; 
+        }
         
-        .video-box { width: 95%; height: 210px; background: #000; border-radius: 20px; margin: 10px auto; border: 1px solid #222; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .full-immersive { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 550; border-radius: 0; margin: 0; border: none; }
-        video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
+        .profile-trigger { font-size: 24px; cursor: pointer; transition: 0.3s; }
+        .profile-trigger:hover { transform: scale(1.2); filter: drop-shadow(0 0 5px var(--main-clr)); }
+
+        /* PLAYER COMPONENTS */
+        .video-box { 
+            width: 92%; height: 220px; background: #000; 
+            border-radius: 25px; margin: 20px auto; 
+            border: 1px solid #111; overflow: hidden; 
+            position: relative; display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
         
-        #fs-controls { position: fixed; bottom: 40px; left: 20px; width: 80vh; background: rgba(0,0,0,0.85); padding: 15px; border-radius: 20px; display: none; align-items: center; gap: 15px; z-index: 570; border: 1px solid var(--main-clr); backdrop-filter: blur(10px); transform: rotate(90deg) translateX(50%); transform-origin: left bottom; pointer-events: auto; opacity: 0; transition: 0.3s; }
-        .full-immersive #fs-controls { display: flex; opacity: 1; }
-        #close-vid { position: fixed; top: 25px; left: 25px; width: 45px; height: 45px; background: rgba(255, 30, 30, 0.9); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 580; transform: rotate(90deg); }
+        .full-immersive { 
+            position: fixed !important; top: 0; left: 0; 
+            width: 100vw !important; height: 100vh !important; 
+            z-index: 2000; border-radius: 0; margin: 0; 
+        }
+
+        #close-vid { 
+            position: fixed; top: 40px; left: 40px; 
+            width: 50px; height: 50px; background: rgba(255, 30, 30, 0.9); 
+            border-radius: 50%; display: none; align-items: center; 
+            justify-content: center; cursor: pointer; z-index: 2100; 
+            transform: rotate(90deg); font-weight: bold; color: #fff;
+        }
         .full-immersive #close-vid { display: flex; }
 
-        .playlist-sidebar { width: 0; background: #050505; border-left: 1px solid #111; transition: 0.4s; overflow-y: auto; display: none; }
-        .laptop-view .playlist-sidebar { width: 320px; display: block; }
-        .playlist-item { padding: 15px; border-bottom: 1px solid #111; font-size: 13px; cursor: pointer; color: #888; transition: 0.2s; }
-        .playlist-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .playlist-item.active { color: var(--main-clr); background: rgba(0,255,204,0.08); border-left: 4px solid var(--main-clr); font-weight: bold; }
+        /* SIDEBAR PLAYLIST (FOR LAPTOP VIEW) */
+        .playlist-sidebar { 
+            width: 0; background: #050505; border-left: 1px solid #1a1a1a; 
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); 
+            overflow-y: auto; display: none; 
+        }
+        .laptop-view .playlist-sidebar { width: 380px; display: block; }
+        
+        .sidebar-header {
+            padding: 30px; font-weight: 900; color: var(--main-clr);
+            font-size: 18px; border-bottom: 1px solid #111;
+            letter-spacing: 2px;
+        }
 
-        .visualizer-container { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
-        #v-canvas { position: absolute; width: 100%; height: 100%; }
-        .image-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--main-clr); z-index: 2; background: #000; transition: 0.1s ease; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+        .playlist-item { 
+            padding: 20px 30px; border-bottom: 1px solid #0f0f0f; 
+            font-size: 14px; cursor: pointer; color: #666; 
+            transition: 0.3s; display: flex; align-items: center; gap: 15px;
+        }
+        .playlist-item:hover { background: rgba(0,255,204,0.05); color: #fff; }
+        .playlist-item.active { 
+            color: var(--main-clr); background: rgba(0,255,204,0.1); 
+            border-left: 6px solid var(--main-clr); font-weight: bold; 
+        }
+
+        /* CIRCULAR VISUALIZER */
+        .visualizer-container { 
+            position: relative; width: 220px; height: 220px; 
+            display: flex; align-items: center; justify-content: center; margin: 25px 0; 
+        }
+        #v-canvas { position: absolute; width: 100%; height: 100%; z-index: 1; }
+        
+        .image-container { 
+            width: 125px; height: 125px; border-radius: 50%; 
+            overflow: hidden; border: 4px solid var(--main-clr); 
+            z-index: 10; background: #000; cursor: pointer; 
+            box-shadow: 0 0 35px rgba(0,255,204,0.4);
+            transition: 0.4s;
+        }
+        .image-container:hover { transform: scale(1.05); }
         .image-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        .play-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--accent-gradient); border: none; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; box-shadow: 0 5px 15px rgba(0,255,204,0.4); transition: 0.3s; }
-        .tool-select { background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 11px; padding: 8px 14px; cursor: pointer; transition: 0.3s; }
-        input[type=range] { flex: 1; accent-color: var(--main-clr); cursor: pointer; height: 4px; border-radius: 5px; }
+        /* PLAYER CONTROLS */
+        .play-btn { 
+            width: 75px; height: 75px; border-radius: 50%; 
+            background: var(--accent-gradient); border: none; 
+            font-size: 32px; cursor: pointer; display: flex; 
+            align-items: center; justify-content: center; color: #000; 
+            box-shadow: 0 10px 25px rgba(0,255,204,0.4); 
+            transition: 0.3s;
+        }
+        .play-btn:active { transform: scale(0.9); }
+
+        .tool-select { 
+            background: #1a1a1a; color: #fff; border: 1px solid #333; 
+            border-radius: 10px; font-size: 12px; padding: 10px 18px; cursor: pointer; 
+            transition: 0.3s;
+        }
+        .tool-select:hover { border-color: var(--main-clr); }
+
+        /* THE 3-DOTS TOPIC MENU */
+        #info-menu { 
+            position: absolute; top: 100px; right: 25px; 
+            background: #0a0a0a; border: 1px solid var(--main-clr); 
+            border-radius: 24px; z-index: 1500; width: 260px; 
+            display: none; box-shadow: 0 20px 60px #000; overflow-y: auto;
+            max-height: 500px; animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .menu-topic-head { 
+            padding: 15px 25px; font-size: 11px; font-weight: 900; 
+            color: var(--main-clr); background: #050505; 
+            border-bottom: 1px solid #1a1a1a; letter-spacing: 1px;
+        }
+        .menu-link { 
+            display: block; padding: 16px 25px; color: #ccc; 
+            text-decoration: none; font-size: 13px; border-bottom: 1px solid #111; 
+            transition: 0.3s;
+        }
+        .menu-link:hover { background: rgba(0,255,204,0.1); color: #fff; padding-left: 35px; }
+
+        /* HACKER MODE / SHADOW OS */
+        #shadow-os { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.99); color: var(--hacker-green); 
+            z-index: 5000; display: none; font-family: 'Consolas', 'Courier New', monospace; 
+            padding: 50px; box-sizing: border-box; overflow-y: auto; 
+        }
+        .crack-line { 
+            border-bottom: 1px solid #002b00; padding: 25px 0; 
+            font-size: 15px; display: flex; align-items: center; gap: 25px; 
+            animation: textGlitch 0.2s infinite alternate;
+        }
+        .h-img { width: 65px; height: 65px; border: 2px solid var(--hacker-green); border-radius: 50%; padding: 3px; }
+        .progress-bar { width: 100%; background: #050505; height: 14px; border: 1px solid #004400; margin-top: 10px; border-radius: 7px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: 0.1s; }
+
+        /* MEDIA UTILS */
+        #pdf-viewer { width: 94%; height: 400px; display: none; border: 1px solid var(--main-clr); border-radius: 25px; object-fit: contain; background: #000; transition: 0.8s; margin: 15px auto; }
         
-        #info-menu { position: absolute; top: 90px; right: 15px; background: #0a0a0a; border: 1px solid var(--main-clr); border-radius: 20px; z-index: 700; padding: 5px 0; width: 230px; max-height: 380px; overflow-y: auto; display: none; box-shadow: 0 10px 40px #000; scrollbar-width: thin; scrollbar-color: var(--main-clr) #000; }
-        #info-menu::-webkit-scrollbar { width: 4px; }
-        #info-menu::-webkit-scrollbar-thumb { background: var(--main-clr); border-radius: 10px; }
-        .menu-link { display: block; padding: 12px 20px; color: #ccc; text-decoration: none; font-size: 12px; border-bottom: 1px solid #1a1a1a; transition: 0.2s; }
-        .menu-link:hover { background: rgba(0,255,204,0.1); color: #fff; padding-left: 25px; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; border-bottom: 1px solid #1a1a1a; transition: 0.3s; }
+        .user-item:hover { background: #111; }
 
-        #pdf-viewer { width: 95%; height: 350px; display: none; border: 1px solid var(--main-clr); border-radius: 20px; object-fit: contain; background: #000; margin-top: 10px; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        #shadow-os { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); color: var(--hacker-green); z-index: 2000; display: none; font-family: 'Courier New', monospace; padding: 30px; box-sizing: border-box; overflow-y: auto; }
-        .crack-line { border-bottom: 1px solid #002200; padding: 15px 0; font-size: 14px; display: flex; align-items: center; gap: 20px; }
-        .h-img { width: 50px; height: 50px; border: 1px solid var(--hacker-green); border-radius: 50%; object-fit: cover; }
-        .progress-bar { width: 100%; background: #111; height: 10px; border: 1px solid #004400; margin-top: 5px; border-radius: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--hacker-green); width: 0%; transition: width 0.2s; }
-        .flicker { animation: hBlink 0.1s infinite; color: #fff; }
-        @keyframes hBlink { 50% { opacity: 0; } }
-
-        .anim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; max-height: 250px; overflow-y: auto; }
-        .anim-option { background: #222; border: 1px solid #444; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-size: 12px; transition: 0.3s; }
-        .anim-option.selected { border-color: var(--main-clr); background: rgba(0,255,204,0.15); }
-
-        /* Delete User UI */
-        .del-btn { color: #ff4444; cursor: pointer; padding: 5px; font-size: 14px; transition: 0.3s; }
-        .del-btn:hover { background: rgba(255,0,0,0.1); border-radius: 50%; }
-        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #222; }
+        /* SEEK BAR CUSTOM */
+        input[type="range"] { -webkit-appearance: none; background: #222; height: 6px; border-radius: 5px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--main-clr); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--main-clr); }
     </style>
 </head>
 <body>
@@ -137,138 +255,151 @@
 <div class="phone" id="main-frame">
     <div class="screen">
         <div id="close-vid" onclick="resetRotation()">✕</div>
+        
+        <input type="file" id="pic-update-input" style="display:none" accept="image/*" onchange="handlePicUpdate(event)">
 
         <div id="qr-modal" class="overlay" onclick="this.style.display='none'">
             <div class="card" style="text-align:center">
-                <h3 style="color:var(--main-clr)">Scan to Pay</h3>
-                <img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" style="width:200px; height:200px; border:5px solid #fff; border-radius:15px">
-                <p style="margin-top:15px; font-size:12px; color: #fff;">mandavikaushal913@okaxis</p>
-            </div>
-        </div>
-
-        <div id="info-overlay-app" class="overlay" onclick="this.style.display='none'">
-            <div class="card" style="text-align:center">
-                <h2 style="color:var(--main-clr); margin-bottom: 10px;">MI PLAYER PRO</h2>
-                <p style="margin: 5px 0;">Version: 16.0 Elite</p>
-                <p style="margin: 5px 0;">Developer: Kaushal Ji</p>
-                <p style="font-size:10px; color:#666; margin-top: 15px;">Encrypted by MI-Shadow Tech</p>
-            </div>
-        </div>
-
-        <div id="info-menu">
-            <div style="font-size:10px; color:var(--main-clr); padding:10px; border-bottom:1px solid #222; position:sticky; top:0; background:#0a0a0a; z-index:10; font-weight: bold; text-align:center;">MI ELITE MENU</div>
-            <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Support (UPI QR)</a>
-            <a href="#" onclick="document.getElementById('info-overlay-app').style.display='flex'" class="menu-link">ℹ️ App Info</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 Official Portal</a>
-            <a href="https://harshitkaushal9129-bit.github.io/snt-institute/Index.html" target="_blank" class="menu-link">🏫 SNT Institute Main</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Calculator/" target="_blank" class="menu-link">🔢 MI Calculator</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 Code Editor</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" target="_blank" class="menu-link">📄 PDF Reader Pro</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Media-downloader/" target="_blank" class="menu-link">📥 Media Downloader</a>
-            <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" target="_blank" class="menu-link">✏️ NIELIT MCQs</a>
-            <a href="https://harshitkaushal9129-bit.github.io/O-level-mcqs-practice/" target="_blank" class="menu-link">🎓 O-Level Practice</a>
-            <a href="https://wa.me/9129191898" target="_blank" class="menu-link">💬 WhatsApp Support</a>
-            <a href="tel:9129191898" class="menu-link">📞 Direct Call</a>
-        </div>
-
-        <div id="anim-selector-overlay" class="overlay">
-            <div class="card">
-                <h3 style="margin:0; color:var(--main-clr); text-align:center;">Slideshow Animation</h3>
-                <div class="anim-grid" id="anim-grid-box"></div>
-                <button onclick="document.getElementById('anim-selector-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; width:100%;">Skip</button>
+                <h3 style="color:var(--main-clr); margin-bottom: 20px;">Elite Support</h3>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" style="width:220px; border-radius:20px; border: 6px solid #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2);">
+                <p style="margin-top:20px; font-weight: bold;">mandavikaushal913@okaxis</p>
+                <p style="font-size: 11px; color: #777;">Pay directly to Kaushal Ji</p>
             </div>
         </div>
 
         <div id="reg-overlay" class="overlay">
             <div class="card">
-                <h3 style="margin:0 0 15px; color:var(--main-clr); text-align:center;">प्रीमियम रजिस्ट्रेशन</h3>
-                <input type="text" id="reg-name" placeholder="अपना नाम लिखें">
-                <input type="number" id="reg-phone" placeholder="मोबाइल नंबर">
-                <input type="email" id="reg-email" placeholder="ईमेल आईडी">
-                <input type="password" id="reg-pass" placeholder="पासवर्ड सेट करें">
-                <div style="font-size: 11px; color: #888; margin: 5px 0;">प्रोफ़ाइल फोटो चुनें:</div>
-                <input type="file" id="reg-pic" accept="image/*" style="font-size: 11px; border: 1px dashed #444;">
-                <button class="btn-main" onclick="saveNewUser()" style="margin-top:15px;">अकाउंट बनाएं</button>
-                <button onclick="document.getElementById('reg-overlay').style.display='none'" style="background:none; border:none; color:rgba(255,0,0,0.6); margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">बंद करें</button>
+                <h3 style="color:var(--main-clr); text-align:center; margin-bottom: 25px;">New Elite Member</h3>
+                <input type="text" id="reg-name" placeholder="Display Name">
+                <input type="email" id="reg-email" placeholder="Email Address">
+                <input type="number" id="reg-phone" placeholder="Phone Number (Login ID)">
+                <input type="password" id="reg-pass" placeholder="Account Password">
+                <div style="font-size: 11px; color: #555; margin: 5px 0;">Optional: Profile Picture</div>
+                <input type="file" id="reg-pic" accept="image/*">
+                <button class="btn-main" onclick="registerUser()">Register Now</button>
+                <p onclick="document.getElementById('reg-overlay').style.display='none'" style="text-align:center; font-size:12px; color:#ff4444; cursor:pointer; margin-top:18px;">Abandon</p>
             </div>
         </div>
 
         <div id="login-overlay" class="overlay">
             <div class="card">
-                <h3 style="color:var(--main-clr); text-align:center;">Secure Login</h3>
-                <p id="login-user-name" style="font-size:12px; color:#888; text-align:center;"></p>
-                <input type="password" id="login-pass" placeholder="Enter Password">
-                <button class="btn-main" onclick="verifyLogin()">Login</button>
-                <button onclick="document.getElementById('login-overlay').style.display='none'" style="background:none; border:none; color:#666; margin-top:12px; cursor:pointer; width:100%; font-size: 12px;">Cancel</button>
+                <h3 id="login-label" style="text-align:center; color:var(--main-clr); margin-bottom: 25px;">Identity Check</h3>
+                <input type="password" id="login-pass" placeholder="Secret Key">
+                <button class="btn-main" onclick="confirmLogin()">Verify & Unlock</button>
             </div>
         </div>
-        
-        <div class="header">
-            <div onclick="toggleUserList(event)" style="cursor: pointer; background:rgba(255,255,255,0.05); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
-            <div style="text-align:center;"><span style="font-weight: 900; font-size: 14px; color:var(--main-clr);">MI PLAYER PRO</span><div style="display:flex; gap:8px; margin-top:8px;"><select id="speed-ctrl" class="tool-select" onchange="changeSpeed()"><option value="1">1.0x</option><option value="1.5">1.5x</option><option value="2">2.0x</option></select><button onclick="toggleView()" class="tool-select">🖥️ View</button></div></div>
-            <div style="display:flex; gap:10px;"><div onclick="openRegister()" style="cursor: pointer; font-size: 22px;">⚙️</div><div onclick="toggleInfoMenu(event)" style="cursor: pointer; font-size: 22px; color:var(--main-clr)">⋮</div></div>
+
+        <div id="anim-overlay" class="overlay">
+            <div class="card">
+                <h3 style="color:var(--main-clr); text-align:center; margin-bottom: 20px;">Transition Style</h3>
+                <div class="anim-grid" id="anim-grid"></div>
+            </div>
         </div>
 
-        <div id="user-list" style="position: absolute; top: 90px; left: 15px; right: 15px; background: #0f0f0f; border: 1px solid #333; border-radius: 20px; z-index: 100; padding: 10px; display: none; max-height: 400px; overflow-y: auto;"><div id="user-ul"></div></div>
+        <div class="header">
+            <div class="profile-trigger" onclick="toggleUserList(event)">👤</div>
+            <div style="text-align:center;">
+                <span style="color:var(--main-clr); font-weight:900; letter-spacing: 2px; font-size: 18px;">MI PLAYER PRO</span>
+                <div style="display:flex; gap:10px; margin-top:10px; justify-content: center;">
+                    <select id="speed-ctrl" class="tool-select" onchange="setSpeed()">
+                        <option value="1">1.0x Speed</option>
+                        <option value="1.5">1.5x Speed</option>
+                        <option value="2">2.0x Speed</option>
+                    </select>
+                    <button onclick="toggleLaptopView()" class="tool-select">🖥️ View</button>
+                </div>
+            </div>
+            <div style="display:flex; gap:15px; align-items: center;">
+                <div onclick="openRegister()" style="cursor:pointer; font-size: 20px;">⚙️</div>
+                <div onclick="toggleMenu(event)" style="cursor:pointer; color:var(--main-clr); font-size:26px;">⋮</div>
+            </div>
+        </div>
+
+        <div id="info-menu">
+            <div class="menu-topic-head">ADMIN & FINANCE</div>
+            <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support (UPI)</a>
+            <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 SNT Official Portal</a>
+            
+            <div class="menu-topic-head">MI ECOSYSTEM</div>
+            <a href="https://harshitkaushal9129-bit.github.io/Calculator/" target="_blank" class="menu-link">🔢 MI Cyber Calculator</a>
+            <a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 MI Pro Code Editor</a>
+            <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" target="_blank" class="menu-link">📄 MI Document Reader</a>
+            
+            <div class="menu-topic-head">EDUCATION TOOLS</div>
+            <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" target="_blank" class="menu-link">✏️ NIELIT MCQ Portal</a>
+            <a href="https://harshitkaushal9129-bit.github.io/O-level-mcqs-practice/" target="_blank" class="menu-link">🎓 O-Level Practice Lab</a>
+            
+            <div class="menu-topic-head">CONTACT DEVELOPER</div>
+            <a href="https://wa.me/9129191898" class="menu-link">💬 WhatsApp Kaushal Ji</a>
+            <a href="tel:9129191898" class="menu-link">📞 Direct Call Support</a>
+        </div>
+
+        <div id="user-list" style="position: absolute; top: 110px; left: 25px; right: 25px; background: #080808; border: 1px solid #222; border-radius: 25px; z-index: 1000; display: none; max-height: 450px; overflow-y: auto; box-shadow: 0 30px 60px #000;">
+            <div id="user-render-box"></div>
+        </div>
 
         <div class="main-layout">
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 15px; overflow-y: auto;">
-                <div id="display-name" style="font-weight:bold; font-size:18px;">Guest</div>
-                <div id="display-contact" style="font-size:11px; color:var(--main-clr); margin-bottom:15px;">Offline</div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 25px; overflow-y: auto;">
                 
-                <div class="visualizer-container" id="v-cont">
+                <div id="user-display-name" style="font-weight:900; font-size: 20px; color: #fff;">Guest Identity</div>
+                <div id="user-display-phone" style="font-size:12px; color:var(--main-clr); margin-bottom: 25px; letter-spacing: 1px;">Status: Standby</div>
+
+                <div class="visualizer-container" id="visual-area">
                     <canvas id="v-canvas"></canvas>
-                    <div class="image-container" id="p-circle">
-                        <img id="profile-img" style="display:none;"><div id="default-svg" style="font-size:45px; margin-top:20px; text-align:center;">🎵</div>
+                    <div class="image-container" id="p-circle" ondblclick="triggerUpdate()" title="Double click to update profile">
+                        <img id="main-thumb" style="display:none;">
+                        <div id="music-icon" style="font-size:55px; margin-top:30px;">🎵</div>
                     </div>
                 </div>
 
-                <div class="video-box" id="vid-box" style="display:none;">
-                    <video id="vid-p" onclick="togglePlay()" playsinline></video>
-                    <div id="fs-controls">
-                        <button onclick="togglePlay()" id="fs-play-btn" style="background:none; border:none; color:white; font-size:24px;">⏸</button>
-                        <input type="range" id="fs-seek" value="0">
+                <div class="video-box" id="v-box" style="display:none;">
+                    <video id="main-video" onclick="togglePlayback()" playsinline></video>
+                </div>
+                <img id="pdf-viewer" alt="MI PDF View">
+
+                <button class="btn-main" id="fullscreen-btn" style="display:none; width: 85%; margin: 15px 0; background: var(--main-clr); color: #000;" onclick="goFullscreen()">🔄 ENTER FULLSCREEN</button>
+
+                <h4 id="now-playing" style="font-size:14px; color:#888; margin: 25px 0; text-align:center; width: 90%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: monospace;">Awaiting Data Stream...</h4>
+
+                <div style="width:95%;">
+                    <input type="range" id="seek-bar" value="0" style="width: 100%;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color: var(--main-clr); margin-top:8px; font-weight: bold;">
+                        <span id="time-curr">0:00</span>
+                        <span id="time-total">0:00</span>
                     </div>
                 </div>
 
-                <img id="pdf-viewer">
-
-                <button class="tool-select" id="rot-btn" style="margin:10px 0; display:none; background: var(--main-clr); color: #000; font-weight: bold; border:none;" onclick="rotateVideo()">🔄 Full Screen Mode</button>
-                <h4 id="track-name" style="margin:15px 0; font-size:13px; color:#ddd; text-align:center; width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">No Media</h4>
-
-                <div style="width:90%;">
-                    <input type="range" id="seek-slider" value="0">
-                    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--main-clr); margin-top: 5px;"><span id="curr-time">0:00</span> <span id="dur-time">0:00</span></div>
+                <div style="display:flex; align-items:center; gap:45px; margin: 35px 0;">
+                    <button onclick="playPrev()" style="background:none; border:none; color:#fff; font-size:36px; cursor:pointer; transition: 0.3s;">⏮</button>
+                    <button id="master-play" class="play-btn" onclick="togglePlayback()">▶</button>
+                    <button onclick="playNext()" style="background:none; border:none; color:#fff; font-size:36px; cursor:pointer; transition: 0.3s;">⏭</button>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:35px; margin:25px 0;">
-                    <button onclick="prevT()" style="background:none; border:none; color:#fff; font-size:28px;">⏮</button>
-                    <button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button>
-                    <button onclick="nextT()" style="background:none; border:none; color:#fff; font-size:28px;">⏭</button>
+                <div style="display:flex; gap:15px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;">
+                    <label class="tool-select">📂 AUDIO<input type="file" multiple accept="audio/*" style="display:none;" onchange="handleFiles(event, 'music')"></label>
+                    <label class="tool-select">🎬 VIDEO<input type="file" multiple accept="video/*" style="display:none;" onchange="handleFiles(event, 'video')"></label>
+                    <label class="tool-select" style="border-color: var(--main-clr);">🖼️ SLIDES<input type="file" multiple accept="image/*" style="display:none;" onchange="handleFiles(event, 'pdf')"></label>
                 </div>
 
-                <div style="display:flex; gap:12px; flex-wrap: wrap; justify-content: center;">
-                    <label class="tool-select"><input type="file" multiple accept="audio/*" style="display:none;" onchange="loadFiles(event, 'music')">Music</label>
-                    <label class="tool-select"><input type="file" multiple accept="video/*" style="display:none;" onchange="loadFiles(event, 'video')">Video</label>
-                    <label class="tool-select" style="color:var(--main-clr); border-color:var(--main-clr);"><input type="file" multiple accept="image/*" style="display:none;" onchange="loadFiles(event, 'pdf')">Images</label>
-                </div>
             </div>
-            
-            <div class="playlist-sidebar" id="playlist-side">
-                <div style="padding:20px; color:var(--main-clr); font-weight:bold; border-bottom:1px solid #111;">UP NEXT</div>
-                <div id="side-list-items"></div>
+
+            <div class="playlist-sidebar" id="sidebar">
+                <div class="sidebar-header">QUEUE DECRYPTION</div>
+                <div id="sidebar-items"></div>
             </div>
         </div>
     </div>
 </div>
 
 <div id="shadow-os">
-    <div style="font-size:12px; margin-bottom:15px;">MI-PLAYER SYSTEM BREACH [v16.0] | DECRYPTING...<br>-----------------------------------------------------------</div>
-    <div id="h-results"></div>
+    <div style="color: #fff; font-size: 18px; margin-bottom: 30px; border-bottom: 1px solid #004400; padding-bottom: 10px;">
+        [MI-SHADOW OS] KERNEL ACCESS GRANTED... EXPLOITING USER_DB...
+    </div>
+    <div id="hacker-logs"></div>
 </div>
 
 <script>
-    // Firebase Config
+    // --- 1. FIREBASE & CORE INIT ---
     const firebaseConfig = {
       apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
       authDomain: "calculator-by-kaushalji.firebaseapp.com",
@@ -276,14 +407,12 @@
       projectId: "calculator-by-kaushalji",
       storageBucket: "calculator-by-kaushalji.firebasestorage.app",
       messagingSenderId: "156130281294",
-      appId: "1:156130281294:web:73b80a5f344daeabdd001f",
-      measurementId: "G-TKRF2YK924"
+      appId: "1:156130281294:web:73b80a5f344daeabdd001f"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
 
-    // Security Scripts
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -302,239 +431,422 @@
     
     setInterval(function() { debugger; }, 1000); 
 
-    // Core Player Variables
-    let users = [{ name: "Guest", phone: "Offline", pass: "", img: null }];
-    let activeIdx = 0, attemptingIdx = 0;
-    let playlist = [], trackIdx = 0, currentMode = 'music', rotation = 0;
-    let audioMedia = new Audio(), videoEl = document.getElementById('vid-p'), pdfViewer = document.getElementById('pdf-viewer');
-    let activeMedia = audioMedia, audioCtx, analyser, vCanvas, vCtx, sourceAudio, sourceVideo;
-    let imageInterval = null, isSlideshowPlaying = false, selectedAnimation = localStorage.getItem('mi_player_anim') || "fade";
+    
 
-    const animations = [
-        { name: "Fade", val: "fade" }, { name: "Zoom", val: "zoom" },
-        { name: "Slide", val: "slide" }, { name: "Rotate", val: "rotate" },
-        { name: "Flip", val: "flip" }, { name: "Blur", val: "blur" }
-    ];
+    
+    // Global App State
+    let users = [{ name: "Guest Identity", phone: "Standby", email: "N/A", pass: "", img: null }];
+    let currentUserIdx = 0, loginAttemptIdx = 0;
+    let playlist = [], trackIdx = 0, mode = 'music';
+    let audio = new Audio(), video = document.getElementById('main-video'), pdf = document.getElementById('pdf-viewer');
+    let activeMedia = audio, audioCtx, analyser, canvas, ctx, slideIntv, isSliding = false;
+    let currentAnim = localStorage.getItem('mi_anim') || "fade";
 
-    function init() {
-        database.ref('users').on('value', (snapshot) => {
-            const data = snapshot.val();
-            let remoteUsers = [{ name: "Guest", phone: "Offline", pass: "", img: null }];
-            if(data) {
-                Object.values(data).forEach(u => remoteUsers.push(u));
+    const anims = ["fade", "zoom", "blur", "slide", "rotate"];
+
+    function startApp() {
+        // Sync Users with Firebase
+        db.ref('users').on('value', snap => {
+            users = [{ name: "Guest Identity", phone: "Standby", email: "N/A", pass: "", img: null }];
+            if(snap.val()) {
+                Object.values(snap.val()).forEach(u => users.push(u));
             }
-            users = remoteUsers;
-            const savedPhone = localStorage.getItem('mi_active_phone');
-            if(savedPhone) {
-                activeIdx = users.findIndex(u => u.phone === savedPhone);
-                if(activeIdx === -1) activeIdx = 0;
+            const saved = localStorage.getItem('mi_phone');
+            if(saved) {
+                const found = users.findIndex(u => u.phone === saved);
+                if(found !== -1) currentUserIdx = found;
             }
-            updateUIWithUser();
-            renderUsers();
+            updateProfileUI(); 
+            renderUserList();
         });
 
-        const grid = document.getElementById('anim-grid-box');
-        animations.forEach(a => {
-            const div = document.createElement('div');
-            div.className = `anim-option ${selectedAnimation === a.val ? 'selected' : ''}`;
-            div.textContent = a.name;
-            div.onclick = () => { selectedAnimation = a.val; localStorage.setItem('mi_player_anim', a.val); document.getElementById('anim-selector-overlay').style.display='none'; if(currentMode==='pdf') startConfirmedSlideshow(a.val); };
-            grid.appendChild(div);
+        // Initialize Slideshow Effect Grid
+        const grid = document.getElementById('anim-grid');
+        anims.forEach(a => {
+            const btn = document.createElement('div');
+            btn.className = 'anim-option';
+            btn.innerText = a.toUpperCase();
+            btn.onclick = () => {
+                currentAnim = a;
+                localStorage.setItem('mi_anim', a);
+                document.getElementById('anim-overlay').style.display='none';
+                startSlideshow();
+            };
+            grid.appendChild(btn);
         });
     }
 
-    function updateUIWithUser() {
-        const u = users[activeIdx] || users[0];
-        document.getElementById('display-name').textContent = u.name;
-        document.getElementById('display-contact').textContent = u.phone;
-        const pImg = document.getElementById('profile-img');
-        const dSvg = document.getElementById('default-svg');
-        if(u.img) {
-            pImg.src = u.img; pImg.style.display='block'; dSvg.style.display='none';
+    // --- 2. ELITE USER MANAGEMENT ---
+    function updateProfileUI(musicThumb = null) {
+        const u = users[currentUserIdx];
+        document.getElementById('user-display-name').innerText = u.name;
+        document.getElementById('user-display-phone').innerText = u.phone === "Standby" ? "Offline" : u.phone;
+        
+        const img = document.getElementById('main-thumb');
+        const icon = document.getElementById('music-icon');
+        const finalSrc = musicThumb || u.img;
+
+        if(finalSrc) {
+            img.src = finalSrc;
+            img.style.display = 'block';
+            icon.style.display = 'none';
         } else {
-            pImg.style.display='none'; dSvg.style.display='block';
+            img.style.display = 'none';
+            icon.style.display = 'block';
         }
     }
 
-    function saveNewUser() {
-        const name = document.getElementById('reg-name').value;
-        const phone = document.getElementById('reg-phone').value;
-        const email = document.getElementById('reg-email').value;
-        const pass = document.getElementById('reg-pass').value;
-        const picFile = document.getElementById('reg-pic').files[0];
+    function registerUser() {
+        const n = document.getElementById('reg-name').value;
+        const e = document.getElementById('reg-email').value;
+        const p = document.getElementById('reg-phone').value;
+        const pw = document.getElementById('reg-pass').value;
+        const pic = document.getElementById('reg-pic').files[0];
 
-        if(!name || !pass || !phone) { alert("कृपया नाम, मोबाइल और पासवर्ड भरें!"); return; }
+        if(!n || !p || !pw || !e) return alert("Security breach: Missing credentials!");
 
-        const pushData = (base64) => {
-            const userData = { name, phone, email, pass, img: base64 || null };
-            database.ref('users/' + phone).set(userData).then(() => {
-                alert("प्रीमium रजिस्ट्रेशन सफल!");
+        const pushData = (b64) => {
+            db.ref('users/' + p).set({
+                name: n,
+                email: e,
+                phone: p,
+                pass: pw,
+                img: b64 || null
+            }).then(() => {
                 document.getElementById('reg-overlay').style.display = 'none';
             });
         };
 
-        if (picFile) {
+        if(pic) {
             const reader = new FileReader();
-            reader.onload = (e) => pushData(e.target.result);
-            reader.readAsDataURL(picFile);
-        } else { pushData(null); }
-    }
-
-    function verifyLogin() {
-        const inputPass = document.getElementById('login-pass').value;
-        if(inputPass === users[attemptingIdx].pass) {
-            switchUser(attemptingIdx);
-            document.getElementById('login-overlay').style.display = 'none';
-        } else { alert("Wrong Password!"); }
-    }
-
-    function switchUser(i) {
-        activeIdx = i;
-        localStorage.setItem('mi_active_phone', users[i].phone);
-        updateUIWithUser();
-    }
-
-    function deleteUser(phone, name) {
-        if(phone === "Offline") return;
-        if(confirm(`क्या आप ${name} का अकाउंट हमेशा के लिए डिलीट करना चाहते हैं?`)) {
-            database.ref('users/' + phone).remove().then(() => {
-                alert("Account Deleted Successfully.");
-                if(localStorage.getItem('mi_active_phone') === phone) {
-                    localStorage.removeItem('mi_active_phone');
-                    activeIdx = 0;
-                    updateUIWithUser();
-                }
-            });
+            reader.onload = ev => pushData(ev.target.result);
+            reader.readAsDataURL(pic);
+        } else {
+            pushData(null);
         }
     }
 
-    function renderUsers() {
-        const ul = document.getElementById('user-ul'); ul.innerHTML = '';
+    function triggerUpdate() {
+        if(users[currentUserIdx].phone !== "Standby") {
+            document.getElementById('pic-update-input').click();
+        }
+    }
+    
+    function handlePicUpdate(e) {
+        const f = e.target.files[0];
+        if(!f) return;
+        const r = new FileReader();
+        r.onload = ev => {
+            db.ref('users/' + users[currentUserIdx].phone).update({ img: ev.target.result });
+        };
+        r.readAsDataURL(f);
+    }
+
+    function confirmLogin() {
+        const pass = document.getElementById('login-pass').value;
+        if(pass === users[loginAttemptIdx].pass) {
+            currentUserIdx = loginAttemptIdx;
+            localStorage.setItem('mi_phone', users[currentUserIdx].phone);
+            updateProfileUI();
+            document.getElementById('login-overlay').style.display = 'none';
+        } else {
+            alert("Unauthorized Access Attempt!");
+        }
+    }
+
+    function renderUserList() {
+        const box = document.getElementById('user-render-box');
+        box.innerHTML = '';
         users.forEach((u, i) => {
-            const d = document.createElement('div'); 
-            d.className = "user-item";
-            
-            const infoDiv = document.createElement('div');
-            infoDiv.style.cursor = "pointer";
-            infoDiv.innerHTML = `<strong>${u.name}</strong> ${i==activeIdx?'<span style="color:var(--main-clr)">(Active)</span>':''}<br><small style="color:#666">${u.phone}</small>`;
-            infoDiv.onclick = () => { 
-                if(u.phone === "Offline") { switchUser(0); return; }
-                attemptingIdx = i; 
-                document.getElementById('login-user-name').textContent = u.name; 
-                document.getElementById('login-overlay').style.display = 'flex'; 
-            };
-
-            const delDiv = document.createElement('div');
-            if(u.phone !== "Offline") {
-                delDiv.innerHTML = "🗑️";
-                delDiv.className = "del-btn";
-                delDiv.onclick = (e) => { e.stopPropagation(); deleteUser(u.phone, u.name); };
-            }
-
-            d.appendChild(infoDiv);
-            d.appendChild(delDiv);
-            ul.appendChild(d);
+            const div = document.createElement('div');
+            div.className = 'user-item';
+            div.innerHTML = `
+                <div onclick="initLogin(${i})" style="flex:1; cursor:pointer;">
+                    <div style="font-weight:bold;">${u.name}</div>
+                    <div style="font-size:11px; color:#555;">${u.phone}</div>
+                </div>
+                ${u.phone !== 'Standby' ? `<div class="del-user" onclick="deleteUser('${u.phone}')">🗑️</div>` : ''}
+            `;
+            box.appendChild(div);
         });
     }
 
-    // UI Handlers
-    function toggleInfoMenu(e){ e.stopPropagation(); const m = document.getElementById('info-menu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
-    function openRegister() { document.getElementById('reg-overlay').style.display = 'flex'; }
-    function toggleUserList(e) { e.stopPropagation(); const l = document.getElementById('user-list'); l.style.display = l.style.display === 'block' ? 'none' : 'block'; }
-    
-    function initVisualizer() {
-        if (audioCtx) return;
+    function deleteUser(p) {
+        if(confirm("Wipe this identity from database?")) {
+            db.ref('users/' + p).remove();
+        }
+    }
+
+    function initLogin(i) {
+        loginAttemptIdx = i;
+        document.getElementById('login-label').innerText = "Unlock " + users[i].name;
+        document.getElementById('login-overlay').style.display = 'flex';
+    }
+
+    // --- 3. CORE PLAYER ENGINE ---
+    function handleFiles(e, m) {
+        playlist = Array.from(e.target.files);
+        mode = m;
+        
+        // Dynamic UI switching
+        document.getElementById('v-box').style.display = m === 'video' ? 'flex' : 'none';
+        document.getElementById('visual-area').style.display = m === 'music' ? 'flex' : 'none';
+        document.getElementById('pdf-viewer').style.display = m === 'pdf' ? 'block' : 'none';
+        document.getElementById('fullscreen-btn').style.display = m === 'video' ? 'block' : 'none';
+
+        if(playlist.length > 0) {
+            playTrack(0);
+            if(m === 'pdf') document.getElementById('anim-overlay').style.display = 'flex';
+        }
+    }
+
+    function playTrack(i) {
+        trackIdx = i;
+        const file = playlist[i];
+        const url = URL.createObjectURL(file);
+        document.getElementById('now-playing').innerText = "Streaming: " + file.name;
+
+        if(mode === 'music') {
+            activeMedia = audio;
+            audio.src = url;
+            audio.play();
+            
+            // Extract Metadata for Thumbnails
+            window.jsmediatags.read(file, {
+                onSuccess: (tag) => {
+                    const p = tag.tags.picture;
+                    if(p) {
+                        let b64 = "";
+                        for(let j=0; j<p.data.length; j++) b64 += String.fromCharCode(p.data[j]);
+                        updateProfileUI("data:" + p.format + ";base64," + window.btoa(b64));
+                    } else {
+                        updateProfileUI();
+                    }
+                },
+                onError: () => updateProfileUI()
+            });
+        } else if(mode === 'video') {
+            activeMedia = video;
+            video.src = url;
+            video.play();
+        } else {
+            pdf.src = url;
+        }
+        
+        setupVisuals();
+        renderSidebar();
+        updatePlayBtn('⏸');
+
+        activeMedia.onloadedmetadata = () => {
+            document.getElementById('seek-bar').max = activeMedia.duration;
+            document.getElementById('time-total').innerText = formatTime(activeMedia.duration);
+        };
+
+        activeMedia.ontimeupdate = () => {
+            const bar = document.getElementById('seek-bar');
+            bar.value = activeMedia.currentTime;
+            document.getElementById('time-curr').innerText = formatTime(activeMedia.currentTime);
+        };
+
+        activeMedia.onended = () => playNext();
+    }
+
+    function setupVisuals() {
+        if(audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
-        sourceAudio = audioCtx.createMediaElementSource(audioMedia);
-        sourceVideo = audioCtx.createMediaElementSource(videoEl);
-        sourceAudio.connect(analyser); sourceVideo.connect(analyser);
+        
+        const src1 = audioCtx.createMediaElementSource(audio);
+        const src2 = audioCtx.createMediaElementSource(video);
+        
+        src1.connect(analyser);
+        src2.connect(analyser);
         analyser.connect(audioCtx.destination);
-        vCanvas = document.getElementById('v-canvas'); vCtx = vCanvas.getContext('2d');
-        vCanvas.width = 180; vCanvas.height = 180;
-        drawVisualizer();
+        
+        canvas = document.getElementById('v-canvas');
+        ctx = canvas.getContext('2d');
+        canvas.width = 220;
+        canvas.height = 220;
+        drawVisuals();
     }
 
-    function drawVisualizer() {
-        requestAnimationFrame(drawVisualizer);
-        let array = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(array);
-        vCtx.clearRect(0, 0, 180, 180);
-        for (let i = 0; i < 60; i++) {
-            let h = array[i*2] / 4;
-            let angle = (i * Math.PI * 2) / 60;
-            vCtx.strokeStyle = `hsl(${(i/60)*360}, 100%, 50%)`;
-            vCtx.lineWidth = 2; vCtx.beginPath();
-            vCtx.moveTo(90 + Math.cos(angle)*55, 90 + Math.sin(angle)*55);
-            vCtx.lineTo(90 + Math.cos(angle)*(55+h), 90 + Math.sin(angle)*(55+h));
-            vCtx.stroke();
+    function drawVisuals() {
+        requestAnimationFrame(drawVisuals);
+        let freqData = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(freqData);
+        
+        ctx.clearRect(0,0,220,220);
+        const centerX = 110, centerY = 110;
+        
+        for(let i=0; i<80; i++) {
+            let val = freqData[i*2] / 4;
+            let rad = (i * Math.PI * 2) / 80;
+            ctx.strokeStyle = `hsl(${(i/80)*360}, 100%, 50%)`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX + Math.cos(rad)*75, centerY + Math.sin(rad)*75);
+            ctx.lineTo(centerX + Math.cos(rad)*(75 + val), centerY + Math.sin(rad)*(75 + val));
+            ctx.stroke();
         }
     }
 
-    function rotateVideo() { rotation = 90; document.getElementById('vid-box').classList.add('full-immersive'); videoEl.style.transform = `rotate(90deg) scale(1.5)`; }
-    function resetRotation() { rotation = 0; document.getElementById('vid-box').classList.remove('full-immersive'); videoEl.style.transform = `none`; }
-
-    function togglePlay() { 
-        if(currentMode === 'pdf') { if(!isSlideshowPlaying) startConfirmedSlideshow(selectedAnimation); else stopImageSlideshow(); return; }
-        if(activeMedia.paused) { activeMedia.play(); btnUpdate('⏸'); } else { activeMedia.pause(); btnUpdate('▶'); } 
+    function startSlideshow() {
+        clearInterval(slideIntv);
+        isSliding = true;
+        slideIntv = setInterval(() => {
+            // Animation logic before switch
+            if(currentAnim==='fade') pdf.style.opacity='0';
+            if(currentAnim==='zoom') pdf.style.transform='scale(1.4)';
+            if(currentAnim==='blur') pdf.style.filter='blur(20px)';
+            if(currentAnim==='rotate') pdf.style.transform='rotate(15deg) scale(0.8)';
+            
+            setTimeout(() => {
+                playNext();
+                pdf.style.opacity='1';
+                pdf.style.transform='none';
+                pdf.style.filter='none';
+            }, 800);
+        }, 4000);
     }
 
-    function startConfirmedSlideshow(val) { isSlideshowPlaying = true; btnUpdate('⏸'); imageInterval = setInterval(() => { applyImgEffect(val); setTimeout(() => { nextT(); pdfViewer.style.opacity = "1"; pdfViewer.style.transform = "none"; pdfViewer.style.filter = "none"; }, 700); }, 3000); }
-    function applyImgEffect(v) { if(v==="fade") pdfViewer.style.opacity="0"; if(v==="zoom") pdfViewer.style.transform="scale(1.5)"; if(v==="blur") pdfViewer.style.filter="blur(20px)"; }
-    function stopImageSlideshow() { isSlideshowPlaying = false; btnUpdate('▶'); clearInterval(imageInterval); }
-    function btnUpdate(txt) { document.getElementById('play-btn').textContent = txt; document.getElementById('fs-play-btn').textContent = txt; }
-
-    function loadFiles(e, mode) {
-        playlist = Array.from(e.target.files); currentMode = mode;
-        document.getElementById('rot-btn').style.display = mode === 'video' ? 'inline-block' : 'none';
-        document.getElementById('v-cont').style.display = mode === 'music' ? 'flex' : 'none';
-        document.getElementById('vid-box').style.display = mode === 'video' ? 'flex' : 'none';
-        pdfViewer.style.display = mode === 'pdf' ? 'block' : 'none';
-        if(playlist.length > 0) { playT(0); if(mode === 'pdf') document.getElementById('anim-selector-overlay').style.display = 'flex'; }
+    // --- 4. SYSTEM UTILITIES ---
+    function formatTime(s) {
+        let min = Math.floor(s/60);
+        let sec = Math.floor(s%60);
+        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-    function renderPlaylist() {
-        const list = document.getElementById('side-list-items'); list.innerHTML = '';
-        playlist.forEach((f, i) => {
-            const d = document.createElement('div'); d.className = `playlist-item ${i===trackIdx?'active':''}`;
-            d.textContent = f.name; d.onclick = () => playT(i); list.appendChild(d);
+    function togglePlayback() { 
+        if(mode==='pdf') {
+            if(isSliding) { clearInterval(slideIntv); isSliding=false; updatePlayBtn('▶'); }
+            else { startSlideshow(); updatePlayBtn('⏸'); }
+            return;
+        }
+        activeMedia.paused ? (activeMedia.play(), updatePlayBtn('⏸')) : (activeMedia.pause(), updatePlayBtn('▶')); 
+    }
+
+    function updatePlayBtn(txt) { document.getElementById('master-play').innerText = txt; }
+
+    function playNext() {
+        if(trackIdx < playlist.length - 1) playTrack(trackIdx + 1);
+        else if(mode === 'pdf') playTrack(0); // Loop slideshow
+    }
+
+    function playPrev() {
+        if(trackIdx > 0) playTrack(trackIdx - 1);
+    }
+
+    function goFullscreen() {
+        const box = document.getElementById('v-box');
+        box.classList.add('full-immersive');
+        video.style.transform = 'rotate(90deg) scale(1.6)';
+    }
+
+    function resetRotation() {
+        document.getElementById('v-box').classList.remove('full-immersive');
+        video.style.transform = 'none';
+    }
+
+    function toggleLaptopView() {
+        document.getElementById('main-frame').classList.toggle('laptop-view');
+    }
+
+    function setSpeed() {
+        activeMedia.playbackRate = document.getElementById('speed-ctrl').value;
+    }
+
+    function toggleMenu(e) {
+        e.stopPropagation();
+        const menu = document.getElementById('info-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleUserList(e) {
+        e.stopPropagation();
+        const list = document.getElementById('user-list');
+        list.style.display = list.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function renderSidebar() {
+        const container = document.getElementById('sidebar-items');
+        container.innerHTML = '';
+        playlist.forEach((file, idx) => {
+            const item = document.createElement('div');
+            item.className = `playlist-item ${idx === trackIdx ? 'active' : ''}`;
+            item.innerHTML = `<span>${idx + 1}.</span> <span>${file.name}</span>`;
+            item.onclick = () => playTrack(idx);
+            container.appendChild(item);
         });
     }
 
-    function playT(i) {
-        trackIdx = i; const url = URL.createObjectURL(playlist[i]);
-        document.getElementById('track-name').textContent = playlist[i].name;
-        if(currentMode === 'video') { activeMedia = videoEl; videoEl.src = url; videoEl.play(); } 
-        else if(currentMode === 'music') { activeMedia = audioMedia; audioMedia.src = url; audioMedia.play(); } 
-        else if(currentMode === 'pdf') { pdfViewer.src = url; renderPlaylist(); return; }
-        initVisualizer(); renderPlaylist(); btnUpdate('⏸');
-        activeMedia.onloadedmetadata = () => { document.getElementById('seek-slider').max = activeMedia.duration; document.getElementById('dur-time').textContent = formatTime(activeMedia.duration); };
-        activeMedia.ontimeupdate = () => { document.getElementById('seek-slider').value = activeMedia.currentTime; document.getElementById('curr-time').textContent = formatTime(activeMedia.currentTime); };
-        activeMedia.onended = () => nextT();
-    }
+    // --- 5. HACKER PROTOCOL ---
+    window.onkeydown = (e) => {
+        // Ctrl + Q to activate Shadow OS
+        if(e.ctrlKey && e.key === 'q') {
+            document.getElementById('shadow-os').style.display='block';
+            runShadowExploit();
+        }
+        // Esc to close
+        if(e.key === 'Escape') {
+            document.getElementById('shadow-os').style.display='none';
+        }
+    };
 
-    function formatTime(s) { let m = Math.floor(s/60); let sec = Math.floor(s%60); return `${m}:${sec<10?'0':''}${sec}`; }
-    document.getElementById('seek-slider').oninput = function() { activeMedia.currentTime = this.value; };
-    function toggleView() { document.getElementById('main-frame').classList.toggle('laptop-view'); }
-    function changeSpeed() { activeMedia.playbackRate = document.getElementById('speed-ctrl').value; }
-    function nextT() { if(trackIdx < playlist.length-1) playT(trackIdx+1); else if(currentMode==='pdf') playT(0); }
-    function prevT() { if(trackIdx > 0) playT(trackIdx-1); }
-
-    window.onclick = () => { document.getElementById('info-menu').style.display = 'none'; document.getElementById('user-list').style.display = 'none'; };
-    window.onkeydown = (e) => { if(e.ctrlKey && e.key === 'q') { document.getElementById('shadow-os').style.display='block'; runScan(); } if(e.key==='Escape') document.getElementById('shadow-os').style.display='none'; };
-
-    function runScan() {
-        const res = document.getElementById('h-results'); res.innerHTML = "";
+    function runShadowExploit() {
+        const logs = document.getElementById('hacker-logs');
+        logs.innerHTML = '';
         users.forEach((u, i) => {
-            if(u.phone === "Offline") return;
-            const div = document.createElement('div'); div.className="crack-line";
-            div.innerHTML = `SCANNING USER_${i}... <div class="progress-bar"><div class="progress-fill" id="f-${i}"></div></div>`;
-            res.appendChild(div);
-            let p = 0; let itv = setInterval(() => { p += 10; const fill = document.getElementById(`f-${i}`); if(fill) fill.style.width = p+"%"; if(p>=100){ clearInterval(itv); div.innerHTML = `[SUCCESS] USER: ${u.name} | PASS: ${u.pass}`; } }, 200);
+            if(u.phone === 'Standby') return;
+            
+            const row = document.createElement('div');
+            row.className = 'crack-line';
+            row.innerHTML = `
+                <img src="${u.img || 'https://cdn-icons-png.flaticon.com/512/727/727218.png'}" class="h-img">
+                <div style="flex:1">
+                    TARGET: ${u.name.toUpperCase()} | SEARCHING MEMORY...
+                    <div class="progress-bar"><div class="progress-fill" id="h-fill-${i}"></div></div>
+                </div>
+            `;
+            logs.appendChild(row);
+
+            let progress = 0;
+            let timer = setInterval(() => {
+                progress += Math.random() * 15;
+                if(progress > 100) progress = 100;
+                document.getElementById(`h-fill-${i}`).style.width = progress + '%';
+                
+                if(progress >= 100) {
+                    clearInterval(timer);
+                    row.innerHTML = `
+                        <img src="${u.img || ''}" class="h-img">
+                        <div style="color:var(--hacker-green)">
+                            [SUCCESS] DATA EXTRACTED: <br>
+                            EMAIL: ${u.email} <br>
+                            PHONE: ${u.phone} <br>
+                            PASS: <span style="color:white; background:red;">${u.pass}</span>
+                        </div>
+                    `;
+                }
+            }, 100 + (Math.random() * 200));
         });
     }
 
-    init();
+    // --- 6. EVENT LISTENERS ---
+    window.onclick = () => {
+        document.getElementById('info-menu').style.display='none';
+        document.getElementById('user-list').style.display='none';
+    };
+
+    document.getElementById('seek-bar').oninput = function() {
+        activeMedia.currentTime = this.value;
+    };
+
+    function openRegister() {
+        document.getElementById('reg-overlay').style.display='flex';
+    }
+
+    // Launch Application
+    startApp();
 </script>
 </body>
 </html>
