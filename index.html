@@ -931,14 +931,37 @@
     // Launch Application
     startApp();
 
-function updateAndroidClock() {
+function updateAndroidSystem() {
+    // 1. Time Update
     const now = new Date();
     const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
                     now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('android-time').innerText = timeStr;
+    if(document.getElementById('android-time')) {
+        document.getElementById('android-time').innerText = timeStr;
+    }
+
+    // 2. Real Battery Update
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(function(battery) {
+            function updateAllBatteryInfo() {
+                const level = Math.round(battery.level * 100);
+                const charging = battery.charging ? "⚡" : "🔋";
+                const batteryElement = document.getElementById('android-battery');
+                if(batteryElement) {
+                    batteryElement.innerText = `${charging} ${level}%`;
+                }
+            }
+            updateAllBatteryInfo();
+            battery.addEventListener('levelchange', updateAllBatteryInfo);
+            battery.addEventListener('chargingchange', updateAllBatteryInfo);
+        });
+    }
 }
-setInterval(updateAndroidClock, 1000);
-updateAndroidClock();
+
+// Har 1 min mein update karein
+setInterval(updateAndroidSystem, 60000); 
+updateAndroidSystem();
+
 
 
  
