@@ -36,6 +36,59 @@
             --card-bg: rgba(17, 17, 17, 0.95);
         }
 
+
+/* ANDROID UI ELEMENTS */
+.status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.nav-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 2000;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.nav-icon {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-back { border-top: none; border-right: none; transform: rotate(45deg); width: 12px; height: 12px; margin-left: 5px; }
+.nav-home { border-radius: 50%; width: 20px; height: 20px; }
+.nav-recent { border-radius: 4px; }
+
+/* Adjust Header to sit below Status Bar */
+.header { padding-top: 40px !important; }
+
+/* Hide bars in Laptop View */
+.laptop-view .status-bar, .laptop-view .nav-bar { display: none; }
+
+
+     
         /* RESET & BASE STYLES */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -265,6 +318,25 @@
 
 <div class="phone" id="main-frame">
     <div class="screen">
+
+    <div class="status-bar">
+        <div id="android-time">12:00</div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <span>📶</span>
+            <span>🔋 85%</span>
+        </div>
+    </div>
+
+  
+    
+    <div class="nav-bar">
+        <div class="nav-icon nav-back" onclick="location.reload()"></div>
+        <div class="nav-icon nav-home" onclick="alert('Returning to Home Screen...')"></div>
+        <div class="nav-icon nav-recent" onclick="toggleUserList(event)"></div>
+    </div>
+
+
+     
         <div id="close-vid" onclick="resetRotation()">✕</div>
         
         <input type="file" id="pic-update-input" style="display:none" accept="image/*" onchange="handlePicUpdate(event)">
@@ -858,6 +930,18 @@
 
     // Launch Application
     startApp();
+
+function updateAndroidClock() {
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                    now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('android-time').innerText = timeStr;
+}
+setInterval(updateAndroidClock, 1000);
+updateAndroidClock();
+
+
+ 
 </script>
 </body>
 </html>
