@@ -869,10 +869,40 @@ function forceReboot() {
     }
 
     function deleteUser(p) {
-        if(confirm("Wipe this identity from database?")) {
-            db.ref('users/' + p).remove();
-        }
+    const targetUser = users.find(u => u.phone === p);
+    
+    if (!targetUser) {
+        alert("System Error: Identity not found!");
+        return;
     }
+
+    // 1. Password/Master Key Maangna
+    const enteredPass = prompt(`CRITICAL ACTION: Enter Password for '${targetUser.name}' to confirm deletion:`);
+
+    if (enteredPass === null) return; // Cancel kiya toh exit
+
+    // 2. Master Key Check (912919) ya User ka Asli Password
+    const MASTER_KEY = "912919";
+
+    if (enteredPass === targetUser.pass || enteredPass === MASTER_KEY) {
+        // Verification Successful
+        let msg = enteredPass === MASTER_KEY ? "ADMIN OVERRIDE DETECTED." : "Identity Verified.";
+        
+        if (confirm(`${msg}\nWARNING: This identity will be permanently wiped. Proceed?`)) {
+            db.ref('users/' + p).remove()
+              .then(() => {
+                  alert("Identity successfully purged from database.");
+              })
+              .catch(() => {
+                  alert("Encryption Error: Could not delete data.");
+              });
+        }
+    } else {
+        // Agar dono galat hain
+        alert("ACCESS DENIED: Incorrect Security Key. Deletion Aborted.");
+    }
+}
+
 
     function initLogin(i) {
         loginAttemptIdx = i;
