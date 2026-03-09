@@ -633,8 +633,11 @@ input[type="range"]::-webkit-slider-thumb {
                     <video id="main-video" onclick="togglePlayback()" playsinline></video>
                 </div>
                 <img id="pdf-viewer" alt="MI PDF View">
-
-                <button class="btn-main" id="fullscreen-btn" style="display:none; width: 85%; margin: 15px 0; background: var(--main-clr); color: #000; font-weight: bold;" onclick="goFullscreen()">🔄 ENTER FULLSCREEN</button>
+<button class="btn-main" id="fullscreen-btn" 
+    style="display:none; width: 90%; margin: 15px auto; background: var(--main-clr); color: #000; font-weight: bold;" 
+    onclick="goFullscreen()">
+    🔄 ENTER FULLSCREEN
+</button>
 
                 <h4 id="now-playing" style="font-size:14px; color:#888; margin: 25px 0; text-align:center; width: 90%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: monospace;">Awaiting Data Stream...</h4>
 
@@ -993,35 +996,50 @@ function forceReboot() {
     }
 }
 
-    function playTrack(i) {
+function playTrack(i) {
     trackIdx = i;
     const file = playlist[i];
     const url = URL.createObjectURL(file);
     
-    // UI Elements
-    const nowPlaying = document.getElementById('now-playing');
+    // UI Elements fetch karna
     const vBox = document.getElementById('v-box');
     const visualArea = document.getElementById('visual-area');
-    const mainVideo = document.getElementById('main-video');
+    const fsBtn = document.getElementById('fullscreen-btn');
+    const nowPlaying = document.getElementById('now-playing');
     const pdfViewer = document.getElementById('pdf-viewer');
 
     nowPlaying.innerText = "⚡ Streaming: " + file.name;
 
-    // Har baar naye track par purane media ko stop karein
+    // Har naye track par purana media stop
     audio.pause();
     video.pause();
 
-    if (mode === 'music') {
+    if (mode === 'video') {
+        // --- VIDEO MODE ---
+        activeMedia = video;
+        video.src = url;
+        
+        vBox.style.display = 'flex';       
+        visualArea.style.display = 'none';  
+        fsBtn.style.display = 'block';     // Video mein button dikhega
+        pdfViewer.style.display = 'none';
+        
+        video.play();
+        updateProfileUI(); // Menu header update ke liye
+
+    } else if (mode === 'music') {
         // --- MUSIC MODE ---
         activeMedia = audio;
         audio.src = url;
+        
+        vBox.style.display = 'none';
+        visualArea.style.display = 'flex';
+        fsBtn.style.display = 'none';      // Music mein button chhupega
+        pdfViewer.style.display = 'none';
+        
         audio.play();
 
-        vBox.style.display = 'none';      // Video box chhupao
-        visualArea.style.display = 'flex'; // Visualizer dikhao
-        pdfViewer.style.display = 'none';
-
-        // Extract Metadata (Album Art)
+        // Extract Metadata for Thumbnails (Album Art)
         window.jsmediatags.read(file, {
             onSuccess: (tag) => {
                 const p = tag.tags.picture;
@@ -1030,42 +1048,30 @@ function forceReboot() {
                     for(let j=0; j<p.data.length; j++) b64 += String.fromCharCode(p.data[j]);
                     updateProfileUI("data:" + p.format + ";base64," + window.btoa(b64));
                 } else {
-                    updateProfileUI(); // Default profile pic dikhayega
+                    updateProfileUI(); // Default profile pic
                 }
             },
             onError: () => updateProfileUI()
         });
-
-    } else if (mode === 'video') {
-        // --- VIDEO MODE (Elite Update) ---
-        activeMedia = video;
-        video.src = url;
-        
-        vBox.style.display = 'flex';       // Video box dikhao
-        visualArea.style.display = 'none';  // Music circle hatao (Clean Look)
-        pdfViewer.style.display = 'none';
-        
-        video.play();
-        updateProfileUI(); // Taki menu mein photo sahi rahe
 
     } else if (mode === 'pdf') {
         // --- IMAGE/PDF SLIDESHOW ---
         pdfViewer.src = url;
         vBox.style.display = 'none';
         visualArea.style.display = 'none';
+        fsBtn.style.display = 'none';
         pdfViewer.style.display = 'block';
     }
     
-    // Core engine updates
+    // Core engine functions
     setupVisuals();
     renderSidebar();
-    updatePlayBtn('Wait...'); // Loading status
+    updatePlayBtn('⏸');
 
-    // Metadata & Time logic
+    // Seek Bar & Time Logic
     activeMedia.onloadedmetadata = () => {
         document.getElementById('seek-bar').max = activeMedia.duration;
         document.getElementById('time-total').innerText = formatTime(activeMedia.duration);
-        updatePlayBtn('⏸');
     };
 
     activeMedia.ontimeupdate = () => {
@@ -1077,6 +1083,25 @@ function forceReboot() {
     activeMedia.onended = () => playNext();
 }
 
+// Video par Double Tap Logic (Add this outside playTrack)
+let lastTap = 0;
+document.getElementById('main-video').addEventListener('click', function (e) {
+    const now = new Date().getTime();
+    const timesince = now - lastTap;
+    if (timesince < 300 && timesince > 0) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        if (x > rect.width / 2) {
+            this.currentTime += 10; // Right side: +10s
+        } else {
+            this.currentTime -= 10; // Left side: -10s
+        }
+    }
+    lastTap = now;
+});
+
+
+    
     function setupVisuals() {
         if(audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1363,18 +1388,20 @@ function goFullscreen() {
     const frame = document.getElementById('main-frame');
     const btn = document.getElementById('fullscreen-btn');
     
-    // Toggle class
     frame.classList.toggle('full-video-mode');
     
-    // Update button text
     if(frame.classList.contains('full-video-mode')) {
-        btn.innerText = "🔄 EXIT FULLSCREEN";
+        btn.innerText = "🔄 EXIT CINEMA MODE";
+        // Full screen mein button ko niche float karwane ke liye
         btn.style.position = "fixed";
         btn.style.bottom = "80px";
-        btn.style.zIndex = "100000";
+        btn.style.left = "50%";
+        btn.style.transform = "translateX(-50%)";
+        btn.style.zIndex = "100001";
     } else {
         btn.innerText = "🔄 ENTER FULLSCREEN";
         btn.style.position = "static";
+        btn.style.transform = "none";
     }
 }
 
