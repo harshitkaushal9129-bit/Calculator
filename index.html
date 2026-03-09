@@ -206,15 +206,32 @@ body {
 
 #main-thumb { width: 100%; height: 100%; object-fit: cover; }
 
+/* Video area ko bada aur responsive banayein */
 .video-box {
     width: 100%;
-    height: 220px;
+    height: auto; /* Fixed height hatayi */
+    min-height: 200px;
+    max-height: 80vh; /* Laptop view mein zyada jagah le sake */
     background: #000;
-    border-radius: 20px;
+    border-radius: 15px;
     overflow: hidden;
-    display: flex;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: none; /* By default hidden */
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+    margin: 10px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+#main-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Video stretch nahi hoga */
+}
+
+/* Jab video chale to Visualizer hide karne ke liye class */
+.media-active-video .visualizer-container {
+    display: none !important;
+}
+
 
 /* --- PLAYER CONTROLS --- */
 .play-btn {
@@ -911,72 +928,113 @@ function forceReboot() {
     }
 
     // --- 3. CORE PLAYER ENGINE ---
+    
     function handleFiles(e, m) {
-        playlist = Array.from(e.target.files);
-        mode = m;
-        
-        // Dynamic UI switching
-        document.getElementById('v-box').style.display = m === 'video' ? 'flex' : 'none';
-        document.getElementById('visual-area').style.display = m === 'music' ? 'flex' : 'none';
-        document.getElementById('pdf-viewer').style.display = m === 'pdf' ? 'block' : 'none';
-        document.getElementById('fullscreen-btn').style.display = m === 'video' ? 'block' : 'none';
+    playlist = Array.from(e.target.files);
+    mode = m;
+    
+    const vBox = document.getElementById('v-box');
+    const visualArea = document.getElementById('visual-area');
+    const mainFrame = document.getElementById('main-frame');
 
-        if(playlist.length > 0) {
-            playTrack(0);
-            if(m === 'pdf') document.getElementById('anim-overlay').style.display = 'flex';
-        }
+    if(m === 'video') {
+        vBox.style.display = 'flex';
+        visualArea.style.display = 'none'; // Music circle hide
+        mainFrame.classList.add('media-active-video');
+    } else {
+        vBox.style.display = 'none';
+        visualArea.style.display = 'flex'; // Music circle show
+        mainFrame.classList.remove('media-active-video');
     }
+
+    if(playlist.length > 0) {
+        playTrack(0);
+    }
+}
 
     function playTrack(i) {
-        trackIdx = i;
-        const file = playlist[i];
-        const url = URL.createObjectURL(file);
-        document.getElementById('now-playing').innerText = "Streaming: " + file.name;
+    trackIdx = i;
+    const file = playlist[i];
+    const url = URL.createObjectURL(file);
+    
+    // UI Elements
+    const nowPlaying = document.getElementById('now-playing');
+    const vBox = document.getElementById('v-box');
+    const visualArea = document.getElementById('visual-area');
+    const mainVideo = document.getElementById('main-video');
+    const pdfViewer = document.getElementById('pdf-viewer');
 
-        if(mode === 'music') {
-            activeMedia = audio;
-            audio.src = url;
-            audio.play();
-            
-            // Extract Metadata for Thumbnails
-            window.jsmediatags.read(file, {
-                onSuccess: (tag) => {
-                    const p = tag.tags.picture;
-                    if(p) {
-                        let b64 = "";
-                        for(let j=0; j<p.data.length; j++) b64 += String.fromCharCode(p.data[j]);
-                        updateProfileUI("data:" + p.format + ";base64," + window.btoa(b64));
-                    } else {
-                        updateProfileUI();
-                    }
-                },
-                onError: () => updateProfileUI()
-            });
-        } else if(mode === 'video') {
-            activeMedia = video;
-            video.src = url;
-            video.play();
-        } else {
-            pdf.src = url;
-        }
+    nowPlaying.innerText = "⚡ Streaming: " + file.name;
+
+    // Har baar naye track par purane media ko stop karein
+    audio.pause();
+    video.pause();
+
+    if (mode === 'music') {
+        // --- MUSIC MODE ---
+        activeMedia = audio;
+        audio.src = url;
+        audio.play();
+
+        vBox.style.display = 'none';      // Video box chhupao
+        visualArea.style.display = 'flex'; // Visualizer dikhao
+        pdfViewer.style.display = 'none';
+
+        // Extract Metadata (Album Art)
+        window.jsmediatags.read(file, {
+            onSuccess: (tag) => {
+                const p = tag.tags.picture;
+                if(p) {
+                    let b64 = "";
+                    for(let j=0; j<p.data.length; j++) b64 += String.fromCharCode(p.data[j]);
+                    updateProfileUI("data:" + p.format + ";base64," + window.btoa(b64));
+                } else {
+                    updateProfileUI(); // Default profile pic dikhayega
+                }
+            },
+            onError: () => updateProfileUI()
+        });
+
+    } else if (mode === 'video') {
+        // --- VIDEO MODE (Elite Update) ---
+        activeMedia = video;
+        video.src = url;
         
-        setupVisuals();
-        renderSidebar();
-        updatePlayBtn('⏸');
+        vBox.style.display = 'flex';       // Video box dikhao
+        visualArea.style.display = 'none';  // Music circle hatao (Clean Look)
+        pdfViewer.style.display = 'none';
+        
+        video.play();
+        updateProfileUI(); // Taki menu mein photo sahi rahe
 
-        activeMedia.onloadedmetadata = () => {
-            document.getElementById('seek-bar').max = activeMedia.duration;
-            document.getElementById('time-total').innerText = formatTime(activeMedia.duration);
-        };
-
-        activeMedia.ontimeupdate = () => {
-            const bar = document.getElementById('seek-bar');
-            bar.value = activeMedia.currentTime;
-            document.getElementById('time-curr').innerText = formatTime(activeMedia.currentTime);
-        };
-
-        activeMedia.onended = () => playNext();
+    } else if (mode === 'pdf') {
+        // --- IMAGE/PDF SLIDESHOW ---
+        pdfViewer.src = url;
+        vBox.style.display = 'none';
+        visualArea.style.display = 'none';
+        pdfViewer.style.display = 'block';
     }
+    
+    // Core engine updates
+    setupVisuals();
+    renderSidebar();
+    updatePlayBtn('Wait...'); // Loading status
+
+    // Metadata & Time logic
+    activeMedia.onloadedmetadata = () => {
+        document.getElementById('seek-bar').max = activeMedia.duration;
+        document.getElementById('time-total').innerText = formatTime(activeMedia.duration);
+        updatePlayBtn('⏸');
+    };
+
+    activeMedia.ontimeupdate = () => {
+        const bar = document.getElementById('seek-bar');
+        bar.value = activeMedia.currentTime;
+        document.getElementById('time-curr').innerText = formatTime(activeMedia.currentTime);
+    };
+
+    activeMedia.onended = () => playNext();
+}
 
     function setupVisuals() {
         if(audioCtx) return;
