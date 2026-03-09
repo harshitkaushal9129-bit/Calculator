@@ -495,23 +495,46 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
 
         <div id="info-menu">
-            <div class="menu-topic-head">ADMIN & FINANCE</div>
-            <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support (UPI)</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 SNT Official Portal</a>
-            
-            <div class="menu-topic-head">MI ECOSYSTEM</div>
-            <a href="https://harshitkaushal9129-bit.github.io/Calculator/" target="_blank" class="menu-link">🔢 MI Cyber Calculator</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 MI Pro Code Editor</a>
-            <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" target="_blank" class="menu-link">📄 MI Document Reader</a>
-            
-            <div class="menu-topic-head">EDUCATION TOOLS</div>
-            <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" target="_blank" class="menu-link">✏️ NIELIT MCQ Portal</a>
-            <a href="https://harshitkaushal9129-bit.github.io/O-level-mcqs-practice/" target="_blank" class="menu-link">🎓 O-Level Practice Lab</a>
-            
-            <div class="menu-topic-head">CONTACT DEVELOPER</div>
-            <a href="https://wa.me/9129191898" class="menu-link">💬 WhatsApp Kaushal Ji</a>
-            <a href="tel:9129191898" class="menu-link">📞 Direct Call Support</a>
+    <div style="padding: 10px; border-bottom: 1px solid #222; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <div id="menu-p-icon" style="width: 35px; height: 35px; border-radius: 50%; background: var(--main-clr); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">K</div>
+        <div>
+            <div id="menu-user-name" style="font-size: 12px; font-weight: bold; color: #fff;">Elite Member</div>
+            <div style="font-size: 9px; color: var(--main-clr); letter-spacing: 1px;">MI PRO ACCESS</div>
         </div>
+    </div>
+
+    <div class="menu-topic-head">ADMIN & FINANCE</div>
+    <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support (UPI)</a>
+    <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 SNT Official Portal</a>
+
+    <div class="menu-topic-head">SPREAD THE TECH</div>
+    <a href="#" onclick="shareApp()" class="menu-link">📤 Share MI Player Pro</a>
+    <a href="https://github.com/harshitkaushal9129-bit" target="_blank" class="menu-link">🐙 Follow on GitHub</a>
+
+    <div class="menu-topic-head">MI ECOSYSTEM</div>
+    <a href="https://harshitkaushal9129-bit.github.io/Calculator/" target="_blank" class="menu-link">🔢 MI Cyber Calculator</a>
+    <a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 MI Pro Code Editor</a>
+    <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" target="_blank" class="menu-link">📄 MI Document Reader</a>
+
+    <div class="menu-topic-head">ADVANCED TOOLS</div>
+    <a href="#" onclick="toggleLaptopView()" class="menu-link">🖥️ Desktop Mode</a>
+    <a href="#" onclick="location.reload()" class="menu-link">🔄 Force System Reboot</a>
+    <a href="#" onclick="alert('Checking for MI-OS updates... System is up to date.')" class="menu-link">📡 Check Updates</a>
+
+    <div class="menu-topic-head">EDUCATION TOOLS</div>
+    <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" target="_blank" class="menu-link">✏️ NIELIT MCQ Portal</a>
+    <a href="https://harshitkaushal9129-bit.github.io/O-level-mcqs-practice/" target="_blank" class="menu-link">🎓 O-Level Practice Lab</a>
+
+    <div class="menu-topic-head">CONTACT DEVELOPER</div>
+    <a href="https://wa.me/9129191898" class="menu-link">💬 WhatsApp Kaushal Ji</a>
+    <a href="tel:9129191898" class="menu-link">📞 Direct Call Support</a>
+
+    <div style="font-size: 9px; color: #444; padding: 15px 10px; text-align: center; border-top: 1px solid #111;">
+        MI PLAYER PRO v4.2.0-ELITE <br>
+        SECURE DATA ENCRYPTION ENABLED
+    </div>
+</div>
+
 
         <div id="user-list" style="position: absolute; top: 110px; left: 25px; right: 25px; background: #080808; border: 1px solid #222; border-radius: 25px; z-index: 1000; display: none; max-height: 450px; overflow-y: auto; box-shadow: 0 30px 60px #000;">
             <div id="user-render-box"></div>
