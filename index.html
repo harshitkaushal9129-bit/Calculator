@@ -141,7 +141,22 @@ body {
     display: none;
     z-index: 2000;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    
+    /* --- Naya Scrollable Logic --- */
+    max-height: 280px; /* Isse sirf 4-5 items hi ek baar mein dikhenge */
+    overflow-y: auto;  /* Scrollbar enable karne ke liye */
+    scrollbar-width: thin; /* Firefox ke liye */
 }
+
+/* Scrollbar ko thoda stylish banane ke liye (Chrome/Safari) */
+#info-menu::-webkit-scrollbar {
+    width: 4px;
+}
+#info-menu::-webkit-scrollbar-thumb {
+    background: var(--main-clr);
+    border-radius: 10px;
+}
+
 
 .menu-topic-head {
     font-size: 10px;
