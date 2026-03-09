@@ -507,13 +507,17 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
 
         <div id="info-menu">
-    <div style="padding: 10px; border-bottom: 1px solid #222; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-        <div id="menu-p-icon" style="width: 35px; height: 35px; border-radius: 50%; background: var(--main-clr); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">K</div>
-        <div>
-            <div id="menu-user-name" style="font-size: 12px; font-weight: bold; color: #fff;">Elite Member</div>
-            <div style="font-size: 9px; color: var(--main-clr); letter-spacing: 1px;">MI PRO ACCESS</div>
-        </div>
+<div style="padding: 10px; border-bottom: 1px solid #222; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+    <img id="menu-user-img" style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--main-clr); display: none; object-fit: cover;">
+    
+    <div id="menu-p-icon" style="width: 35px; height: 35px; border-radius: 50%; background: var(--main-clr); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">K</div>
+    
+    <div>
+        <div id="menu-user-name" style="font-size: 12px; font-weight: bold; color: #fff;">Elite Member</div>
+        <div style="font-size: 9px; color: var(--main-clr); letter-spacing: 1px;">MI PRO ACCESS</div>
     </div>
+</div>
+
 
     <div class="menu-topic-head">ADMIN & FINANCE</div>
     <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support (UPI)</a>
@@ -692,25 +696,53 @@ input[type="range"]::-webkit-slider-thumb {
         });
     }
 
-    // --- 2. ELITE USER MANAGEMENT ---
     function updateProfileUI(musicThumb = null) {
-        const u = users[currentUserIdx];
-        document.getElementById('user-display-name').innerText = u.name;
-        document.getElementById('user-display-phone').innerText = u.phone === "Standby" ? "Offline" : u.phone;
-        
-        const img = document.getElementById('main-thumb');
-        const icon = document.getElementById('music-icon');
-        const finalSrc = musicThumb || u.img;
+    const u = users[currentUserIdx];
+    
+    // 1. Name Updates (Main Screen + Menu Header)
+    const displayName = u.name || "Elite Member";
+    document.getElementById('user-display-name').innerText = displayName;
+    document.getElementById('user-display-phone').innerText = u.phone === "Standby" ? "Offline" : u.phone;
+    
+    // Menu mein user ka naam update karein
+    const menuUserName = document.getElementById('menu-user-name');
+    if(menuUserName) menuUserName.innerText = displayName;
 
-        if(finalSrc) {
-            img.src = finalSrc;
-            img.style.display = 'block';
-            icon.style.display = 'none';
-        } else {
-            img.style.display = 'none';
-            icon.style.display = 'block';
+    // 2. Image & Icon Logic
+    const img = document.getElementById('main-thumb');
+    const icon = document.getElementById('music-icon');
+    const menuIcon = document.getElementById('menu-p-icon');
+    
+    // Check karein ki registered image hai ya music thumbnail
+    const finalSrc = musicThumb || u.img;
+
+    if(finalSrc) {
+        // Main Screen Image
+        img.src = finalSrc;
+        img.style.display = 'block';
+        icon.style.display = 'none';
+        
+        // Menu Header Image (Icon ko chupa kar image dikhayega)
+        if(menuIcon) {
+            menuIcon.style.backgroundImage = `url('${finalSrc}')`;
+            menuIcon.style.backgroundSize = 'cover';
+            menuIcon.style.backgroundPosition = 'center';
+            menuIcon.innerText = ''; // Purana 'K' hata dega
+            menuIcon.style.border = '1px solid var(--main-clr)';
+        }
+    } else {
+        // Fallback: Agar photo nahi hai toh text icon dikhaye
+        img.style.display = 'none';
+        icon.style.display = 'block';
+        
+        if(menuIcon) {
+            menuIcon.style.backgroundImage = 'none';
+            menuIcon.innerText = displayName.charAt(0).toUpperCase();
+            menuIcon.style.background = 'var(--main-clr)';
         }
     }
+}
+
 function forceReboot() {
     const screen = document.getElementById('reboot-screen');
     const canvas = document.getElementById('reboot-canvas');
