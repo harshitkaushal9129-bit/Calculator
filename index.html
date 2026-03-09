@@ -970,6 +970,97 @@ input[type="range"]::-webkit-slider-thumb {
         list.style.display = list.style.display === 'block' ? 'none' : 'block';
     }
 
+
+
+function updateAndroidSystem() {
+    // 1. Time Update
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                    now.getMinutes().toString().padStart(2, '0');
+    if(document.getElementById('android-time')) {
+        document.getElementById('android-time').innerText = timeStr;
+    }
+
+    // 2. Real Battery Update
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(function(battery) {
+            function updateAllBatteryInfo() {
+                const level = Math.round(battery.level * 100);
+                const charging = battery.charging ? "⚡" : "🔋";
+                const batteryElement = document.getElementById('android-battery');
+                if(batteryElement) {
+                    batteryElement.innerText = `${charging} ${level}%`;
+                }
+            }
+            updateAllBatteryInfo();
+            battery.addEventListener('levelchange', updateAllBatteryInfo);
+            battery.addEventListener('chargingchange', updateAllBatteryInfo);
+        });
+    }
+}
+
+// Har 1 min mein update karein
+setInterval(updateAndroidSystem, 60000); 
+updateAndroidSystem();
+
+const resizer = document.getElementById("drag-bar");
+const sidebar = document.getElementById("sidebar");
+const mainFrame = document.getElementById("main-frame");
+
+let isResizing = false;
+
+resizer.addEventListener("mousedown", (e) => {
+    if (!mainFrame.classList.contains("laptop-view")) return;
+    isResizing = true;
+    resizer.classList.add("active");
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none"; // Drag ke waqt text select na ho
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (!isResizing) return;
+
+    // Sidebar ki nayi width calculate karein (right side se)
+    const containerRect = mainFrame.getBoundingClientRect();
+    const newWidth = containerRect.right - e.clientX;
+
+    // Limit set karein: min 200px aur max 600px
+    if (newWidth > 200 && newWidth < 600) {
+        sidebar.style.width = newWidth + "px";
+    }
+});
+
+document.addEventListener("mouseup", () => {
+    isResizing = false;
+    resizer.classList.remove("active");
+    document.body.style.cursor = "default";
+    document.body.style.userSelect = "auto";
+});
+
+function shareApp() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'MI PLAYER PRO',
+            text: 'Check out MI PLAYER PRO - The ultimate media experience by Kaushal Ji!',
+            url: window.location.href
+        }).then(() => console.log('Successful share'))
+          .catch((error) => console.log('Error sharing', error));
+    } else {
+        // Fallback agar browser share support na kare
+        const dummy = document.createElement('input');
+        document.body.appendChild(dummy);
+        dummy.value = window.location.href;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        alert('Link Copied to Clipboard!');
+    }
+}
+
+        
+
+
+        
     function renderSidebar() {
         const container = document.getElementById('sidebar-items');
         container.innerHTML = '';
@@ -1051,70 +1142,6 @@ input[type="range"]::-webkit-slider-thumb {
     // Launch Application
     startApp();
 
-function updateAndroidSystem() {
-    // 1. Time Update
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
-                    now.getMinutes().toString().padStart(2, '0');
-    if(document.getElementById('android-time')) {
-        document.getElementById('android-time').innerText = timeStr;
-    }
-
-    // 2. Real Battery Update
-    if ('getBattery' in navigator) {
-        navigator.getBattery().then(function(battery) {
-            function updateAllBatteryInfo() {
-                const level = Math.round(battery.level * 100);
-                const charging = battery.charging ? "⚡" : "🔋";
-                const batteryElement = document.getElementById('android-battery');
-                if(batteryElement) {
-                    batteryElement.innerText = `${charging} ${level}%`;
-                }
-            }
-            updateAllBatteryInfo();
-            battery.addEventListener('levelchange', updateAllBatteryInfo);
-            battery.addEventListener('chargingchange', updateAllBatteryInfo);
-        });
-    }
-}
-
-// Har 1 min mein update karein
-setInterval(updateAndroidSystem, 60000); 
-updateAndroidSystem();
-
-const resizer = document.getElementById("drag-bar");
-const sidebar = document.getElementById("sidebar");
-const mainFrame = document.getElementById("main-frame");
-
-let isResizing = false;
-
-resizer.addEventListener("mousedown", (e) => {
-    if (!mainFrame.classList.contains("laptop-view")) return;
-    isResizing = true;
-    resizer.classList.add("active");
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none"; // Drag ke waqt text select na ho
-});
-
-document.addEventListener("mousemove", (e) => {
-    if (!isResizing) return;
-
-    // Sidebar ki nayi width calculate karein (right side se)
-    const containerRect = mainFrame.getBoundingClientRect();
-    const newWidth = containerRect.right - e.clientX;
-
-    // Limit set karein: min 200px aur max 600px
-    if (newWidth > 200 && newWidth < 600) {
-        sidebar.style.width = newWidth + "px";
-    }
-});
-
-document.addEventListener("mouseup", () => {
-    isResizing = false;
-    resizer.classList.remove("active");
-    document.body.style.cursor = "default";
-    document.body.style.userSelect = "auto";
-});
 
 
  
