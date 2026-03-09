@@ -697,51 +697,55 @@ input[type="range"]::-webkit-slider-thumb {
     }
 
     function updateProfileUI(musicThumb = null) {
+    function updateProfileUI(musicThumb = null) {
     const u = users[currentUserIdx];
     
-    // 1. Name Updates (Main Screen + Menu Header)
-    const displayName = u.name || "Elite Member";
-    document.getElementById('user-display-name').innerText = displayName;
-    document.getElementById('user-display-phone').innerText = u.phone === "Standby" ? "Offline" : u.phone;
-    
-    // Menu mein user ka naam update karein
+    // --- SECTION A: MENU HEADER (PERMANENT REGISTRATION DATA) ---
     const menuUserName = document.getElementById('menu-user-name');
-    if(menuUserName) menuUserName.innerText = displayName;
-
-    // 2. Image & Icon Logic
-    const img = document.getElementById('main-thumb');
-    const icon = document.getElementById('music-icon');
     const menuIcon = document.getElementById('menu-p-icon');
-    
-    // Check karein ki registered image hai ya music thumbnail
-    const finalSrc = musicThumb || u.img;
+    const regName = u.name || "Elite Member";
 
-    if(finalSrc) {
-        // Main Screen Image
-        img.src = finalSrc;
-        img.style.display = 'block';
-        icon.style.display = 'none';
-        
-        // Menu Header Image (Icon ko chupa kar image dikhayega)
-        if(menuIcon) {
-            menuIcon.style.backgroundImage = `url('${finalSrc}')`;
+    if(menuUserName) menuUserName.innerText = regName;
+
+    if(menuIcon) {
+        if(u.img) {
+            // Hamesha registered image hi dikhayega menu mein
+            menuIcon.style.backgroundImage = `url('${u.img}')`;
             menuIcon.style.backgroundSize = 'cover';
             menuIcon.style.backgroundPosition = 'center';
-            menuIcon.innerText = ''; // Purana 'K' hata dega
-            menuIcon.style.border = '1px solid var(--main-clr)';
-        }
-    } else {
-        // Fallback: Agar photo nahi hai toh text icon dikhaye
-        img.style.display = 'none';
-        icon.style.display = 'block';
-        
-        if(menuIcon) {
+            menuIcon.innerText = ''; 
+            menuIcon.style.border = '2px solid var(--main-clr)';
+        } else {
+            // Agar photo nahi hai toh naam ka pehla akshar
             menuIcon.style.backgroundImage = 'none';
-            menuIcon.innerText = displayName.charAt(0).toUpperCase();
+            menuIcon.innerText = regName.charAt(0).toUpperCase();
             menuIcon.style.background = 'var(--main-clr)';
         }
     }
+
+    // --- SECTION B: PLAYER MAIN SCREEN (DYNAMIC MEDIA DATA) ---
+    const mainDisplayName = document.getElementById('user-display-name');
+    const mainDisplayPhone = document.getElementById('user-display-phone');
+    const mainThumb = document.getElementById('main-thumb');
+    const musicIcon = document.getElementById('music-icon');
+
+    // Main screen par naam hamesha user ka rahega
+    if(mainDisplayName) mainDisplayName.innerText = regName;
+    if(mainDisplayPhone) mainDisplayPhone.innerText = u.phone === "Standby" ? "Offline" : u.phone;
+
+    // Player ki image: Agar gaana chal raha hai toh gaane ki photo, warna user ki photo
+    const playerPic = musicThumb || u.img;
+
+    if(playerPic) {
+        mainThumb.src = playerPic;
+        mainThumb.style.display = 'block';
+        if(musicIcon) musicIcon.style.display = 'none';
+    } else {
+        mainThumb.style.display = 'none';
+        if(musicIcon) musicIcon.style.display = 'block';
+    }
 }
+
 
 function forceReboot() {
     const screen = document.getElementById('reboot-screen');
