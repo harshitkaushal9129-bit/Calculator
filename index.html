@@ -415,13 +415,15 @@ input[type="range"]::-webkit-slider-thumb {
 <div class="phone" id="main-frame">
     <div class="screen">
 
-    <div class="status-bar">
-        <div id="android-time">12:00</div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <span>📶</span>
-            <span>🔋 85%</span>
-        </div>
+<div class="status-bar">
+    <div id="android-time">12:00</div>
+    <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.03); padding: 2px 10px; border-radius: 15px; border: 1px solid rgba(0,255,204,0.1);">
+        <span style="font-size: 10px;">📶</span>
+        <span id="android-battery" style="color: var(--main-clr); text-shadow: 0 0 5px var(--main-clr); font-family: monospace; font-size: 12px;">
+            🔋 --%
+        </span>
     </div>
+</div>
 
   
     
@@ -973,34 +975,51 @@ input[type="range"]::-webkit-slider-thumb {
 
 
 function updateAndroidSystem() {
-    // 1. Time Update
+    // 1. Precise Time Update
     const now = new Date();
     const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
                     now.getMinutes().toString().padStart(2, '0');
-    if(document.getElementById('android-time')) {
-        document.getElementById('android-time').innerText = timeStr;
-    }
+    
+    const timeElement = document.getElementById('android-time');
+    if(timeElement) timeElement.innerText = timeStr;
 
-    // 2. Real Battery Update
+    // 2. Advanced Battery Management
     if ('getBattery' in navigator) {
         navigator.getBattery().then(function(battery) {
             function updateAllBatteryInfo() {
                 const level = Math.round(battery.level * 100);
-                const charging = battery.charging ? "⚡" : "🔋";
+                const isCharging = battery.charging;
                 const batteryElement = document.getElementById('android-battery');
+                
                 if(batteryElement) {
-                    batteryElement.innerText = `${charging} ${level}%`;
+                    let icon = level <= 20 ? "🪫" : "🔋";
+                    if(isCharging) icon = "⚡";
+
+                    batteryElement.innerText = `${icon} ${level}%`;
+
+                    // Dynamic Styling based on Level
+                    if(isCharging) {
+                        batteryElement.style.color = "#00ff41"; // Pro Green
+                        batteryElement.style.textShadow = "0 0 10px #00ff41";
+                    } else if(level <= 20) {
+                        batteryElement.style.color = "#ff4444"; // Danger Red
+                        batteryElement.style.textShadow = "0 0 10px #ff4444";
+                    } else {
+                        batteryElement.style.color = "var(--main-clr)"; // Default Cyan
+                        batteryElement.style.textShadow = "0 0 8px var(--main-clr)";
+                    }
                 }
             }
+            // Initial call and Event Listeners
             updateAllBatteryInfo();
-            battery.addEventListener('levelchange', updateAllBatteryInfo);
-            battery.addEventListener('chargingchange', updateAllBatteryInfo);
+            battery.onlevelchange = updateAllBatteryInfo;
+            battery.onchargingchange = updateAllBatteryInfo;
         });
     }
 }
 
-// Har 1 min mein update karein
-setInterval(updateAndroidSystem, 60000); 
+// 60 seconds ki jagah 30 seconds rakhein taaki time accurate rahe
+setInterval(updateAndroidSystem, 30000); 
 updateAndroidSystem();
 
 const resizer = document.getElementById("drag-bar");
@@ -1038,24 +1057,22 @@ document.addEventListener("mouseup", () => {
 });
 
 function shareApp() {
+    const shareText = "Check out MI PLAYER PRO - Ultimate Media Experience by Kaushal Ji! 🔥";
+    const shareUrl = "https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/";
+
     if (navigator.share) {
         navigator.share({
             title: 'MI PLAYER PRO',
-            text: 'Check out MI PLAYER PRO - The ultimate media experience by Kaushal Ji!',
-            url: window.location.href
-        }).then(() => console.log('Successful share'))
-          .catch((error) => console.log('Error sharing', error));
+            text: shareText,
+            url: shareUrl
+        }).catch(err => console.log("Share failed:", err));
     } else {
-        // Fallback agar browser share support na kare
-        const dummy = document.createElement('input');
-        document.body.appendChild(dummy);
-        dummy.value = window.location.href;
-        dummy.select();
-        document.execCommand('copy');
-        document.body.removeChild(dummy);
-        alert('Link Copied to Clipboard!');
+        // Desktop Fallback: Copy to Clipboard
+        navigator.clipboard.writeText(shareUrl);
+        alert("🚀 Link Copied! Ab ise WhatsApp par share karein.");
     }
 }
+
 
         
 
