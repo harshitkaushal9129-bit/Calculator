@@ -476,6 +476,14 @@ input[type="range"]::-webkit-slider-thumb {
                 <div class="anim-grid" id="anim-grid"></div>
             </div>
         </div>
+<div id="reboot-screen" style="position:fixed; inset:0; background:#000; z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; font-family: 'Consolas', monospace;">
+    <canvas id="reboot-canvas" style="position:absolute; inset:0;"></canvas>
+    <div style="position:relative; z-index:10001; text-align:center;">
+        <h2 style="color:#00ffcc; letter-spacing:5px; text-shadow:0 0 15px #00ffcc;">SYSTEM REBOOT</h2>
+        <p style="color:#fff; margin-top:10px; font-size:12px; opacity:0.7;">Initializing MI-OS Kernel...</p>
+        <div style="color:#00ffcc; font-weight:bold; margin-top:20px; font-size:20px;">KAUSHAL JI</div>
+    </div>
+</div>
 
         <div class="header">
             <div class="profile-trigger" onclick="toggleUserList(event)">👤</div>
@@ -701,6 +709,50 @@ input[type="range"]::-webkit-slider-thumb {
             icon.style.display = 'block';
         }
     }
+function forceReboot() {
+    const screen = document.getElementById('reboot-screen');
+    const canvas = document.getElementById('reboot-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // 1. Show Black Screen
+    screen.style.display = 'flex';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // 2. Matrix Rain Logic (Alphabets Falling)
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let x = 0; x < columns; x++) drops[x] = 1;
+
+    function drawMatrix() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // Fade effect
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#00ffcc"; // Alphabet color
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+
+    const matrixInterval = setInterval(drawMatrix, 35);
+
+    // 3. Final Reboot (After 4 Seconds)
+    setTimeout(() => {
+        clearInterval(matrixInterval);
+        location.reload();
+    }, 4000); 
+}
 
     function registerUser() {
         const n = document.getElementById('reg-name').value;
