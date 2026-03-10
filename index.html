@@ -590,7 +590,12 @@ input[type="range"]::-webkit-slider-thumb {
     <a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 MI Pro Code Editor</a>
     <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" target="_blank" class="menu-link">📄 MI Document Reader</a>
 
+         <div class="menu-topic-head">SMART CONTROLS</div>
+<a href="#" onclick="setSleep(30)" class="menu-link">🌙 Sleep Timer (30m)</a>
+<a href="#" onclick="startVoice()" class="menu-link">🎙️ Activate AI Voice</a>
+
     <div class="menu-topic-head">ADVANCED TOOLS</div>
+         
     <a href="#" onclick="toggleLaptopView()" class="menu-link">🖥️ Desktop Mode</a>
     <a href="#" onclick="forceReboot()" class="menu-link">🔄 Force System Reboot</a>
 
@@ -777,6 +782,18 @@ async function togglePiP() {
     }
 }
 
+ let sleepT;function setSleep(min){if(sleepT)clearTimeout(sleepT);
+alert(`Sleep Timer: ${min} min set!`);sleepT=setTimeout(()=>{
+activeMedia.pause();updatePlayBtn('▶');alert("MI PRO: Auto-Sleep Triggered");
+},min*60000);}
+
+ const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
+rec.lang='en-US';rec.onresult=e=>{const cmd=e.results[0][0].transcript.toLowerCase();
+if(cmd.includes('play'))togglePlayback();if(cmd.includes('pause'))activeMedia.pause();
+if(cmd.includes('next'))playNext();if(cmd.includes('previous'))playPrev();};
+function startVoice(){rec.start();alert("Listening for MI-Commands...");}
+
+ 
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
 window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
 document.getElementById('seek-bar').oninput=function(){activeMedia.currentTime=this.value;};
