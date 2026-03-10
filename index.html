@@ -733,6 +733,21 @@ function shareApp(){const url="https://harshitkaushal9129-bit.github.io/Dashboar
 function renderSidebar(){const c=document.getElementById('sidebar-items');c.innerHTML='';playlist.forEach((f,idx)=>{const d=document.createElement('div');d.className=`playlist-item ${idx===trackIdx?'active':''}`;d.innerHTML=`<span>${idx+1}.</span> <span>${f.name}</span>`;d.onclick=()=>playTrack(idx);c.appendChild(d);});}
 function updateNetworkStats(){const s=document.getElementById('net-speed'),i=document.getElementById('net-icon');if(navigator.onLine){i.innerText="📶";let sp=(Math.random()*450+50).toFixed(1);s.innerText=sp+" KB/s";s.style.color="var(--hacker-green)";}else{i.innerText="✈️";s.innerText="OFFLINE";s.style.color="#ff4444";}}
 setInterval(updateNetworkStats,2000);
+
+
+        // Ye function apne script mein kahin bhi add kar dein
+async function togglePiP() {
+    try {
+        if (video !== document.pictureInPictureElement) {
+            await video.requestPictureInPicture();
+        } else {
+            await document.exitPictureInPicture();
+        }
+    } catch (error) {
+        console.log("PiP not supported or error:", error);
+    }
+}
+
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
 window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
 document.getElementById('seek-bar').oninput=function(){activeMedia.currentTime=this.value;};
