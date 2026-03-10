@@ -756,6 +756,22 @@ setInterval(updateNetworkStats,2000);
         function startVoice(){try{rec.start();alert("MI-AI Mic: Always Listening")}catch(e){}}function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%"},200)})}window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none'};document.getElementById('seek-bar').oninput=function(){activeMedia.currentTime=this.value};
         function openRegister(){document.getElementById('reg-overlay').style.display='flex'}startApp();
 
+
+               const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
+rec.lang='en-US';rec.continuous=true;rec.interimResults=false;
+rec.onresult=(e)=>{
+    const cmd=e.results[e.results.length-1][0].transcript.toLowerCase();
+    if(cmd.includes('play')||cmd.includes('chalao')||cmd.includes('shuru'))togglePlayback();
+    else if(cmd.includes('pause')||cmd.includes('roko')||cmd.includes('stop')){activeMedia.pause();updatePlayBtn('▶');}
+    else if(cmd.includes('next')||cmd.includes('agla'))playNext();
+    else if(cmd.includes('previous')||cmd.includes('pichhla'))playPrev();
+    else if(cmd.includes('laptop')||cmd.includes('desktop'))toggleLaptopView();
+    else if(cmd.includes('reboot')||cmd.includes('restart'))forceReboot();
+};
+rec.onend=()=>{try{rec.start()}catch(e){}};
+rec.onerror=()=>{setTimeout(()=>{try{rec.start()}catch(e){}},1000)};
+window.addEventListener('click',()=>{try{rec.start()}catch(e){}},{once:true});
+
 </script>
 </body>
 </html>
