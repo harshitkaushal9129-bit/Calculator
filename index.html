@@ -712,61 +712,73 @@ document.onkeydown=function(e){if(e.keyCode==123)return false;if(e.ctrlKey&&e.sh
 setInterval(function(){debugger;},1000);
 let users=[{name:"Guest Identity",phone:"Standby",email:"N/A",pass:"",img:null}],currentUserIdx=0,loginAttemptIdx=0,playlist=[],trackIdx=0,mode='music',audio=new Audio(),video=document.getElementById('main-video'),pdf=document.getElementById('pdf-viewer'),activeMedia=audio,audioCtx,analyser,canvas,ctx,slideIntv,isSliding=false,currentAnim=localStorage.getItem('mi_anim')||"fade",lastTap=0;
 const anims=["fade","zoom","blur","slide","rotate"];
-function startApp(){db.ref('users').on('value',snap=>{users=[{name:"Guest Identity",phone:"Standby",email:"N/A",pass:"",img:null}];if(snap.val())Object.values(snap.val()).forEach(u=>users.push(u));const saved=localStorage.getItem('mi_phone');if(saved){const found=users.findIndex(u=>u.phone===saved);if(found!==-1)currentUserIdx=found;}updateProfileUI();renderUserList();});const grid=document.getElementById('anim-grid');anims.forEach(a=>{const btn=document.createElement('div');btn.className='anim-option';btn.innerText=a.toUpperCase();btn.onclick=()=>{currentAnim=a;localStorage.setItem('mi_anim',a);document.getElementById('anim-overlay').style.display='none';startSlideshow();};grid.appendChild(btn);});
-                   
-                    const screen = document.getElementById('reboot-screen');
+function startApp() {
+    const screen = document.getElementById('reboot-screen');
     const canvas = document.getElementById('reboot-canvas');
-    const ctx = canvas.getContext('2d');
+    const mctx = canvas.getContext('2d'); // 'ctx' variable clash na ho isliye 'mctx'
 
-    // 1. Show Reboot Screen
+    // 1. Reboot Animation Start
     screen.style.display = 'flex';
-    
-    // 2. Set Canvas to Full Screen
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     const alphabet = "0101010101ABCDEFHIJKLMNOPQRSTUVXYZ@#$%&*";
     const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
-    const drops = [];
-
-    // Initialize drops
-    for (let x = 0; x < columns; x++) {
-        drops[x] = 1;
-    }
+    const drops = Array(columns).fill(1);
 
     function drawMatrix() {
-        // Transparent black layer for trail effect
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        mctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        mctx.fillRect(0, 0, canvas.width, canvas.height);
+        mctx.fillStyle = "#00ffcc";
+        mctx.font = fontSize + "px monospace";
 
-        ctx.fillStyle = "#00ffcc"; // Neon Cyan theme
-        ctx.font = fontSize + "px monospace";
-
-        for (let i = 0; i < drops.length; i++) {
+        drops.forEach((y, i) => {
             const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-            // Randomly reset drops to top
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-            }
+            mctx.fillText(text, i * fontSize, y * fontSize);
+            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
-        }
+        });
     }
 
-    // 3. Start Animation
     const matrixInterval = setInterval(drawMatrix, 35);
 
-    // 4. Cleanup and Reload
+    // 2. 4 Seconds baad animation hatakar App loading complete karna
     setTimeout(() => {
         clearInterval(matrixInterval);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Page reload to clear all states
-        location.reload();
-    }, 4500); 
-                   }   
-                   }
+        screen.style.transition = "opacity 1s ease";
+        screen.style.opacity = "0";
+        setTimeout(() => { screen.style.display = 'none'; }, 1000);
+    }, 4000);
+
+    // 3. Existing Database & UI Logic
+    db.ref('users').on('value', snap => {
+        users = [{ name: "Guest Identity", phone: "Standby", email: "N/A", pass: "", img: null }];
+        if (snap.val()) Object.values(snap.val()).forEach(u => users.push(u));
+        const saved = localStorage.getItem('mi_phone');
+        if (saved) {
+            const found = users.findIndex(u => u.phone === saved);
+            if (found !== -1) currentUserIdx = found;
+        }
+        updateProfileUI();
+        renderUserList();
+    });
+
+    const grid = document.getElementById('anim-grid');
+    anims.forEach(a => {
+        const btn = document.createElement('div');
+        btn.className = 'anim-option';
+        btn.innerText = a.toUpperCase();
+        btn.onclick = () => {
+            currentAnim = a;
+            localStorage.setItem('mi_anim', a);
+            document.getElementById('anim-overlay').style.display = 'none';
+            startSlideshow();
+        };
+        grid.appendChild(btn);
+    });
+}
+
 
        
        
