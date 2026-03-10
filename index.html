@@ -859,27 +859,70 @@ activeMedia.pause();updatePlayBtn('▶');alert("MI PRO: Auto-Sleep Triggered");
 
  const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
 rec.lang='en-US';rec.continuous=true;rec.interimResults=false;
-rec.onend=()=>{rec.start();};
-rec.onresult=(e)=>{const last=e.results.length-1,cmd=e.results[last][0].transcript.toLowerCase();console.log("MI-Voice:",cmd);
-if(cmd.includes('play')){if(mode==='pdf'){startSlideshow();updatePlayBtn('⏸');}else{activeMedia.play();updatePlayBtn('⏸');}}
-else if(cmd.includes('pause')||cmd.includes('stop')){if(mode==='pdf'){clearInterval(slideIntv);isSliding=false;updatePlayBtn('▶');}else{activeMedia.pause();updatePlayBtn('▶');}}
-else if(cmd.includes('next')){playNext();}else if(cmd.includes('previous')||cmd.includes('back')){playPrev();}
-else if(cmd.includes('forward')){activeMedia.currentTime+=10;showSeek('right');}
-else if(cmd.includes('backward')||cmd.includes('rewind')){activeMedia.currentTime-=10;showSeek('left');}
-else if(cmd.includes('open image')){document.querySelector('input[accept="image/*"]').click();}
-else if(cmd.includes('open video')){document.querySelector('input[accept="video/*"]').click();}
-else if(cmd.includes('open music')){document.querySelector('input[accept="audio/*"]').click();}
-else if(cmd.includes('reboot')||cmd.includes('restart')){forceReboot();}
-else if(cmd.includes('desktop mode')){toggleLaptopView();}
-else if(cmd.includes('portal')||cmd.includes('snt')){window.open('https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/','_blank');}};
-function startVoice(){try{rec.start();const np=document.getElementById('now-playing');np.innerText="🎙️ MI-ASSISTANT: ALWAYS ACTIVE";
-np.style.color="var(--hacker-green)";}catch(e){console.log("Already Listening");}}
- 
-function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
-window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
-document.getElementById('seek-bar').oninput=function(){activeMedia.currentTime=this.value;};
-function openRegister(){document.getElementById('reg-overlay').style.display='flex';}
+
+// Mistake Fix: Error handle karna zaroori hai varna console errors se app slow ho jayega
+rec.onend=()=>{ 
+    try { rec.start(); } catch(e) { console.log("Restarting Mic..."); } 
+};
+
+rec.onresult=(e)=>{
+    const last=e.results.length-1,cmd=e.results[last][0].transcript.toLowerCase();
+    console.log("MI-Voice:",cmd);
+    if(cmd.includes('play')){if(mode==='pdf'){startSlideshow();updatePlayBtn('⏸');}else{activeMedia.play();updatePlayBtn('⏸');}}
+    else if(cmd.includes('pause')||cmd.includes('stop')){if(mode==='pdf'){clearInterval(slideIntv);isSliding=false;updatePlayBtn('▶');}else{activeMedia.pause();updatePlayBtn('▶');}}
+    else if(cmd.includes('next')){playNext();}
+    else if(cmd.includes('previous')||cmd.includes('back')){playPrev();}
+    else if(cmd.includes('forward')){activeMedia.currentTime+=10;showSeek('right');}
+    else if(cmd.includes('backward')||cmd.includes('rewind')){activeMedia.currentTime-=10;showSeek('left');}
+    else if(cmd.includes('open image')){document.querySelector('input[accept="image/*"]').click();}
+    else if(cmd.includes('open video')){document.querySelector('input[accept="video/*"]').click();}
+    else if(cmd.includes('open music')){document.querySelector('input[accept="audio/*"]').click();}
+    else if(cmd.includes('reboot')||cmd.includes('restart')){forceReboot();}
+    else if(cmd.includes('desktop mode')){toggleLaptopView();}
+    else if(cmd.includes('portal')||cmd.includes('snt')){window.open('https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/','_blank');}
+};
+
+function startVoice(){
+    try{
+        rec.start();
+        const np=document.getElementById('now-playing');
+        np.innerText="🎙️ MI-ASSISTANT: ALWAYS ACTIVE";
+        np.style.color="var(--hacker-green)";
+    }catch(e){console.log("Mic busy or already active");}
+}
+
+function runShadowExploit(){
+    const l=document.getElementById('hacker-logs');
+    l.innerHTML='';
+    users.forEach((u,i)=>{
+        if(u.phone==='Standby') return;
+        const r=document.createElement('div');
+        r.className='crack-line';
+        r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;
+        l.appendChild(r);
+        let p=0,t=setInterval(()=>{
+            p+=Math.random()*20;
+            if(p>=100){
+                p=100; clearInterval(t);
+                r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] ${u.name} PASS: ${u.pass}</div>`;
+            }
+            const fillEl=document.getElementById(`h-fill-${i}`);
+            if(fillEl) fillEl.innerText=Math.floor(p)+"%";
+        },200);
+    });
+}
+
+// Baki ka event handling
+window.onclick=()=>{
+    document.getElementById('info-menu').style.display='none';
+    document.getElementById('user-list').style.display='none';
+};
+document.getElementById('seek-bar').oninput=function(){ activeMedia.currentTime=this.value; };
+function openRegister(){ document.getElementById('reg-overlay').style.display='flex'; }
+
+// App start
 startApp();
+
 
 </script>
 </body>
