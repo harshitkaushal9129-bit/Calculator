@@ -592,7 +592,10 @@ input[type="range"]::-webkit-slider-thumb {
 
          <div class="menu-topic-head">SMART CONTROLS</div>
 <a href="#" onclick="setSleep(30)" class="menu-link">🌙 Sleep Timer (30m)</a>
-<a href="#" onclick="startVoice()" class="menu-link">🎙️ Activate AI Voice</a>
+<label class="menu-link" style="cursor:pointer;">
+    📄 Open PDF Document
+    <input type="file" accept=".pdf" style="display:none;" onchange="handleFiles(event, 'pdf')">
+</label>
 
     <div class="menu-topic-head">ADVANCED TOOLS</div>
          
@@ -787,102 +790,7 @@ alert(`Sleep Timer: ${min} min set!`);sleepT=setTimeout(()=>{
 activeMedia.pause();updatePlayBtn('▶');alert("MI PRO: Auto-Sleep Triggered");
 },min*60000);}
 
-const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();rec.lang='en-US';rec.continuous=true;let assistantActive=false,timeout;const playChime=(f=880)=>{const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);osc.type='sine';osc.frequency.setValueAtTime(f,ctx.currentTime);g.gain.setValueAtTime(0.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.5);osc.start();osc.stop(ctx.currentTime+0.5)};
-        rec.onresult = e => {
-    const result = e.results[e.results.length - 1];
-    const cmd = result[0].transcript.toLowerCase().trim();
-    const np = document.getElementById('now-playing');
-    
-    console.log("Voice Input:", cmd); // Debugging ke liye
 
-    // Wake Word Detection
-    if (cmd.includes('hey kaushalji') || cmd.includes('hey kaushal ji')) {
-        assistantActive = true;
-        playChime(1056);
-        np.innerText = "🎙️ YES KAUSHAL JI...";
-        np.style.color = "#00ffcc";
-        
-        clearTimeout(timeout);
-        // 7 seconds tak command ka wait karega
-        timeout = setTimeout(() => {
-            assistantActive = false;
-            np.innerText = "🎙️ STANDBY";
-            np.style.color = "#888";
-        }, 7000);
-        return;
-    }
-
-    if (assistantActive) {
-        playChime(660);
-        
-        // --- COMMANDS EXECUTION ---
-        if (cmd.includes('play') || cmd.includes('chalao')) {
-            if (mode === 'pdf') startSlideshow();
-            else activeMedia.play();
-            updatePlayBtn('⏸');
-        } 
-        else if (cmd.includes('pause') || cmd.includes('stop') || cmd.includes('ruko')) {
-            if (mode === 'pdf') clearInterval(slideIntv);
-            else activeMedia.pause();
-            updatePlayBtn('▶');
-        } 
-        else if (cmd.includes('next') || cmd.includes('agla')) {
-            playNext();
-        } 
-        else if (cmd.includes('previous') || cmd.includes('back') || cmd.includes('piche')) {
-            playPrev();
-        } 
-        else if (cmd.includes('forward')) {
-            activeMedia.currentTime += 10;
-            showSeek('right');
-        } 
-        else if (cmd.includes('backward')) {
-            activeMedia.currentTime -= 10;
-            showSeek('left');
-        }
-        else if (cmd.includes('reboot')) {
-            forceReboot();
-        }
-        else if (cmd.includes('desktop mode')) {
-            toggleLaptopView();
-        }
-
-        // Command execute hone ke baad reset
-        assistantActive = false;
-        np.innerText = "🎙️ EXECUTED: " + cmd.toUpperCase();
-        setTimeout(() => { 
-            if(!assistantActive) np.innerText = "MI-OS Active"; 
-        }, 2000);
-    }
-};
-
-        
-        function startVoice() {
-    // 1. Pehle Audio Context ko jagana padta hai
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (AudioCtx) {
-        const dummyCtx = new AudioCtx();
-        if (dummyCtx.state === 'suspended') dummyCtx.resume();
-    }
-
-    try {
-        // 2. Recognition start karne se pehle check karein
-        rec.start(); 
-        
-        // 3. Feedback system
-        playChime(440);
-        const np = document.getElementById('now-playing');
-        if (np) {
-            np.innerText = "🎙️ MI-OS: LISTENING FOR 'HEY KAUSHALJI'";
-            np.style.color = "var(--main-clr)";
-        }
-        console.log("AI Voice System Initialized...");
-
-    } catch (e) {
-        // Agar pehle se on hai toh error na dikhaye, bas console mein bataye
-        console.log("Mic is already active or blocked by browser.");
-    }
-}
 
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
 window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
