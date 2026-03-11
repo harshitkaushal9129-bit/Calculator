@@ -787,8 +787,115 @@ alert(`Sleep Timer: ${min} min set!`);sleepT=setTimeout(()=>{
 activeMedia.pause();updatePlayBtn('▶');alert("MI PRO: Auto-Sleep Triggered");
 },min*60000);}
 
-const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();rec.lang='en-US';rec.continuous=true;let assistantActive=false,timeout;const playChime=(f=880)=>{const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);osc.type='sine';osc.frequency.setValueAtTime(f,ctx.currentTime);g.gain.setValueAtTime(0.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.5);osc.start();osc.stop(ctx.currentTime+0.5)};rec.onresult=e=>{const cmd=e.results[e.results.length-1][0].transcript.toLowerCase();const np=document.getElementById('now-playing');if(cmd.includes('hey kaushalji')){assistantActive=true;playChime(1056);np.innerText="🎙️ YES KAUSHAL JI...";np.style.color="#00ffcc";clearTimeout(timeout);timeout=setTimeout(()=>{assistantActive=false;np.innerText="🎙️ STANDBY"},5000);return}if(assistantActive){playChime(660);if(cmd.includes('play')){if(mode==='pdf'){startSlideshow()}else{activeMedia.play()}updatePlayBtn('⏸')}else if(cmd.includes('pause')||cmd.includes('stop')){if(mode==='pdf'){clearInterval(slideIntv)}else{activeMedia.pause()}updatePlayBtn('▶')}else if(cmd.includes('next')){playNext()}else if(cmd.includes('previous')||cmd.includes('back')){playPrev()}else if(cmd.includes('forward')){activeMedia.currentTime+=10;showSeek('right')}else if(cmd.includes('backward')){activeMedia.currentTime-=10;showSeek('left')}else if(cmd.includes('open image')){document.querySelector('input[accept="image/*"]').click()}else if(cmd.includes('open video')){document.querySelector('input[accept="video/*"]').click()}else if(cmd.includes('open music')){document.querySelector('input[accept="audio/*"]').click()}else if(cmd.includes('reboot')){forceReboot()}else if(cmd.includes('desktop mode')){toggleLaptopView()}assistantActive=false;np.innerText="🎙️ EXECUTED";setTimeout(()=>{np.innerText="MI-OS Active"},2000)}};rec.onend=()=>rec.start();
-        function startVoice(){try{rec.start();playChime(440);document.getElementById('now-playing').innerText="🎙️ WAKE WORD: HEY KAUSHALJI"}catch(e){}}
+// --- MI PLAYER PRO: ELITE VOICE ENGINE ---
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+    alert("Voice Recognition not supported in this browser.");
+} else {
+    const rec = new SpeechRecognition();
+    rec.lang = 'en-IN'; 
+    rec.continuous = true;
+    rec.interimResults = false;
+
+    let assistantActive = false;
+    let timeout;
+
+    const playChime = (f = 880) => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.connect(g); g.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, ctx.currentTime);
+            g.gain.setValueAtTime(0.1, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+            osc.start(); osc.stop(ctx.currentTime + 0.5);
+        } catch(e) { console.log("Audio feedback error"); }
+    };
+
+    rec.onresult = (e) => {
+        const cmd = e.results[e.results.length - 1][0].transcript.toLowerCase().trim();
+        const np = document.getElementById('now-playing');
+        
+        console.log("Heard:", cmd);
+
+        // --- WAKE WORD ---
+        if (cmd.includes('hey kaushalji') || cmd.includes('kaushal ji')) {
+            assistantActive = true;
+            playChime(1056);
+            np.innerText = "🎙️ YES KAUSHAL JI...";
+            np.style.color = "#00ffcc";
+            
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                assistantActive = false;
+                np.innerText = "🎙️ STANDBY";
+                np.style.color = "#888";
+            }, 7000); 
+            return;
+        }
+
+        // --- ACTION COMMANDS ---
+        if (assistantActive) {
+            playChime(660);
+            
+            // 1. Media Playback
+            if (cmd.includes('play')) {
+                if (mode === 'pdf') startSlideshow(); else activeMedia.play();
+                updatePlayBtn('⏸');
+            } 
+            else if (cmd.includes('pause') || cmd.includes('stop')) {
+                if (mode === 'pdf') clearInterval(slideIntv); else activeMedia.pause();
+                updatePlayBtn('▶');
+            } 
+            else if (cmd.includes('next')) {
+                playNext();
+            } 
+            else if (cmd.includes('previous') || cmd.includes('back')) {
+                playPrev();
+            }
+
+            // 2. File Openers (Triggering Hidden Inputs)
+            else if (cmd.includes('open video')) {
+                document.querySelector('input[accept="video/*"]').click();
+            }
+            else if (cmd.includes('open audio') || cmd.includes('open music')) {
+                document.querySelector('input[accept="audio/*"]').click();
+            }
+            else if (cmd.includes('open image') || cmd.includes('open photo')) {
+                document.querySelector('input[accept="image/*"]').click();
+            }
+
+            // 3. System Actions
+            else if (cmd.includes('reboot') || cmd.includes('restart')) {
+                forceReboot();
+            }
+            else if (cmd.includes('close app') || cmd.includes('exit')) {
+                location.reload(); // App reset karne ke liye
+            }
+            else if (cmd.includes('desktop mode')) {
+                toggleLaptopView();
+            }
+
+            assistantActive = false;
+            np.innerText = "🎙️ EXECUTED: " + cmd.toUpperCase();
+            setTimeout(() => { np.innerText = "MI-OS Active"; }, 2000);
+        }
+    };
+
+    rec.onerror = (event) => { console.error("Speech Error:", event.error); };
+    rec.onend = () => { rec.start(); };
+
+    function startVoice() {
+        try {
+            rec.start();
+            playChime(440);
+            document.getElementById('now-playing').innerText = "🎙️ LISTENING...";
+        } catch (e) { console.log("Mic already on"); }
+    }
+}
 
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
 window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
