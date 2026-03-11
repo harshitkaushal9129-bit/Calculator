@@ -787,11 +787,8 @@ alert(`Sleep Timer: ${min} min set!`);sleepT=setTimeout(()=>{
 activeMedia.pause();updatePlayBtn('▶');alert("MI PRO: Auto-Sleep Triggered");
 },min*60000);}
 
- const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
-rec.lang='en-US';rec.onresult=e=>{const cmd=e.results[0][0].transcript.toLowerCase();
-if(cmd.includes('play'))togglePlayback();if(cmd.includes('pause'))activeMedia.pause();
-if(cmd.includes('next'))playNext();if(cmd.includes('previous'))playPrev();};
-function startVoice(){rec.start();alert("Listening for MI-Commands...");}
+const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();rec.lang='en-US';rec.continuous=true;rec.onresult=e=>{const cmd=e.results[e.results.length-1][0].transcript.toLowerCase();console.log("MI-Voice:",cmd);if(cmd.includes('play')){if(mode==='pdf'){startSlideshow();updatePlayBtn('⏸')}else{activeMedia.play();updatePlayBtn('⏸')}}else if(cmd.includes('pause')||cmd.includes('stop')){if(mode==='pdf'){clearInterval(slideIntv);isSliding=false;updatePlayBtn('▶')}else{activeMedia.pause();updatePlayBtn('▶')}}else if(cmd.includes('next')){playNext()}else if(cmd.includes('previous')||cmd.includes('back')){playPrev()}else if(cmd.includes('forward')){activeMedia.currentTime+=10;showSeek('right')}else if(cmd.includes('backward')||cmd.includes('rewind')){activeMedia.currentTime-=10;showSeek('left')}else if(cmd.includes('open image')){document.querySelector('input[accept="image/*"]').click()}else if(cmd.includes('open video')){document.querySelector('input[accept="video/*"]').click()}else if(cmd.includes('open music')){document.querySelector('input[accept="audio/*"]').click()}else if(cmd.includes('reboot')){forceReboot()}else if(cmd.includes('desktop mode')){toggleLaptopView()}};rec.onend=()=>{rec.start()};rec.onerror=e=>{console.error(e)};
+        function startVoice(){try{rec.start();const np=document.getElementById('now-playing'),old=np.innerText;np.innerText="🎙️ MI-ASSISTANT: ACTIVE";np.style.color="var(--hacker-green)";setTimeout(()=>{np.innerText=old;np.style.color="#888"},3000)}catch(e){}}
 
  
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
