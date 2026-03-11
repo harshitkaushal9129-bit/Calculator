@@ -631,7 +631,67 @@ function togglePlayback(){if(mode==='pdf'){isSliding?(clearInterval(slideIntv),i
 
 function playNext(){if(trackIdx<playlist.length-1)playTrack(trackIdx+1);else if(mode==='pdf')playTrack(0);}
 function playPrev(){if(trackIdx>0)playTrack(trackIdx-1);}
+function toggleLaptopView() {
+    const frame = document.getElementById('main-frame');
+    frame.classList.toggle('laptop-view');
+    
+    // Agar laptop view on hai toh sidebar ko thoda space dein
+    const sidebar = document.getElementById('sidebar');
+    if(frame.classList.contains('laptop-view')) {
+        sidebar.style.width = "320px";
+    } else {
+        sidebar.style.width = "0";
+    }
+}
 
+function forceReboot() {
+    // Menu band karein
+    document.getElementById('info-menu').style.display = 'none';
+    
+    // Reboot animation start karein
+    const screen = document.getElementById('reboot-screen');
+    const canvas = document.getElementById('reboot-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    screen.style.display = 'flex';
+    screen.style.opacity = "1";
+    
+    // Matrix Effect (Copy from your startApp logic)
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()010101";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+    for (let x = 0; x < columns; x++) drops[x] = 1;
+
+    function drawMatrix() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#00ffcc";
+        ctx.font = fontSize + "px monospace";
+        for (let i = 0; i < drops.length; i++) {
+            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+
+    const matrixInterval = setInterval(drawMatrix, 35);
+
+    // 3 second baad screen hatayein
+    setTimeout(() => {
+        clearInterval(matrixInterval);
+        screen.style.transition = "opacity 1s ease";
+        screen.style.opacity = "0";
+        setTimeout(() => {
+            screen.style.display = 'none';
+        }, 1000);
+    }, 3000);
+}
+
+    
 function updateAndroidSystem(){const now=new Date(),timeStr=now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');const tEl=document.getElementById('android-time');if(tEl)tEl.innerText=timeStr;if('getBattery' in navigator){navigator.getBattery().then(b=>{const update=()=>{const lvl=Math.round(b.level*100),batEl=document.getElementById('android-battery');if(batEl)batEl.innerText=`${b.charging?"⚡":lvl<=20?"🪫":"🔋"} ${lvl}%`;};update();b.onlevelchange=update;b.onchargingchange=update;});}}
 setInterval(updateAndroidSystem,30000);updateAndroidSystem();
 
