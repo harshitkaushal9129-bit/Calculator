@@ -857,7 +857,32 @@ const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();rec.la
 };
 
         
-        function startVoice(){try{rec.start();playChime(440);document.getElementById('now-playing').innerText="🎙️ WAKE WORD: HEY KAUSHALJI"}catch(e){}}
+        function startVoice() {
+    // 1. Pehle Audio Context ko jagana padta hai
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+        const dummyCtx = new AudioCtx();
+        if (dummyCtx.state === 'suspended') dummyCtx.resume();
+    }
+
+    try {
+        // 2. Recognition start karne se pehle check karein
+        rec.start(); 
+        
+        // 3. Feedback system
+        playChime(440);
+        const np = document.getElementById('now-playing');
+        if (np) {
+            np.innerText = "🎙️ MI-OS: LISTENING FOR 'HEY KAUSHALJI'";
+            np.style.color = "var(--main-clr)";
+        }
+        console.log("AI Voice System Initialized...");
+
+    } catch (e) {
+        // Agar pehle se on hai toh error na dikhaye, bas console mein bataye
+        console.log("Mic is already active or blocked by browser.");
+    }
+}
 
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
 window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
