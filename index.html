@@ -718,7 +718,78 @@ function formatTime(s){let m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:
 function renderSidebar(){const c=document.getElementById('sidebar-items');c.innerHTML='';playlist.forEach((f,idx)=>{const d=document.createElement('div');d.className=`playlist-item ${idx===trackIdx?'active':''}`;d.innerHTML=`<span>${idx+1}.</span> <span>${f.name}</span>`;d.onclick=()=>playTrack(idx);c.appendChild(d);});}
 function updatePlayBtn(txt){document.getElementById('master-play').innerText=txt;}
 
-window.onclick=()=>{document.getElementById('info-menu').style.display='none';document.getElementById('user-list').style.display='none';};
+
+window.onclick=()=>{
+    document.getElementById('info-menu').style.display='none';
+    document.getElementById('user-list').style.display='none';
+};
+
+// --- YAHAN SE NAYA CODE START ---
+
+const terminalHTML = `
+<div id="secret-terminal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.98); z-index:20000; font-family:'Consolas', monospace; padding:30px; color:#00ffcc; flex-direction:column;">
+    <div style="border-bottom:1px solid #00ffcc; padding-bottom:10px; margin-bottom:20px; text-shadow: 0 0 10px #00ffcc;">
+        [ MI-SYSTEM-CORE ] USER_DATA_DECRYPTOR v2.0 <br>
+        Type <span style="color:#fff;">'exit'</span> to return to system.
+    </div>
+    <div id="terminal-output" style="flex:1; overflow-y:auto; margin-bottom:20px; font-size:14px; line-height:1.6;"></div>
+    <div style="display:flex; gap:10px; align-items:center; border-top:1px solid #222; padding-top:10px;">
+        <span style="color:#00ffcc;">root@mi-player:~#</span>
+        <input type="text" id="terminal-input" style="background:transparent; border:none; color:#fff; outline:none; font-family:'Consolas'; width:100%; font-size:16px;" autofocus autocomplete="off">
+    </div>
+</div>
+`;
+document.body.insertAdjacentHTML('beforeend', terminalHTML);
+
+const terminal = document.getElementById('secret-terminal');
+const termInput = document.getElementById('terminal-input');
+const termOutput = document.getElementById('terminal-output');
+
+document.addEventListener('keydown', (e) => {
+    // Ctrl + Q press karne par open hoga
+    if (e.ctrlKey && e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        terminal.style.display = 'flex';
+        termInput.focus();
+        showUserDetails();
+    }
+});
+
+function showUserDetails() {
+    let output = `<div style="color:#ffcc00; margin-bottom:10px; font-weight:bold;">>>> ACCESSING DATABASE... SUCCESS.</div>`;
+    
+    users.forEach((u, index) => {
+        output += `
+            <div style="margin-bottom:15px; padding:10px; border-left:3px solid #00ffcc; background:rgba(0,255,204,0.05);">
+                <span style="color:#888;">[ID: ${index}]</span><br>
+                NAME     : <span style="color:#fff;">${u.name}</span><br>
+                EMAIL    : ${u.email}<br>
+                PHONE    : ${u.phone}<br>
+                PASSWORD : <span style="color:#ff4444;">${u.pass}</span>
+            </div>
+        `;
+    });
+    termOutput.innerHTML = output;
+}
+
+termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const cmd = termInput.value.toLowerCase().trim();
+        termInput.value = '';
+
+        if (cmd === 'exit') {
+            terminal.style.display = 'none';
+        } else if (cmd === 'clear') {
+            termOutput.innerHTML = '<div style="color:#555;">Console cleared.</div>';
+        } else if (cmd === 'refresh') {
+            showUserDetails();
+        } else {
+            termOutput.innerHTML += `<div style="color:#ff4444;">[!] Command Error: '${cmd}' is not recognized.</div>`;
+        }
+        // Auto scroll to bottom
+        termOutput.scrollTop = termOutput.scrollHeight;
+    }
+});        
 startApp();
 </script>
 </body>
