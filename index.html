@@ -504,12 +504,16 @@ input[type="range"]::-webkit-slider-thumb {
 <div style="text-align:center;">
 <span style="color:var(--main-clr);font-weight:900;letter-spacing:2px;font-size:18px;">MI PLAYER PRO</span>
 <div style="display:flex;gap:10px;margin-top:10px;justify-content:center;">
-<select id="speed-ctrl" class="tool-select" onchange="setSpeed()">
-<option value="1">1.0x Speed</option>
-<option value="1.5">1.5x Speed</option>
-<option value="2">2.0x Speed</option>
+
+    <select id="speed-ctrl" class="tool-select" onchange="setSpeed()">
+    <option value="0.5">0.5x Slow</option>
+    <option value="1" selected>1.0x Normal</option>
+    <option value="1.5">1.5x Speed</option>
+    <option value="2">2.0x Speed</option>
 </select>
-<button onclick="toggleLaptopView()" class="tool-select">🖥️ View</button>
+
+
+    <button onclick="toggleLaptopView()" class="tool-select">🖥️ View</button>
 </div>
 </div>
 <div style="display:flex;gap:15px;align-items:center;">
@@ -699,6 +703,10 @@ function forceReboot() {
     
 function updateAndroidSystem(){const now=new Date(),timeStr=now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');const tEl=document.getElementById('android-time');if(tEl)tEl.innerText=timeStr;if('getBattery' in navigator){navigator.getBattery().then(b=>{const update=()=>{const lvl=Math.round(b.level*100),batEl=document.getElementById('android-battery');if(batEl)batEl.innerText=`${b.charging?"⚡":lvl<=20?"🪫":"🔋"} ${lvl}%`;};update();b.onlevelchange=update;b.onchargingchange=update;});}}
 setInterval(updateAndroidSystem,30000);updateAndroidSystem();
+function setSpeed() { const speed = document.getElementById('speed-ctrl').value;  if (activeMedia) {
+        activeMedia.playbackRate = parseFloat(speed); console.log("Playback speed set to: " + speed);
+    }
+}
 
 function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
 
