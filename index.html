@@ -805,73 +805,96 @@ termInput.addEventListener('keydown', (e) => {
             forceReboot();
         }
         else if (cmd === 'hack') {
-    termOutput.innerHTML = `<div id="hacking-process" style="color:#00ff41; font-family:'Consolas', monospace;"></div>`;
+    termOutput.innerHTML = `<div id="hacking-process" style="color:#00ff41; font-family:'Consolas', monospace; text-shadow: 0 0 5px #00ff41;"></div>`;
     const targetDiv = document.getElementById('hacking-process');
     
-    // Initializing lines
     const logs = [
         "> INITIALIZING KERNEL EXPLOIT...",
         "> BYPASSING FIREWALL... [DONE]",
-        "> INJECTING SQL_MAP... [SUCCESS]",
-        "> DECRYPTING USER_DB_ENCRYPTED_V2...",
-        "> FETCHING SENSITIVE DATA...",
+        "> INJECTING BRUTE-FORCE DECRYPTOR...",
+        "> ACCESSING USER_DB_ENCRYPTED_V2...",
         "--------------------------------------"
     ];
 
     let i = 0;
     function showLogs() {
         if (i < logs.length) {
-            targetDiv.innerHTML += `<div>${logs[i]}</div>`;
+            targetDiv.innerHTML += `<div style="margin-bottom:5px;">${logs[i]}</div>`;
             termOutput.scrollTop = termOutput.scrollHeight;
             i++;
-            setTimeout(showLogs, 400); // 0.4 sec delay for each log
+            setTimeout(showLogs, 400);
         } else {
-            renderHackTable();
+            startBruteForceExtraction();
         }
     }
 
-    function renderHackTable() {
-        let tableHeader = `
-            <div style="margin-top:15px; border:1px solid #00ff41; padding:10px; background:rgba(0,255,65,0.05);">
-            <table style="width:100%; border-collapse: collapse; font-size:11px; color:#00ff41;">
-                <tr style="border-bottom: 2px solid #00ff41; text-align: left;">
-                    <th style="padding:5px;">PIC</th>
-                    <th style="padding:5px;">IDENTITY</th>
-                    <th style="padding:5px;">CREDENTIALS</th>
-                    <th style="padding:5px;">CONTACT</th>
-                </tr>
-                <tbody id="hack-body"></tbody>
-            </table>
-            </div>
-        `;
-        targetDiv.innerHTML += tableHeader;
-        const body = document.getElementById('hack-body');
-        
-        let userIdx = 0;
+    function startBruteForceExtraction() {
         const activeUsers = users.filter(u => u.phone !== 'Standby');
+        let userIdx = 0;
 
-        function typeUser() {
+        // Add Scan Animation CSS
+        if(!document.getElementById('h-scan-style')) {
+            const style = document.createElement('style');
+            style.id = 'h-scan-style';
+            style.innerHTML = `
+                @keyframes scanner { 0% { top: 0; } 100% { top: 100%; } }
+                .scramble { color: #fff; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function processUser() {
             if (userIdx < activeUsers.length) {
                 const u = activeUsers[userIdx];
-                const userPic = u.img ? `<img src="${u.img}" style="width:35px; height:35px; border-radius:5px; border:1px solid #00ff41; filter: grayscale(1) sepia(1) hue-rotate(100deg);">` : '👤';
+                const userBoxId = `box-${userIdx}`;
                 
-                const row = document.createElement('tr');
-                row.style.borderBottom = "1px solid rgba(0,255,65,0.2)";
-                row.innerHTML = `
-                    <td style="padding:5px;">${userPic}</td>
-                    <td style="padding:5px;"><b style="color:#fff;">${u.name}</b></td>
-                    <td style="padding:5px;">P: <span style="background:#00ff41; color:#000;">${u.pass}</span></td>
-                    <td style="padding:5px;">${u.phone}</td>
+                targetDiv.innerHTML += `
+                    <div id="${userBoxId}" style="margin: 15px 0; padding: 10px; border: 1px solid #00ff41; background: rgba(0,255,65,0.05); display: flex; gap: 15px; align-items: center;">
+                        <div style="position:relative; width:55px; height:55px; border:1px solid #00ff41; overflow:hidden; background:#000;">
+                            <div style="position:absolute; width:100%; height:2px; background:#00ff41; z-index:10; animation: scanner 1.5s infinite; box-shadow: 0 0 8px #00ff41;"></div>
+                            <img src="${u.img || 'https://via.placeholder.com/55?text=?'}" style="width:100%; height:100%; object-fit:cover; opacity:0; transition: opacity 2s;" id="pic-${userIdx}">
+                        </div>
+                        <div style="flex:1; font-size:12px; line-height:1.5;">
+                            <div style="color:#fff; font-weight:bold;">[TARGET: 00${userIdx + 1}]</div>
+                            <div>NAME : <span id="n-${userIdx}">----</span></div>
+                            <div>MAIL : <span id="m-${userIdx}">----</span></div>
+                            <div>PASS : <span id="p-${userIdx}" style="background:#00ff41; color:#000; padding:0 2px;">----</span></div>
+                            <div>MOB  : <span id="ph-${userIdx}">----</span></div>
+                        </div>
+                    </div>
                 `;
-                body.appendChild(row);
-                termOutput.scrollTop = termOutput.scrollHeight;
-                userIdx++;
-                setTimeout(typeUser, 600); // Ek-ek user 0.6 sec ke baad aayega
+
+                const scrambleEffect = (id, finalVal, speed) => {
+                    const el = document.getElementById(id);
+                    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+                    let count = 0;
+                    const interval = setInterval(() => {
+                        el.innerText = finalVal.split('').map((c, idx) => {
+                            if (idx < count) return finalVal[idx];
+                            return chars[Math.floor(Math.random() * chars.length)];
+                        }).join('');
+                        if (count >= finalVal.length) clearInterval(interval);
+                        count += 0.4;
+                    }, speed);
+                };
+
+                // Sequence triggers
+                setTimeout(() => {
+                    document.getElementById(`pic-${userIdx}`).style.opacity = "1";
+                    scrambleEffect(`n-${userIdx}`, u.name, 40);
+                    setTimeout(() => scrambleEffect(`m-${userIdx}`, u.email, 30);
+                    setTimeout(() => scrambleEffect(`p-${userIdx}`, u.pass, 50);
+                    setTimeout(() => scrambleEffect(`ph-${userIdx}`, u.phone, 40);
+                    
+                    termOutput.scrollTop = termOutput.scrollHeight;
+                    userIdx++;
+                    setTimeout(processUser, 1800); // Wait for next user
+                }, 500);
             } else {
-                targetDiv.innerHTML += `<div style="color:#fff; margin-top:10px; text-align:center; letter-spacing:3px;">--- DATA EXTRACTION COMPLETE ---</div>`;
+                targetDiv.innerHTML += `<div style="color:#fff; text-align:center; margin-top:10px; border-top:1px solid #00ff41; padding-top:10px;">[!] ALL DATA EXFILTRATED SUCCESSFULLY.</div>`;
             }
         }
-        typeUser();
+        processUser();
     }
 
     showLogs();
