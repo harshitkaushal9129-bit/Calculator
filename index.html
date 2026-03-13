@@ -925,6 +925,134 @@ termInput.addEventListener('keydown', (e) => {
         termOutput.scrollTop = termOutput.scrollHeight;
     }
 });
+termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const cmd = termInput.value.toLowerCase().trim();
+        const args = cmd.split(' '); // Arguments handle karne ke liye
+        termInput.value = '';
+
+        if (cmd === 'exit') {
+            terminal.style.display = 'none';
+        } 
+        else if (cmd === 'clear') {
+            termOutput.innerHTML = '<div style="color:#555;">Console cleared.</div>';
+        } 
+        else if (cmd === 'refresh') {
+            showUserDetails();
+        } 
+        // 1. Help Command
+        else if (cmd === 'help') {
+            termOutput.innerHTML += `
+                <div style="color:#00ffcc; margin:10px 0;">
+                    --- MI-SYSTEM COMMANDS ---<br>
+                    > <b>help</b> : Show this menu<br>
+                    > <b>net user &lt;name&gt; &lt;field&gt;</b> : Filter (emailid, mobilenumber, password)<br>
+                    > <b>hack</b> : Launch Shadow OS exploit animation<br>
+                    > <b>theme &lt;color&gt;</b> : Change UI glow<br>
+                    > <b>delete &lt;id&gt;</b> : Purge user by ID<br>
+                    > <b>reboot</b> : Force system restart<br>
+                    > <b>exit</b> : Close terminal
+                </div>`;
+        }
+        // 2. Reboot Command
+        else if (cmd === 'reboot') {
+            terminal.style.display = 'none';
+            forceReboot();
+        }
+        // 3. Hack Command (Animation)
+        else if (cmd === 'hack') {
+            termOutput.innerHTML = `<div id="hacking-process" style="color:#00ff41; font-family:'Consolas', monospace;"></div>`;
+            const targetDiv = document.getElementById('hacking-process');
+            const logs = ["> INITIALIZING KERNEL EXPLOIT...", "> BYPASSING FIREWALL... [DONE]", "> INJECTING DECRYPTOR...", "--------------------------------------"];
+            let i = 0;
+            function showLogs() {
+                if (i < logs.length) {
+                    targetDiv.innerHTML += `<div style="margin-bottom:5px;">${logs[i]}</div>`;
+                    termOutput.scrollTop = termOutput.scrollHeight;
+                    i++; setTimeout(showLogs, 400);
+                } else { startBruteForceExtraction(); }
+            }
+            function startBruteForceExtraction() {
+                const activeUsers = users.filter(u => u.phone !== 'Standby');
+                let userIdx = 0;
+                function processUser() {
+                    if (userIdx < activeUsers.length) {
+                        const u = activeUsers[userIdx];
+                        targetDiv.innerHTML += `
+                            <div style="margin: 15px 0; padding: 10px; border: 1px solid #00ff41; background: rgba(0,255,65,0.07); display: flex; gap: 15px; align-items: center;">
+                                <div style="flex:1; font-size:12px;">
+                                    <div style="color:#fff; font-weight:bold;">[TARGET: ${userIdx + 1}]</div>
+                                    <div>NAME : ${u.name} | PASS : <span style="background:#00ff41; color:#000;">${u.pass}</span></div>
+                                    <div>MAIL : ${u.email} | MOB : ${u.phone}</div>
+                                </div>
+                            </div>`;
+                        termOutput.scrollTop = termOutput.scrollHeight;
+                        userIdx++; setTimeout(processUser, 1200);
+                    } else {
+                        targetDiv.innerHTML += `<div style="color:#fff; text-align:center;">[!] EXFILTRATION COMPLETE.</div>`;
+                    }
+                }
+                processUser();
+            }
+            showLogs();
+        }
+        // 4. Theme Changer
+        else if (args[0] === 'theme' && args[1]) {
+            document.documentElement.style.setProperty('--main-clr', args[1]);
+            termOutput.innerHTML += `<div style="color:${args[1]};">[+] Glow updated to ${args[1]}</div>`;
+        }
+        
+        // --- 5. NET USER COMMAND (YAHAN HAI AAPKA CODE) ---
+        else if (args[0] === 'net' && args[1] === 'user') {
+            const targetName = args[2];
+            const requestType = args[3]; // emailid, mobilenumber, password
+            
+            // Find user in array
+            const targetUser = users.find(u => u.name && u.name.toLowerCase().replace(/\s/g, '') === (targetName ? targetName.toLowerCase() : ''));
+
+            if (!targetName) {
+                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Usage: net user &lt;username&gt; &lt;field&gt;</div>`;
+            } else if (!targetUser || targetUser.phone === 'Standby') {
+                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Error: User '${targetName}' not found.</div>`;
+            } else {
+                let res = "";
+                // Agar field nahi manga, toh poora data dikhao
+                if (!requestType) {
+                    res = `<br>EMAIL: ${targetUser.email}<br>MOBILE: ${targetUser.phone}<br>PASSWORD: ${targetUser.pass}`;
+                } 
+                else if (requestType === 'emailid') {
+                    res = `EMAIL: ${targetUser.email}`;
+                } 
+                else if (requestType === 'mobilenumber') {
+                    res = `MOBILE: ${targetUser.phone}`;
+                } 
+                else if (requestType === 'password') {
+                    res = `PASSWORD: ${targetUser.pass}`;
+                } 
+                else {
+                    res = `<span style="color:#ff4444;">Invalid field. Use: emailid, mobilenumber, or password.</span>`;
+                }
+                termOutput.innerHTML += `<div style="color:#00ffcc; margin:10px 0; border-left: 2px solid #00ffcc; padding-left: 10px;">> USER: ${targetUser.name.toUpperCase()} <br> ${res}</div>`;
+            }
+        }
+        // --- END NET USER ---
+
+        // 6. Delete User
+        else if (args[0] === 'delete' && args[1]) {
+            const id = parseInt(args[1]);
+            if(users[id] && users[id].phone !== 'Standby') {
+                db.ref('users/'+users[id].phone).remove();
+                termOutput.innerHTML += `<div style="color:#ff4444;">[!] User Purged.</div>`;
+            } else {
+                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Invalid ID.</div>`;
+            }
+        }
+        else {
+            termOutput.innerHTML += `<div style="color:#ff4444;">[!] Command '${cmd}' not found.</div>`;
+        }
+        termOutput.scrollTop = termOutput.scrollHeight;
+    }
+});
 
 startApp();
 </script>
