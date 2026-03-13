@@ -775,6 +775,7 @@ function showUserDetails() {
 termInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         const cmd = termInput.value.toLowerCase().trim();
+        const args = cmd.split(' '); // Arguments handle karne ke liye
         termInput.value = '';
 
         if (cmd === 'exit') {
@@ -783,13 +784,57 @@ termInput.addEventListener('keydown', (e) => {
             termOutput.innerHTML = '<div style="color:#555;">Console cleared.</div>';
         } else if (cmd === 'refresh') {
             showUserDetails();
-        } else {
-            termOutput.innerHTML += `<div style="color:#ff4444;">[!] Command Error: '${cmd}' is not recognized.</div>`;
+        } 
+        // 1. Help Command
+        else if (cmd === 'help') {
+            termOutput.innerHTML += `
+                <div style="color:#00ffcc; margin:10px 0;">
+                    --- AVAILABLE COMMANDS ---<br>
+                    > <b>help</b> : Show this menu<br>
+                    > <b>refresh</b> : Reload user database<br>
+                    > <b>clear</b> : Clear terminal screen<br>
+                    > <b>reboot</b> : Force system restart<br>
+                    > <b>hack</b> : Launch Shadow OS exploit<br>
+                    > <b>theme [color]</b> : Change UI glow (e.g., theme red)<br>
+                    > <b>exit</b> : Close terminal
+                </div>`;
         }
-        // Auto scroll to bottom
+        // 2. Reboot Command
+        else if (cmd === 'reboot') {
+            terminal.style.display = 'none';
+            forceReboot();
+        }
+        // 3. Hack Command (Shadow OS trigger)
+        else if (cmd === 'hack') {
+            terminal.style.display = 'none';
+            document.getElementById('shadow-os').style.display = 'block';
+            runShadowExploit();
+        }
+        // 4. Dynamic Theme Changer
+        else if (args[0] === 'theme' && args[1]) {
+            const color = args[1];
+            document.documentElement.style.setProperty('--main-clr', color);
+            termOutput.innerHTML += `<div style="color:${color};">[+] System theme updated to ${color}</div>`;
+        }
+        // 5. User Delete by ID (Advanced)
+        else if (args[0] === 'delete' && args[1]) {
+            const id = parseInt(args[1]);
+            if(users[id] && users[id].phone !== 'Standby') {
+                const p = users[id].phone;
+                db.ref('users/'+p).remove();
+                termOutput.innerHTML += `<div style="color:#ff4444;">[!] User ${users[id].name} purged from database.</div>`;
+            } else {
+                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Error: Invalid User ID.</div>`;
+            }
+        }
+        else {
+            termOutput.innerHTML += `<div style="color:#ff4444;">[!] Command Error: '${cmd}' is not recognized. Type 'help' for list.</div>`;
+        }
+        
         termOutput.scrollTop = termOutput.scrollHeight;
     }
-});        
+});
+
 startApp();
 </script>
 </body>
