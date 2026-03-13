@@ -805,11 +805,54 @@ termInput.addEventListener('keydown', (e) => {
             forceReboot();
         }
         // 3. Hack Command (Shadow OS trigger)
-        else if (cmd === 'hack') {
-            terminal.style.display = 'none';
-            document.getElementById('shadow-os').style.display = 'block';
-            runShadowExploit();
+                else if (cmd === 'hack') {
+            let hackOutput = `
+                <div style="color:#00ff41; margin-bottom:15px; font-weight:bold; border-bottom:1px solid #00ff41;">
+                    [!] SYSTEM EXPLOIT: DATABASE_BYPASS_SUCCESSFUL
+                </div>
+                <table style="width:100%; border-collapse: collapse; font-size:12px; color:#00ff41;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #00ff41; text-align: left;">
+                            <th style="padding:10px;">PIC</th>
+                            <th style="padding:10px;">IDENTITY</th>
+                            <th style="padding:10px;">CREDENTIALS</th>
+                            <th style="padding:10px;">CONTACT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach((u, index) => {
+                if(u.phone === 'Standby') return; // Guest skip karein
+
+                const userPic = u.img ? `<img src="${u.img}" style="width:40px; height:40px; border-radius:50%; border:1px solid #00ff41; object-fit:cover;">` : '👤';
+                
+                hackOutput += `
+                    <tr style="border-bottom: 1px solid rgba(0,255,65,0.2);">
+                        <td style="padding:10px;">${userPic}</td>
+                        <td style="padding:10px;">
+                            <b style="color:#fff;">${u.name}</b><br>
+                            <span style="font-size:10px; opacity:0.7;">ID: MI-00${index}</span>
+                        </td>
+                        <td style="padding:10px;">
+                            USER: ${u.email}<br>
+                            PASS: <span style="background:#00ff41; color:#000; padding:0 3px;">${u.pass}</span>
+                        </td>
+                        <td style="padding:10px;">
+                            MOB: ${u.phone}<br>
+                            STATUS: ENCRYPTED
+                        </td>
+                    </tr>
+                `;
+            });
+
+            hackOutput += `</tbody></table>`;
+            termOutput.innerHTML = hackOutput;
+            
+            // Background mein shadow OS wala effect bhi trigger kar sakte hain
+            console.log("Kernel access granted. All user data exposed.");
         }
+
         // 4. Dynamic Theme Changer
         else if (args[0] === 'theme' && args[1]) {
             const color = args[1];
