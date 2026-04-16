@@ -1,27 +1,37 @@
 const CACHE_NAME = 'mi-player-v16-elite';
 const ASSETS = [
+  './',
   './index.html',
   './manifest.json',
-  './sw.js',
-  'https://cdn-icons-png.flaticon.com/512/727/727218.png'
+  'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js'
 ];
 
-// Install Service Worker
+// Install Event - Caching Assets
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // Sari zaroori files ko offline ke liye save karna
-      return cache.addAll(ASSETS);
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
+});
+
+// Activate Event - Cleaning old caches
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
     })
   );
 });
 
-// Fetch Assets
+// Fetch Event - Serving from cache
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((res) => {
-      // Agar cache mein file milti hai toh wahi dikhao, nahi toh network se lo
-      return res || fetch(e.request);
+      return res || fetch(e.request).catch(() => {
+        if (e.request.mode === 'navigate') return caches.match('./index.html');
+      });
     })
   );
 });
