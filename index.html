@@ -3,600 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MI PLAYER PRO - Full Elite Edition</title>
+    <title>MI PLAYER PRO - Elite Console</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00ffcc">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
-
-        /* --- MI PLAYER PRO - ELITE CORE STYLES --- */
-:root {
-    --main-clr: #00ffcc;
-    --bg-dark: #050505;
-    --card-bg: rgba(20, 20, 20, 0.85);
-    --hacker-green: #00ff41;
-    --neon-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    background: #000;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-    background-image: radial-gradient(circle at center, #0a1a1a 0%, #000 100%);
-}
-
-/* --- DEVICE FRAME & TRANSITIONS --- */
-.phone {
-    width: 380px;
-    height: 800px;
-    background: var(--bg-dark);
-    border: 10px solid #1a1a1a;
-    border-radius: 50px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(0, 255, 204, 0.1);
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-/* Laptop View Logic */
-.phone.laptop-view {
-    width: 95vw;
-    height: 90vh;
-    border-radius: 15px;
-    border-width: 4px;
-}
-
-.screen {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-/* --- SYSTEM UI --- */
-.status-bar {
-    height: 40px;
-    padding: 0 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.nav-bar {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 55px;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    backdrop-filter: blur(15px);
-    z-index: 100;
-    border-top: 1px solid rgba(255,255,255,0.05);
-}
-
-.nav-icon {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #666;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.nav-icon:hover { border-color: var(--main-clr); }
-.nav-back { clip-path: polygon(100% 0, 0 50%, 100% 100%); }
-.nav-home { border-radius: 50%; }
-.nav-recent { border-radius: 4px; }
-
-/* --- HEADER & ELITE MENU --- */
-.header {
-    padding: 20px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
-}
-
-#info-menu {
-    position: absolute;
-    top: 75px;
-    right: 25px;
-    width: 250px;
-    background: var(--card-bg);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 15px;
-    display: none;
-    z-index: 2000;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-    max-height: 280px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-#info-menu::-webkit-scrollbar {
-    width: 4px;
-}
-#info-menu::-webkit-scrollbar-thumb {
-    background: var(--main-clr);
-    border-radius: 10px;
-}
-
-.menu-topic-head {
-    font-size: 10px;
-    color: var(--main-clr);
-    margin: 15px 8px 8px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.menu-link {
-    display: block;
-    color: #ccc;
-    text-decoration: none;
-    padding: 12px;
-    font-size: 13px;
-    border-radius: 12px;
-    transition: 0.3s;
-}
-.menu-link:hover { background: rgba(0, 255, 204, 0.1); color: var(--main-clr); transform: translateX(5px); }
-
-/* --- VISUALIZER & MEDIA AREA --- */
-.visualizer-container {
-    width: 240px;
-    height: 240px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#v-canvas { position: absolute; top: 0; left: 0; filter: drop-shadow(0 0 10px var(--main-clr)); }
-
-.image-container {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: #111;
-    overflow: hidden;
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 4px solid #000;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8);
-}
-
-#main-thumb { width: 100%; height: 100%; object-fit: cover; }
-
-.video-box {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    border-radius: 18px;
-    overflow: hidden;
-    display: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 204, 0.1);
-    margin: 15px 0;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    position: relative;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-#main-video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background-color: #000;
-}
-
-/* Fullscreen Mode */
-.phone.full-video-mode {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    border: none !important;
-    border-radius: 0 !important;
-    z-index: 99999;
-}
-
-.full-video-mode .video-box {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    border: none !important;
-}
-
-.seek-overlay {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 255, 204, 0.3);
-    color: #fff;
-    padding: 20px;
-    border-radius: 50%;
-    font-size: 14px;
-    font-weight: bold;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 100;
-}
-
-.media-active-video .visualizer-container {
-    display: none !important;
-}
-
-/* --- PLAYER CONTROLS --- */
-.play-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--main-clr);
-    border: none;
-    color: #000;
-    font-size: 32px;
-    cursor: pointer;
-    box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
-    transition: 0.3s;
-}
-.play-btn:active { transform: scale(0.9); box-shadow: 0 0 10px var(--main-clr); }
-
-.tool-select {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #fff;
-    padding: 10px 18px;
-    border-radius: 14px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.tool-select:hover { border-color: var(--main-clr); background: rgba(0,255,204,0.05); }
-
-input[type="range"] {
-    -webkit-appearance: none;
-    background: #222;
-    height: 5px;
-    border-radius: 5px;
-    accent-color: var(--main-clr);
-}
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 15px;
-    width: 15px;
-    border-radius: 50%;
-    background: var(--main-clr);
-    box-shadow: 0 0 10px var(--main-clr);
-}
-
-/* --- OVERLAYS & CARDS --- */
-.overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 5000;
-    backdrop-filter: blur(12px);
-}
-
-.card {
-    width: 88%;
-    background: #0e0e0e;
-    padding: 35px 25px;
-    border-radius: 35px;
-    border: 1px solid #1a1a1a;
-    box-shadow: 0 20px 50px rgba(0,0,0,1);
-}
-
-.card input {
-    width: 100%;
-    background: #151515;
-    border: 1px solid #252525;
-    padding: 14px;
-    margin-bottom: 15px;
-    border-radius: 15px;
-    color: #fff;
-    outline: none;
-}
-.card input:focus { border-color: var(--main-clr); }
-
-.btn-main {
-    width: 100%;
-    padding: 15px;
-    border-radius: 15px;
-    border: none;
-    font-weight: 900;
-    letter-spacing: 1px;
-    cursor: pointer;
-    background: var(--main-clr);
-    color: #000;
-    text-transform: uppercase;
-}
-
-/* --- SIDEBAR & LAPTOP VIEW --- */
-.main-layout { display: flex; height: 100%; overflow: hidden; }
-
-.playlist-sidebar {
-    width: 0;
-    background: #080808;
-    border-left: 1px solid #1a1a1a;
-    transition: 0.4s ease;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.laptop-view .playlist-sidebar { width: 320px; }
-
-.resizer {
-    width: 4px;
-    background: #111;
-    cursor: col-resize;
-    display: none;
-}
-.laptop-view .resizer { display: block; }
-.resizer:hover { background: var(--main-clr); }
-
-.sidebar-header {
-    padding: 25px 20px;
-    font-size: 11px;
-    color: var(--main-clr);
-    font-weight: 900;
-    letter-spacing: 2px;
-    border-bottom: 1px solid #111;
-}
-
-.playlist-item {
-    padding: 18px 20px;
-    border-bottom: 1px solid #0a0a0a;
-    display: flex;
-    gap: 15px;
-    font-size: 13px;
-    color: #888;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.playlist-item:hover { background: #0c0c0c; color: #fff; }
-.playlist-item.active { background: rgba(0, 255, 204, 0.05); color: var(--main-clr); border-left: 3px solid var(--main-clr); }
-
-/* --- SHADOW OS (HACKER) --- */
-#shadow-os {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 9999;
-    padding: 40px;
-    font-family: 'Consolas', monospace;
-    display: none;
-    overflow-y: auto;
-}
-
-.crack-line {
-    margin-bottom: 25px;
-    padding: 20px;
-    border: 1px solid #003300;
-    background: rgba(0,20,0,0.2);
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    border-radius: 10px;
-}
-
-.h-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--hacker-green); padding: 2px; }
-
-.progress-bar { width: 100%; height: 5px; background: #050505; margin-top: 12px; border-radius: 10px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--hacker-green); width: 0; transition: width 0.1s; }
-
-/* --- USER LIST --- */
-.user-item {
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #151515;
-    transition: 0.2s;
-}
-.user-item:hover { background: #111; }
-.del-user { color: #ff4444; cursor: pointer; padding: 5px; }
-
-/* --- ANIMATIONS --- */
-@keyframes neonPulse {
-    0% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); }
-    50% { box-shadow: 0 0 35px rgba(0, 255, 204, 0.4); }
-    100% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); }
-}
-
-.play-btn { animation: neonPulse 2s infinite; }
-
-/* Scrollbar Customization */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--main-clr); }
-
+        :root { --main-clr: #00ffcc; --bg-dark: #050505; --card-bg: rgba(20, 20, 20, 0.85); --hacker-green: #00ff41; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; background-image: radial-gradient(circle at center, #0a1a1a 0%, #000 100%); }
+        .phone { width: 380px; height: 800px; background: var(--bg-dark); border: 10px solid #1a1a1a; border-radius: 50px; position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(0, 255, 204, 0.1); transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
+        .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        .status-bar { height: 40px; padding: 0 25px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
+        .nav-bar { position: absolute; bottom: 0; width: 100%; height: 55px; background: rgba(0,0,0,0.85); display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(15px); z-index: 100; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-icon { width: 20px; height: 20px; border: 2px solid #666; cursor: pointer; }
+        .nav-back { clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+        .nav-home { border-radius: 50%; }
+        .nav-recent { border-radius: 4px; }
+        .header { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
+        #info-menu { position: absolute; top: 75px; right: 25px; width: 250px; background: var(--card-bg); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px; display: none; z-index: 2000; }
+        .menu-topic-head { font-size: 10px; color: var(--main-clr); margin: 15px 8px 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .menu-link { display: block; color: #ccc; text-decoration: none; padding: 12px; font-size: 13px; border-radius: 12px; transition: 0.3s; }
+        .menu-link:hover { background: rgba(0, 255, 204, 0.1); color: var(--main-clr); transform: translateX(5px); }
+        .visualizer-container { width: 240px; height: 240px; position: relative; display: flex; justify-content: center; align-items: center; margin-top: 40px;}
+        #v-canvas { position: absolute; top: 0; left: 0; filter: drop-shadow(0 0 10px var(--main-clr)); }
+        .play-btn { width: 80px; height: 80px; border-radius: 50%; background: var(--main-clr); border: none; color: #000; font-size: 32px; cursor: pointer; box-shadow: 0 0 25px rgba(0, 255, 204, 0.4); animation: neonPulse 2s infinite; }
+        .tool-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 18px; border-radius: 14px; font-size: 12px; cursor: pointer; }
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 5000; backdrop-filter: blur(12px); }
+        .card { width: 88%; background: #0e0e0e; padding: 35px 25px; border-radius: 35px; border: 1px solid #1a1a1a; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; background: var(--main-clr); color: #000; cursor: pointer; }
+        @keyframes neonPulse { 0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); } 50% { box-shadow: 0 0 35px rgba(0, 255, 204, 0.4); } }
     </style>
 </head>
 <body>
-
 <div class="phone" id="main-frame">
-<div class="screen">
-<div class="status-bar">
-<div id="android-time">12:00</div>
-<div style="display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.03);padding:2px 12px;border-radius:20px;border:1px solid rgba(0,255,204,0.1);">
-<span id="net-speed" style="font-size:10px;color:var(--hacker-green);font-family:'Consolas',monospace;min-width:55px;text-align:right;">0.0 KB/s</span>
-<span id="net-icon" style="font-size:12px;">📶</span>
-<span id="android-battery" style="color:var(--main-clr);font-family:monospace;font-size:12px;">🔋 --%</span>
+    <div class="screen">
+        <div class="status-bar">
+            <div id="android-time">12:00</div>
+            <div style="display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.03);padding:2px 12px;border-radius:20px;border:1px solid rgba(0,255,204,0.1);">
+                <span id="android-battery" style="color:var(--main-clr);font-family:monospace;font-size:12px;">🔋 --%</span>
+            </div>
+        </div>
+        <div class="header">
+            <div class="profile-trigger" onclick="toggleUserList(event)" style="cursor:pointer;font-size:22px;">👤</div>
+            <div style="text-align:center;">
+                <span style="color:var(--main-clr);font-weight:900;letter-spacing:2px;font-size:18px;">MI PLAYER PRO</span>
+            </div>
+            <div onclick="toggleMenu(event)" style="cursor:pointer;color:var(--main-clr);font-size:26px;">⋮</div>
+        </div>
+        <div id="info-menu">
+            <div class="menu-topic-head">ADMIN & TOOLS</div>
+            <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support</a>
+            <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 Official Portal</a>
+            <a href="#" onclick="forceReboot()" class="menu-link" style="color:#ff4444;">🔄 System Reboot</a>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:25px;">
+            <div id="user-display-name" style="font-weight:900;font-size:20px;color:#fff;">Guest Identity</div>
+            <div id="user-display-phone" style="font-size:12px;color:var(--main-clr);margin-bottom:25px;">Status: Standby</div>
+            <div class="visualizer-container">
+                <canvas id="v-canvas"></canvas>
+                <div style="font-size:55px; z-index: 2;">🎵</div>
+            </div>
+            <h4 id="now-playing" style="margin-top: 30px;">Awaiting Stream...</h4>
+            <div style="display:flex;align-items:center;gap:45px;margin:35px 0;">
+                <button onclick="playPrev()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏮</button>
+                <button id="master-play" class="play-btn" onclick="togglePlayback()">▶</button>
+                <button onclick="playNext()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏭</button>
+            </div>
+            <label class="tool-select">📂 SELECT AUDIO<input type="file" multiple accept="audio/*" style="display:none;" onchange="handleFiles(event)"></label>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-icon nav-back" onclick="location.reload()"></div>
+            <div class="nav-icon nav-home"></div>
+            <div class="nav-icon nav-recent" onclick="toggleUserList(event)"></div>
+        </div>
+    </div>
 </div>
-</div>
-<div class="nav-bar">
-<div class="nav-icon nav-back" onclick="location.reload()"></div>
-<div class="nav-icon nav-home" onclick="alert('Returning Home...')"></div>
-<div class="nav-icon nav-recent" onclick="toggleUserList(event)"></div>
-</div>
-<div id="close-vid" onclick="resetRotation()"></div>
-<input type="file" id="pic-update-input" style="display:none" accept="image/*" onchange="handlePicUpdate(event)">
-<div id="qr-modal" class="overlay" onclick="this.style.display='none'">
-<div class="card" style="text-align:center">
-<h3 style="color:var(--main-clr);margin-bottom:20px;">Elite Support</h3>
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mandavikaushal913@okaxis&pn=Kaushal%20Ji" style="width:220px;border-radius:20px;border:6px solid #fff;box-shadow:0 0 20px rgba(255,255,255,0.2);">
-<p style="margin-top:20px;font-weight:bold;">mandavikaushal913@okaxis</p>
-<p style="font-size:11px;color:#777;">Pay directly to Kaushal Ji</p>
-</div>
-</div>
-<div id="reg-overlay" class="overlay">
-<div class="card">
-<h3 style="color:var(--main-clr);text-align:center;margin-bottom:25px;">New Elite Member</h3>
-<input type="text" id="reg-name" placeholder="Display Name">
-<input type="email" id="reg-email" placeholder="Email Address">
-<input type="number" id="reg-phone" placeholder="Phone Number">
-<input type="password" id="reg-pass" placeholder="Account Password">
-<input type="file" id="reg-pic" accept="image/*" style="font-size:10px;margin-top:5px;">
-<button class="btn-main" onclick="registerUser()">Register Now</button>
-<p onclick="document.getElementById('reg-overlay').style.display='none'" style="text-align:center;font-size:12px;color:#ff4444;cursor:pointer;margin-top:18px;">Abandon</p>
-</div>
-</div>
-<div id="login-overlay" class="overlay">
-<div class="card">
-<h3 id="login-label" style="text-align:center;color:var(--main-clr);margin-bottom:25px;">Identity Check</h3>
-<input type="password" id="login-pass" placeholder="Secret Key">
-<button class="btn-main" onclick="confirmLogin()">Verify & Unlock</button>
-</div>
-</div>
-<div id="anim-overlay" class="overlay">
-<div class="card"><h3 style="color:var(--main-clr);text-align:center;margin-bottom:20px;">Transition Style</h3><div class="anim-grid" id="anim-grid"></div></div>
-</div>
-<div id="reboot-screen" style="position:fixed;inset:0;background:#000;z-index:10000;display:none;flex-direction:column;align-items:center;justify-content:center;font-family:'Consolas',monospace;">
-<canvas id="reboot-canvas" style="position:absolute;inset:0;"></canvas>
-<div style="position:relative;z-index:10001;text-align:center;">
-<h2 style="color:#00ffcc;letter-spacing:5px;text-shadow:0 0 15px #00ffcc;">SYSTEM REBOOT</h2>
-<p style="color:#fff;margin-top:10px;font-size:12px;opacity:0.7;">Initializing MI-OS Kernel...</p>
-<div style="color:#00ffcc;font-weight:bold;margin-top:20px;font-size:20px;">KAUSHAL JI</div>
-</div>
-</div>
-<div class="header">
-<div class="profile-trigger" onclick="toggleUserList(event)" style="cursor:pointer;font-size:22px;">👤</div>
-<div style="text-align:center;">
-<span style="color:var(--main-clr);font-weight:900;letter-spacing:2px;font-size:18px;">MI PLAYER PRO</span>
-<div style="display:flex;gap:10px;margin-top:10px;justify-content:center;">
 
-    <select id="speed-ctrl" class="tool-select" onchange="setSpeed()">
-    <option value="0.5">0.5x Slow</option>
-    <option value="1" selected>1.0x Normal</option>
-    <option value="1.5">1.5x Speed</option>
-    <option value="2">2.0x Speed</option>
-</select>
-
-
-    <button onclick="toggleLaptopView()" class="tool-select">🖥️ View</button>
-</div>
-</div>
-<div style="display:flex;gap:15px;align-items:center;">
-<div onclick="openRegister()" style="cursor:pointer;font-size:20px;">⚙️</div>
-<div onclick="toggleMenu(event)" style="cursor:pointer;color:var(--main-clr);font-size:26px;">⋮</div>
-</div>
-</div>
-<div id="info-menu">
-<div style="padding:10px;border-bottom:1px solid #222;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-<img id="menu-user-img" style="width:35px;height:35px;border-radius:50%;border:2px solid var(--main-clr);display:none;object-fit:cover;">
-<div id="menu-p-icon" style="width:35px;height:35px;border-radius:50%;background:var(--main-clr);color:#000;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;">K</div>
-<div><div id="menu-user-name" style="font-size:12px;font-weight:bold;color:#fff;">Elite Member</div><div style="font-size:9px;color:var(--main-clr);letter-spacing:1px;">MI PRO ACCESS</div></div>
-</div>
-<div class="menu-topic-head">ADMIN & FINANCE</div>
-<a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support (UPI)</a>
-<a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 Official Portal (SNT)</a>
-<div class="menu-topic-head">MI ECOSYSTEM</div>
-<a href="https://harshitkaushal9129-bit.github.io/Calculator/" target="_blank" class="menu-link">🔢 MI Cyber Calculator</a>
-<a href="https://harshitkaushal9129-bit.github.io/Code-editor/" target="_blank" class="menu-link">💻 MI Pro Code Editor</a>
-    <div class="menu-topic-head">DEVELOPER CONTACT</div>
-<a href="https://wa.me/919129191898" target="_blank" class="menu-link">💬 WhatsApp: +91 9129191898</a>
-<a href="tel:+919129191898" class="menu-link">📞 Call: 9129191898</a>
-<a href="https://youtube.com/@programmingby-kaushalji?si=czoHcOTNTYQ997iI" target="_blank" class="menu-link">📺 YouTube Channel</a>
-
-<div class="menu-topic-head">ADVANCED TOOLS</div>
-<a href="#" onclick="toggleLaptopView()" class="menu-link">🖥️ Desktop Mode</a>
-<a href="#" onclick="forceReboot()" class="menu-link" style="color:#ff4444;">🔄 Force System Reboot</a>
-<div class="menu-topic-head">EDUCATION</div>
-<a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" target="_blank" class="menu-link">✏️ NIELIT MCQ Portal</a>
-</div>
-<div class="main-layout">
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:25px;overflow-y:auto;">
-<div id="user-display-name" style="font-weight:900;font-size:20px;color:#fff;">Guest Identity</div>
-<div id="user-display-phone" style="font-size:12px;color:var(--main-clr);margin-bottom:25px;letter-spacing:1px;">Status: Standby</div>
-<div class="visualizer-container" id="visual-area">
-<canvas id="v-canvas"></canvas>
-<div class="image-container" id="p-circle" ondblclick="triggerUpdate()" title="Double click to update profile">
-<img id="main-thumb" style="display:none;">
-<div id="music-icon" style="font-size:55px;margin-top:30px;">🎵</div>
-</div>
-</div>
-<div class="video-box" id="v-box">
-<video id="main-video" controls playsinline></video>
-<div id="seek-left" class="seek-overlay">⏪ -10s</div>
-<div id="seek-right" class="seek-overlay">10s ⏩</div>
-</div>
-<img id="pdf-viewer" alt="MI View" style="display:none;width:100%;border-radius:15px;background:#000;margin:10px auto;">
-<div style="display:flex;gap:10px;width:90%;margin:10px 0;">
-<button onclick="togglePiP()" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid #333;color:white;padding:8px;border-radius:10px;cursor:pointer;font-size:12px;">📺 PiP Mode</button>
-<button class="btn-main" id="fullscreen-btn" style="display:none;flex:2;" onclick="goFullscreen()">🔄 FULLSCREEN</button>
-</div>
-<h4 id="now-playing">Awaiting Data Stream...</h4>
-<div style="width:95%;">
-<input type="range" id="seek-bar" value="0" style="width:100%;">
-<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--main-clr);margin-top:8px;font-weight:bold;">
-<span id="time-curr">0:00</span><span id="time-total">0:00</span>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:45px;margin:35px 0;">
-<button onclick="playPrev()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏮</button>
-<button id="master-play" class="play-btn" onclick="togglePlayback()">▶</button>
-<button onclick="playNext()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏭</button>
-</div>
-<div style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;">
-<label class="tool-select">📂 AUDIO<input type="file" multiple accept="audio/*" style="display:none;" onchange="handleFiles(event,'music')"></label>
-<label class="tool-select">🎬 VIDEO<input type="file" multiple accept="video/*" style="display:none;" onchange="handleFiles(event,'video')"></label>
-<label class="tool-select" style="border-color:var(--main-clr);">🖼️ SLIDES<input type="file" multiple accept="image/*" style="display:none;" onchange="handleFiles(event,'pdf')"></label>
-</div>
-</div>
-<div class="resizer" id="drag-bar"></div>
-<div class="playlist-sidebar" id="sidebar">
-<div class="sidebar-header">QUEUE DECRYPTION</div>
-<div id="sidebar-items"></div>
-</div>
-</div>
-<div id="user-list" style="position:absolute;top:110px;left:25px;right:25px;background:#080808;border:1px solid #222;border-radius:25px;z-index:1000;display:none;max-height:450px;overflow-y:auto;">
-<div id="user-render-box"></div>
-</div>
-</div>
-</div>
-<div id="shadow-os">
-<div style="color:#fff;font-size:18px;margin-bottom:30px;border-bottom:1px solid #004400;padding-bottom:10px;">[MI-SHADOW OS] KERNEL ACCESS GRANTED... EXPLOITING USER_DB...</div>
-<div id="hacker-logs"></div>
+<div id="secret-terminal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.98); z-index:20000; font-family:monospace; padding:30px; color:#00ffcc; flex-direction:column;">
+    <div style="border-bottom:1px solid #00ffcc; padding-bottom:10px; margin-bottom:20px;">[ MI-CORE ] Type 'help' or 'exit'</div>
+    <div id="terminal-output" style="flex:1; overflow-y:auto; font-size:14px;"></div>
+    <div style="display:flex; gap:10px; align-items:center; border-top:1px solid #222; padding-top:10px;">
+        <span>root@mi-player:~#</span>
+        <input type="text" id="terminal-input" style="background:transparent; border:none; color:#fff; outline:none; width:100%;" autofocus autocomplete="off">
+    </div>
 </div>
 
 <script>
@@ -604,456 +94,93 @@ const firebaseConfig={apiKey:"AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",authDomai
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(reg=>console.log('SNT Service Worker Registered!')).catch(err=>console.log('Service Worker Error:',err));});}
+let users=[], currentUserIdx=0, playlist=[], trackIdx=0, audio=new Audio(), audioCtx, analyser, canvas, ctx;
 
-document.onkeydown=function(e){if(e.keyCode==123)return false;if(e.ctrlKey&&e.shiftKey&&e.keyCode=='I'.charCodeAt(0))return false;if(e.ctrlKey&&e.shiftKey&&e.keyCode=='C'.charCodeAt(0))return false;if(e.ctrlKey&&e.shiftKey&&e.keyCode=='J'.charCodeAt(0))return false;if(e.ctrlKey&&e.keyCode=='U'.charCodeAt(0))return false;};
-setInterval(function(){debugger;},1000);
+function startApp(){
+    db.ref('users').on('value',snap=>{
+        users=[{name:"Guest Identity",phone:"Standby",pass:""}];
+        if(snap.val())Object.values(snap.val()).forEach(u=>users.push(u));
+    });
+    updateAndroidSystem();
+}
 
-let users=[{name:"Guest Identity",phone:"Standby",email:"N/A",pass:"",img:null}],currentUserIdx=0,loginAttemptIdx=0,playlist=[],trackIdx=0,mode='music',audio=new Audio(),video=document.getElementById('main-video'),pdf=document.getElementById('pdf-viewer'),activeMedia=audio,audioCtx,analyser,canvas,ctx,slideIntv,isSliding=false,currentAnim=localStorage.getItem('mi_anim')||"fade",lastTap=0;
-const anims=["fade","zoom","blur","slide","rotate"];
+function handleFiles(e){
+    playlist=Array.from(e.target.files);
+    if(playlist.length>0) playTrack(0);
+}
 
-function startApp(){const screen=document.getElementById('reboot-screen'),canvas=document.getElementById('reboot-canvas'),ctx=canvas.getContext('2d');screen.style.display='flex';canvas.width=window.innerWidth;canvas.height=window.innerHeight;const alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()010101",fontSize=16,columns=canvas.width/fontSize,drops=[];for(let x=0;x<columns;x++)drops[x]=1;function drawMatrix(){ctx.fillStyle="rgba(0,0,0,0.05)";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#00ffcc";ctx.font=fontSize+"px monospace";for(let i=0;i<drops.length;i++){const text=alphabet.charAt(Math.floor(Math.random()*alphabet.length));ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;drops[i]++;}}const matrixInterval=setInterval(drawMatrix,35);setTimeout(()=>{clearInterval(matrixInterval);screen.style.transition="opacity 1s ease";screen.style.opacity="0";setTimeout(()=>{screen.style.display='none';screen.style.opacity="1";},1000);},3000);db.ref('users').on('value',snap=>{users=[{name:"Guest Identity",phone:"Standby",email:"N/A",pass:"",img:null}];if(snap.val())Object.values(snap.val()).forEach(u=>users.push(u));const saved=localStorage.getItem('mi_phone');if(saved){const found=users.findIndex(u=>u.phone===saved);if(found!==-1)currentUserIdx=found;}updateProfileUI();renderUserList();});const grid=document.getElementById('anim-grid');anims.forEach(a=>{const btn=document.createElement('div');btn.className='anim-option';btn.innerText=a.toUpperCase();btn.onclick=()=>{currentAnim=a;localStorage.setItem('mi_anim',a);document.getElementById('anim-overlay').style.display='none';if(mode==='pdf')startSlideshow();};grid.appendChild(btn);});}
+function playTrack(i){
+    trackIdx=i;
+    const file=playlist[i];
+    audio.src=URL.createObjectURL(file);
+    document.getElementById('now-playing').innerText="⚡ "+file.name;
+    audio.play();
+    updatePlayBtn('⏸');
+    if(!audioCtx) setupVisuals();
+}
 
-function updateProfileUI(musicThumb=null){const u=users[currentUserIdx],menuUserName=document.getElementById('menu-user-name'),menuIcon=document.getElementById('menu-p-icon'),regName=u.name||"Elite Member";if(menuUserName)menuUserName.innerText=regName;if(menuIcon){if(u.img){menuIcon.style.backgroundImage=`url('${u.img}')`;menuIcon.style.backgroundSize='cover';menuIcon.innerText='';menuIcon.style.border='2px solid var(--main-clr)';}else{menuIcon.style.backgroundImage='none';menuIcon.innerText=regName.charAt(0).toUpperCase();menuIcon.style.background='var(--main-clr)';}}const mainDisplayName=document.getElementById('user-display-name'),mainDisplayPhone=document.getElementById('user-display-phone'),mainThumb=document.getElementById('main-thumb'),musicIcon=document.getElementById('music-icon'),playerPic=musicThumb||u.img;if(mainDisplayName)mainDisplayName.innerText=regName;if(mainDisplayPhone)mainDisplayPhone.innerText=u.phone==="Standby"?"Offline":u.phone;if(playerPic){mainThumb.src=playerPic;mainThumb.style.display='block';if(musicIcon)musicIcon.style.display='none';}else{mainThumb.style.display='none';if(musicIcon)musicIcon.style.display='block';}}
+function setupVisuals(){
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    analyser=audioCtx.createAnalyser();
+    const source=audioCtx.createMediaElementSource(audio);
+    source.connect(analyser); analyser.connect(audioCtx.destination);
+    canvas=document.getElementById('v-canvas'); ctx=canvas.getContext('2d');
+    canvas.width=canvas.height=220;
+    drawVisuals();
+}
 
-function registerUser(){const n=document.getElementById('reg-name').value,e=document.getElementById('reg-email').value,p=document.getElementById('reg-phone').value,pw=document.getElementById('reg-pass').value,pic=document.getElementById('reg-pic').files[0];if(!n||!p||!pw||!e)return alert("Security breach: Missing credentials!");const pushData=(b64)=>{db.ref('users/'+p).set({name:n,email:e,phone:p,pass:pw,img:b64||null}).then(()=>{document.getElementById('reg-overlay').style.display='none';alert("Identity Authenticated!");});};if(pic){const reader=new FileReader();reader.onload=ev=>pushData(ev.target.result);reader.readAsDataURL(pic);}else{pushData(null);}}
-
-function confirmLogin(){const pass=document.getElementById('login-pass').value;if(pass===users[loginAttemptIdx].pass){currentUserIdx=loginAttemptIdx;localStorage.setItem('mi_phone',users[currentUserIdx].phone);updateProfileUI();document.getElementById('login-overlay').style.display='none';}else{alert("Unauthorized Access Attempt!");}}
-
-function renderUserList(){const box=document.getElementById('user-render-box');box.innerHTML='';users.forEach((u,i)=>{const div=document.createElement('div');div.className='user-item';div.innerHTML=`<div onclick="initLogin(${i})" style="flex:1;cursor:pointer;"><div style="font-weight:bold;">${u.name}</div><div style="font-size:11px;color:#555;">${u.phone}</div></div>${u.phone!=='Standby'?`<div class="del-user" onclick="deleteUser('${u.phone}')">🗑️</div>`:''}`;box.appendChild(div);});}
-
-function deleteUser(p){const targetUser=users.find(u=>u.phone===p);if(!targetUser)return;const enteredPass=prompt(`Enter Password for '${targetUser.name}':`);if(enteredPass===targetUser.pass||enteredPass==="912919"){if(confirm("Permanently wipe this identity?")){db.ref('users/'+p).remove().then(()=>alert("Identity purged."));}}else{alert("Access Denied.");}}
-
-function initLogin(i){loginAttemptIdx=i;document.getElementById('login-label').innerText="Unlock "+users[i].name;document.getElementById('login-overlay').style.display='flex';}
-
-function handlePicUpdate(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{db.ref('users/'+users[currentUserIdx].phone).update({img:ev.target.result});};r.readAsDataURL(f);}
-
-function handleFiles(e,m){playlist=Array.from(e.target.files);mode=m;if(playlist.length>0)playTrack(0);}
-
-function playTrack(i){trackIdx=i;const file=playlist[i],url=URL.createObjectURL(file),vBox=document.getElementById('v-box'),vis=document.getElementById('visual-area'),fsBtn=document.getElementById('fullscreen-btn'),np=document.getElementById('now-playing'),pdfV=document.getElementById('pdf-viewer');np.innerText="⚡ Streaming: "+file.name;vBox.style.display='none';pdfV.style.display='none';vis.style.display='none';audio.pause();video.pause();if(mode==='video'){activeMedia=video;video.src=url;vBox.style.display='flex';fsBtn.style.display='block';video.play();updateProfileUI();}else if(mode==='music'){activeMedia=audio;audio.src=url;vis.style.display='flex';fsBtn.style.display='none';audio.play();window.jsmediatags.read(file,{onSuccess:(tag)=>{const p=tag.tags.picture;if(p){let b64="";for(let j=0;j<p.data.length;j++)b64+=String.fromCharCode(p.data[j]);updateProfileUI("data:"+p.format+";base64,"+window.btoa(b64));}else{updateProfileUI();}},onError:()=>updateProfileUI()});}else if(mode==='pdf'){pdfV.src=url;pdfV.style.display='block';fsBtn.style.display='none';}setupVisuals();renderSidebar();updatePlayBtn('⏸');activeMedia.onloadedmetadata=()=>{document.getElementById('seek-bar').max=activeMedia.duration;document.getElementById('time-total').innerText=formatTime(activeMedia.duration);};activeMedia.ontimeupdate=()=>{document.getElementById('seek-bar').value=activeMedia.currentTime;document.getElementById('time-curr').innerText=formatTime(activeMedia.currentTime);};activeMedia.onended=()=>playNext();}
-
-function setupVisuals(){if(audioCtx)return;audioCtx=new(window.AudioContext||window.webkitAudioContext)();analyser=audioCtx.createAnalyser();const s1=audioCtx.createMediaElementSource(audio),s2=audioCtx.createMediaElementSource(video);s1.connect(analyser);s2.connect(analyser);analyser.connect(audioCtx.destination);canvas=document.getElementById('v-canvas');ctx=canvas.getContext('2d');canvas.width=220;canvas.height=220;drawVisuals();}
-
-function drawVisuals(){requestAnimationFrame(drawVisuals);let data=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(data);ctx.clearRect(0,0,220,220);for(let i=0;i<80;i++){let val=data[i*2]/4,rad=(i*Math.PI*2)/80;ctx.strokeStyle=`hsl(${(i/80)*360},100%,50%)`;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(110+Math.cos(rad)*75,110+Math.sin(rad)*75);ctx.lineTo(110+Math.cos(rad)*(75+val),110+Math.sin(rad)*(75+val));ctx.stroke();}}
-
-function togglePlayback(){if(mode==='pdf'){isSliding?(clearInterval(slideIntv),isSliding=false,updatePlayBtn('▶')):(startSlideshow(),updatePlayBtn('⏸'));return;}activeMedia.paused?(activeMedia.play(),updatePlayBtn('⏸')):(activeMedia.pause(),updatePlayBtn('▶'));}
-
-function playNext(){if(trackIdx<playlist.length-1)playTrack(trackIdx+1);else if(mode==='pdf')playTrack(0);}
-function playPrev(){if(trackIdx>0)playTrack(trackIdx-1);}
-function toggleLaptopView() {
-    const frame = document.getElementById('main-frame');
-    frame.classList.toggle('laptop-view');
-    
-    // Agar laptop view on hai toh sidebar ko thoda space dein
-    const sidebar = document.getElementById('sidebar');
-    if(frame.classList.contains('laptop-view')) {
-        sidebar.style.width = "320px";
-    } else {
-        sidebar.style.width = "0";
+function drawVisuals(){
+    requestAnimationFrame(drawVisuals);
+    let data=new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+    ctx.clearRect(0,0,220,220);
+    for(let i=0;i<60;i++){
+        let val=data[i*4]/4, rad=(i*Math.PI*2)/60;
+        ctx.strokeStyle=document.documentElement.style.getPropertyValue('--main-clr') || '#00ffcc';
+        ctx.lineWidth=2; ctx.beginPath();
+        ctx.moveTo(110+Math.cos(rad)*70,110+Math.sin(rad)*70);
+        ctx.lineTo(110+Math.cos(rad)*(70+val),110+Math.sin(rad)*(70+val));
+        ctx.stroke();
     }
 }
 
-function forceReboot() {
-    // Menu band karein
-    document.getElementById('info-menu').style.display = 'none';
-    
-    // Reboot animation start karein
-    const screen = document.getElementById('reboot-screen');
-    const canvas = document.getElementById('reboot-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    screen.style.display = 'flex';
-    screen.style.opacity = "1";
-    
-    // Matrix Effect (Copy from your startApp logic)
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()010101";
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = [];
-    for (let x = 0; x < columns; x++) drops[x] = 1;
+function togglePlayback(){ audio.paused?(audio.play(),updatePlayBtn('⏸')):(audio.pause(),updatePlayBtn('▶')); }
+function updatePlayBtn(txt){ document.getElementById('master-play').innerText=txt; }
+function playNext(){ if(trackIdx<playlist.length-1) playTrack(trackIdx+1); }
+function playPrev(){ if(trackIdx>0) playTrack(trackIdx-1); }
+function toggleMenu(e){ e.stopPropagation(); const m=document.getElementById('info-menu'); m.style.display=m.style.display==='block'?'none':'block'; }
 
-    function drawMatrix() {
-        ctx.fillStyle = "rgba(0,0,0,0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#00ffcc";
-        ctx.font = fontSize + "px monospace";
-        for (let i = 0; i < drops.length; i++) {
-            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
-    }
-
-    const matrixInterval = setInterval(drawMatrix, 35);
-
-    // 3 second baad screen hatayein
-    setTimeout(() => {
-        clearInterval(matrixInterval);
-        screen.style.transition = "opacity 1s ease";
-        screen.style.opacity = "0";
-        setTimeout(() => {
-            screen.style.display = 'none';
-        }, 1000);
-    }, 3000);
+function updateAndroidSystem(){
+    const now=new Date(); document.getElementById('android-time').innerText=now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
+    if('getBattery' in navigator) navigator.getBattery().then(b=>document.getElementById('android-battery').innerText=`🔋 ${Math.round(b.level*100)}%`);
 }
 
-    
-function updateAndroidSystem(){const now=new Date(),timeStr=now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');const tEl=document.getElementById('android-time');if(tEl)tEl.innerText=timeStr;if('getBattery' in navigator){navigator.getBattery().then(b=>{const update=()=>{const lvl=Math.round(b.level*100),batEl=document.getElementById('android-battery');if(batEl)batEl.innerText=`${b.charging?"⚡":lvl<=20?"🪫":"🔋"} ${lvl}%`;};update();b.onlevelchange=update;b.onchargingchange=update;});}}
-setInterval(updateAndroidSystem,30000);updateAndroidSystem();
-function setSpeed() { const speed = document.getElementById('speed-ctrl').value;  if (activeMedia) {
-        activeMedia.playbackRate = parseFloat(speed); console.log("Playback speed set to: " + speed);
-    }
-}
-
-function runShadowExploit(){const l=document.getElementById('hacker-logs');l.innerHTML='';users.forEach((u,i)=>{if(u.phone==='Standby')return;const r=document.createElement('div');r.className='crack-line';r.innerHTML=`<img src="${u.img||''}" class="h-img"><div>TARGET: ${u.name} | <span id="h-fill-${i}">0%</span></div>`;l.appendChild(r);let p=0,t=setInterval(()=>{p+=Math.random()*20;if(p>=100){p=100;clearInterval(t);r.innerHTML=`<div style="color:var(--hacker-green)">[SUCCESS] PASS: ${u.pass}</div>`;}document.getElementById(`h-fill-${i}`).innerText=Math.floor(p)+"%";},200);});}
-
-function triggerUpdate(){if(users[currentUserIdx].phone!=="Standby")document.getElementById('pic-update-input').click();}
-function openRegister(){document.getElementById('reg-overlay').style.display='flex';}
-function toggleMenu(e){e.stopPropagation();const m=document.getElementById('info-menu');m.style.display=m.style.display==='block'?'none':'block';}
-function toggleUserList(e){e.stopPropagation();const l=document.getElementById('user-list');l.style.display=l.style.display==='block'?'none':'block';}
-function formatTime(s){let m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${sec<10?'0':''}${sec}`;}
-function renderSidebar(){const c=document.getElementById('sidebar-items');c.innerHTML='';playlist.forEach((f,idx)=>{const d=document.createElement('div');d.className=`playlist-item ${idx===trackIdx?'active':''}`;d.innerHTML=`<span>${idx+1}.</span> <span>${f.name}</span>`;d.onclick=()=>playTrack(idx);c.appendChild(d);});}
-function updatePlayBtn(txt){document.getElementById('master-play').innerText=txt;}
-
-
-window.onclick=()=>{
-    document.getElementById('info-menu').style.display='none';
-    document.getElementById('user-list').style.display='none';
-};
-
-// --- YAHAN SE NAYA CODE START ---
-
-const terminalHTML = `
-<div id="secret-terminal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.98); z-index:20000; font-family:'Consolas', monospace; padding:30px; color:#00ffcc; flex-direction:column;">
-    <div style="border-bottom:1px solid #00ffcc; padding-bottom:10px; margin-bottom:20px; text-shadow: 0 0 10px #00ffcc;">
-        [ MI-SYSTEM-CORE ] USER_DATA_DECRYPTOR v2.0 <br>
-        Type <span style="color:#fff;">'exit'</span> to return to system.
-    </div>
-    <div id="terminal-output" style="flex:1; overflow-y:auto; margin-bottom:20px; font-size:14px; line-height:1.6;"></div>
-    <div style="display:flex; gap:10px; align-items:center; border-top:1px solid #222; padding-top:10px;">
-        <span style="color:#00ffcc;">root@mi-player:~#</span>
-        <input type="text" id="terminal-input" style="background:transparent; border:none; color:#fff; outline:none; font-family:'Consolas'; width:100%; font-size:16px;" autofocus autocomplete="off">
-    </div>
-</div>
-`;
-document.body.insertAdjacentHTML('beforeend', terminalHTML);
-
+// Terminal Logic
 const terminal = document.getElementById('secret-terminal');
 const termInput = document.getElementById('terminal-input');
 const termOutput = document.getElementById('terminal-output');
 
-document.addEventListener('keydown', (e) => {
-    // Ctrl + Q press karne par open hoga
-    if (e.ctrlKey && e.key.toLowerCase() === 'q') {
-        e.preventDefault();
-        terminal.style.display = 'flex';
-        termInput.focus();
-        showUserDetails();
-    }
-});
-
-function showUserDetails() {
-    let output = `<div style="color:#ffcc00; margin-bottom:10px; font-weight:bold;">>>> ACCESSING DATABASE... SUCCESS.</div>`;
-    
-    users.forEach((u, index) => {
-        output += `
-            <div style="margin-bottom:15px; padding:10px; border-left:3px solid #00ffcc; background:rgba(0,255,204,0.05);">
-                <span style="color:#888;">[ID: ${index}]</span><br>
-                NAME     : <span style="color:#fff;">${u.name}</span><br>
-                EMAIL    : ${u.email}<br>
-                PHONE    : ${u.phone}<br>
-                PASSWORD : <span style="color:#ff4444;">${u.pass}</span>
-            </div>
-        `;
-    });
-    termOutput.innerHTML = output;
-}
+document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key.toLowerCase() === 'q') { terminal.style.display = 'flex'; termInput.focus(); } });
 
 termInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         const cmd = termInput.value.toLowerCase().trim();
-        const args = cmd.split(' '); // Arguments handle karne ke liye
+        const args = cmd.split(' ');
         termInput.value = '';
-
-        if (cmd === 'exit') {
-            terminal.style.display = 'none';
-        } else if (cmd === 'clear') {
-            termOutput.innerHTML = '<div style="color:#555;">Console cleared.</div>';
-        } else if (cmd === 'refresh') {
-            showUserDetails();
-        } 
-        // 1. Help Command
-        else if (cmd === 'help') {
-            termOutput.innerHTML += `
-                <div style="color:#00ffcc; margin:10px 0;">
-                    --- AVAILABLE COMMANDS ---<br>
-                    > <b>help</b> : Show this menu<br>
-                    > <b>refresh</b> : Reload user database<br>
-                    > <b>clear</b> : Clear terminal screen<br>
-                    > <b>reboot</b> : Force system restart<br>
-                    > <b>hack</b> : Launch Shadow OS exploit<br>
-                    > <b>theme [color]</b> : Change UI glow (e.g., theme red)<br>
-                    > <b>exit</b> : Close terminal
-                </div>`;
-        }
-        // 2. Reboot Command
-        else if (cmd === 'reboot') {
-            terminal.style.display = 'none';
-            forceReboot();
-        }
-                else if (cmd === 'hack') {
-            termOutput.innerHTML = `<div id="hacking-process" style="color:#00ff41; font-family:'Consolas', monospace; text-shadow: 0 0 5px #00ff41;"></div>`;
-            const targetDiv = document.getElementById('hacking-process');
-            
-            const logs = [
-                "> INITIALIZING KERNEL EXPLOIT...",
-                "> BYPASSING FIREWALL... [DONE]",
-                "> INJECTING BRUTE-FORCE DECRYPTOR...",
-                "> ACCESSING USER_DB_ENCRYPTED_V2...",
-                "--------------------------------------"
-            ];
-
-            let i = 0;
-            function showLogs() {
-                if (i < logs.length) {
-                    targetDiv.innerHTML += `<div style="margin-bottom:5px;">${logs[i]}</div>`;
-                    termOutput.scrollTop = termOutput.scrollHeight;
-                    i++;
-                    setTimeout(showLogs, 400);
-                } else {
-                    startBruteForceExtraction();
-                }
-            }
-
-            function startBruteForceExtraction() {
-                const activeUsers = users.filter(u => u.phone !== 'Standby');
-                let userIdx = 0;
-
-                // Add Scan Animation CSS if not present
-                if(!document.getElementById('h-scan-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'h-scan-style';
-                    style.innerHTML = `
-                        @keyframes scanner { 0% { top: 0; } 100% { top: 100%; } }
-                        .scrambling-text { color: #fff; text-shadow: 0 0 5px #00ff41; }
-                    `;
-                    document.head.appendChild(style);
-                }
-
-                function processUser() {
-                    if (userIdx < activeUsers.length) {
-                        const u = activeUsers[userIdx];
-                        const userBoxId = `box-${userIdx}`;
-                        
-                        targetDiv.innerHTML += `
-                            <div id="${userBoxId}" style="margin: 15px 0; padding: 12px; border: 1px solid #00ff41; background: rgba(0,255,65,0.07); display: flex; gap: 15px; align-items: center; border-radius: 8px;">
-                                <div style="position:relative; width:60px; height:60px; border:1px solid #00ff41; overflow:hidden; background:#000; border-radius: 4px;">
-                                    <div style="position:absolute; width:100%; height:2px; background:#00ff41; z-index:10; animation: scanner 1.5s infinite; box-shadow: 0 0 8px #00ff41;"></div>
-                                    <img src="${u.img || 'https://via.placeholder.com/60?text=?'}" style="width:100%; height:100%; object-fit:cover; opacity:0; transition: opacity 2s; filter: contrast(1.2) brightness(0.8) sepia(0.3) hue-rotate(100deg);" id="pic-${userIdx}">
-                                </div>
-                                <div style="flex:1; font-size:12px; line-height:1.6; font-family: 'Consolas', monospace;">
-                                    <div style="color:#fff; font-weight:bold; letter-spacing:1px; border-bottom: 1px solid rgba(0,255,65,0.3); margin-bottom: 5px;">[TARGET_ID: 0x00${userIdx + 1}]</div>
-                                    <div>NAME : <span id="n-${userIdx}" class="scrambling-text">----</span></div>
-                                    <div>MAIL : <span id="m-${userIdx}" class="scrambling-text">----</span></div>
-                                    <div>PASS : <span id="p-${userIdx}" style="background:#00ff41; color:#000; padding:0 4px; font-weight:bold;">----</span></div>
-                                    <div>MOB  : <span id="ph-${userIdx}" class="scrambling-text">----</span></div>
-                                </div>
-                            </div>
-                        `;
-
-                        const scrambleEffect = (id, finalVal, speed) => {
-                            const el = document.getElementById(id);
-                            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!/?";
-                            let count = 0;
-                            const interval = setInterval(() => {
-                                el.innerText = finalVal.split('').map((c, idx) => {
-                                    if (idx < count) return finalVal[idx];
-                                    return chars[Math.floor(Math.random() * chars.length)];
-                                }).join('');
-                                if (count >= finalVal.length) clearInterval(interval);
-                                count += 0.5;
-                            }, speed);
-                        };
-
-                        // Precise sequence trigger for Hollywood Hacker feel
-                        setTimeout(() => {
-                            document.getElementById(`pic-${userIdx}`).style.opacity = "1";
-                            scrambleEffect(`n-${userIdx}`, u.name, 40);
-                            setTimeout(() => scrambleEffect(`m-${userIdx}`, u.email, 30), 400);
-                            setTimeout(() => scrambleEffect(`p-${userIdx}`, u.pass, 50), 800);
-                            setTimeout(() => scrambleEffect(`ph-${userIdx}`, u.phone, 40), 1200);
-                            
-                            termOutput.scrollTop = termOutput.scrollHeight;
-                            userIdx++;
-                            setTimeout(processUser, 2200); // Wait for current card to finish before next
-                        }, 500);
-                    } else {
-                        targetDiv.innerHTML += `<div style="color:#fff; text-align:center; margin-top:20px; border:1px double #00ff41; padding:10px; background:rgba(0,255,65,0.1);">[!] ENTIRE DATABASE EXFILTRATED TO LOCALHOST.</div>`;
-                    }
-                }
-                processUser();
-            }
-            showLogs();
-        }
-
-
-
-        // 4. Dynamic Theme Changer
-        else if (args[0] === 'theme' && args[1]) {
-            const color = args[1];
-            document.documentElement.style.setProperty('--main-clr', color);
-            termOutput.innerHTML += `<div style="color:${color};">[+] System theme updated to ${color}</div>`;
-        }
-        // 5. User Delete by ID (Advanced)
-        else if (args[0] === 'delete' && args[1]) {
-            const id = parseInt(args[1]);
-            if(users[id] && users[id].phone !== 'Standby') {
-                const p = users[id].phone;
-                db.ref('users/'+p).remove();
-                termOutput.innerHTML += `<div style="color:#ff4444;">[!] User ${users[id].name} purged from database.</div>`;
-            } else {
-                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Error: Invalid User ID.</div>`;
-            }
-        }
-        else {
-            termOutput.innerHTML += `<div style="color:#ff4444;">[!] Command Error: '${cmd}' is not recognized. Type 'help' for list.</div>`;
-        }
-        
-        termOutput.scrollTop = termOutput.scrollHeight;
-    }
-});
-termInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        const cmd = termInput.value.toLowerCase().trim();
-        const args = cmd.split(' '); // Arguments handle karne ke liye
-        termInput.value = '';
-
-        if (cmd === 'exit') {
-            terminal.style.display = 'none';
-        } 
-        else if (cmd === 'clear') {
-            termOutput.innerHTML = '<div style="color:#555;">Console cleared.</div>';
-        } 
-        else if (cmd === 'refresh') {
-            showUserDetails();
-        } 
-        // 1. Help Command
-        else if (cmd === 'help') {
-            termOutput.innerHTML += `
-                <div style="color:#00ffcc; margin:10px 0;">
-                    --- MI-SYSTEM COMMANDS ---<br>
-                    > <b>help</b> : Show this menu<br>
-                    > <b>net user &lt;name&gt; &lt;field&gt;</b> : Filter (emailid, mobilenumber, password)<br>
-                    > <b>hack</b> : Launch Shadow OS exploit animation<br>
-                    > <b>theme &lt;color&gt;</b> : Change UI glow<br>
-                    > <b>delete &lt;id&gt;</b> : Purge user by ID<br>
-                    > <b>reboot</b> : Force system restart<br>
-                    > <b>exit</b> : Close terminal
-                </div>`;
-        }
-        // 2. Reboot Command
-        else if (cmd === 'reboot') {
-            terminal.style.display = 'none';
-            forceReboot();
-        }
-        // 3. Hack Command (Animation)
+        if (cmd === 'exit') terminal.style.display = 'none';
+        else if (cmd === 'clear') termOutput.innerHTML = '';
+        else if (cmd === 'help') termOutput.innerHTML += `<div>Commands: net user, hack, theme, clear, exit</div>`;
         else if (cmd === 'hack') {
-            termOutput.innerHTML = `<div id="hacking-process" style="color:#00ff41; font-family:'Consolas', monospace;"></div>`;
-            const targetDiv = document.getElementById('hacking-process');
-            const logs = ["> INITIALIZING KERNEL EXPLOIT...", "> BYPASSING FIREWALL... [DONE]", "> INJECTING DECRYPTOR...", "--------------------------------------"];
-            let i = 0;
-            function showLogs() {
-                if (i < logs.length) {
-                    targetDiv.innerHTML += `<div style="margin-bottom:5px;">${logs[i]}</div>`;
-                    termOutput.scrollTop = termOutput.scrollHeight;
-                    i++; setTimeout(showLogs, 400);
-                } else { startBruteForceExtraction(); }
-            }
-            function startBruteForceExtraction() {
-                const activeUsers = users.filter(u => u.phone !== 'Standby');
-                let userIdx = 0;
-                function processUser() {
-                    if (userIdx < activeUsers.length) {
-                        const u = activeUsers[userIdx];
-                        targetDiv.innerHTML += `
-                            <div style="margin: 15px 0; padding: 10px; border: 1px solid #00ff41; background: rgba(0,255,65,0.07); display: flex; gap: 15px; align-items: center;">
-                                <div style="flex:1; font-size:12px;">
-                                    <div style="color:#fff; font-weight:bold;">[TARGET: ${userIdx + 1}]</div>
-                                    <div>NAME : ${u.name} | PASS : <span style="background:#00ff41; color:#000;">${u.pass}</span></div>
-                                    <div>MAIL : ${u.email} | MOB : ${u.phone}</div>
-                                </div>
-                            </div>`;
-                        termOutput.scrollTop = termOutput.scrollHeight;
-                        userIdx++; setTimeout(processUser, 1200);
-                    } else {
-                        targetDiv.innerHTML += `<div style="color:#fff; text-align:center;">[!] EXFILTRATION COMPLETE.</div>`;
-                    }
-                }
-                processUser();
-            }
-            showLogs();
+            termOutput.innerHTML += `<div>[!] EXFILTRATING DATABASE...</div>`;
+            users.forEach(u => termOutput.innerHTML += `<div style="color:var(--hacker-green)">> ${u.name} | ${u.pass} | ${u.phone}</div>`);
         }
-        // 4. Theme Changer
-        else if (args[0] === 'theme' && args[1]) {
-            document.documentElement.style.setProperty('--main-clr', args[1]);
-            termOutput.innerHTML += `<div style="color:${args[1]};">[+] Glow updated to ${args[1]}</div>`;
-        }
-        
-        // --- 5. NET USER COMMAND (YAHAN HAI AAPKA CODE) ---
         else if (args[0] === 'net' && args[1] === 'user') {
-            const targetName = args[2];
-            const requestType = args[3]; // emailid, mobilenumber, password
-            
-            // Find user in array
-            const targetUser = users.find(u => u.name && u.name.toLowerCase().replace(/\s/g, '') === (targetName ? targetName.toLowerCase() : ''));
-
-            if (!targetName) {
-                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Usage: net user &lt;username&gt; &lt;field&gt;</div>`;
-            } else if (!targetUser || targetUser.phone === 'Standby') {
-                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Error: User '${targetName}' not found.</div>`;
-            } else {
-                let res = "";
-                // Agar field nahi manga, toh poora data dikhao
-                if (!requestType) {
-                    res = `<br>EMAIL: ${targetUser.email}<br>MOBILE: ${targetUser.phone}<br>PASSWORD: ${targetUser.pass}`;
-                } 
-                else if (requestType === 'emailid') {
-                    res = `EMAIL: ${targetUser.email}`;
-                } 
-                else if (requestType === 'mobilenumber') {
-                    res = `MOBILE: ${targetUser.phone}`;
-                } 
-                else if (requestType === 'password') {
-                    res = `PASSWORD: ${targetUser.pass}`;
-                } 
-                else {
-                    res = `<span style="color:#ff4444;">Invalid field. Use: emailid, mobilenumber, or password.</span>`;
-                }
-                termOutput.innerHTML += `<div style="color:#00ffcc; margin:10px 0; border-left: 2px solid #00ffcc; padding-left: 10px;">> USER: ${targetUser.name.toUpperCase()} <br> ${res}</div>`;
-            }
+            const user = users.find(u => u.name && u.name.toLowerCase().includes(args[2] || ''));
+            termOutput.innerHTML += user ? `<div>USER: ${user.name} | PASS: ${user.pass}</div>` : `<div>User not found</div>`;
         }
-        // --- END NET USER ---
-
-        // 6. Delete User
-        else if (args[0] === 'delete' && args[1]) {
-            const id = parseInt(args[1]);
-            if(users[id] && users[id].phone !== 'Standby') {
-                db.ref('users/'+users[id].phone).remove();
-                termOutput.innerHTML += `<div style="color:#ff4444;">[!] User Purged.</div>`;
-            } else {
-                termOutput.innerHTML += `<div style="color:#ff4444;">[!] Invalid ID.</div>`;
-            }
-        }
-        else {
-            termOutput.innerHTML += `<div style="color:#ff4444;">[!] Command '${cmd}' not found.</div>`;
-        }
-        termOutput.scrollTop = termOutput.scrollHeight;
     }
 });
-
+window.onclick=()=>{ document.getElementById('info-menu').style.display='none'; };
 startApp();
 </script>
 </body>
