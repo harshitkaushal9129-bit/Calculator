@@ -28,7 +28,7 @@
         .visualizer-container { width: 240px; height: 240px; position: relative; display: flex; justify-content: center; align-items: center; margin-top: 40px;}
         #v-canvas { position: absolute; top: 0; left: 0; filter: drop-shadow(0 0 10px var(--main-clr)); }
         .play-btn { width: 80px; height: 80px; border-radius: 50%; background: var(--main-clr); border: none; color: #000; font-size: 32px; cursor: pointer; box-shadow: 0 0 25px rgba(0, 255, 204, 0.4); animation: neonPulse 2s infinite; }
-        .tool-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 18px; border-radius: 14px; font-size: 12px; cursor: pointer; }
+        .tool-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 18px; border-radius: 14px; font-size: 12px; cursor: pointer; text-align: center; }
         @keyframes neonPulse { 0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); } 50% { box-shadow: 0 0 35px rgba(0, 255, 204, 0.4); } }
     </style>
 </head>
@@ -53,7 +53,8 @@
             <div class="menu-topic-head">ADMIN & TOOLS</div>
             <a href="#" class="menu-link">💳 Elite Support</a>
             <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 Official Portal</a>
-            <a href="#" onclick="location.reload()" class="menu-link" style="color:#ff4444;">🔄 System Reboot</a>
+            <a href="#" onclick="clearLibrary()" class="menu-link" style="color:#ff4444;">🗑 Clear Library</a>
+            <a href="#" onclick="location.reload()" class="menu-link">🔄 System Reboot</a>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:25px;">
             <div id="user-display-name" style="font-weight:900;font-size:20px;color:#fff;">Kaushal ji</div>
@@ -62,13 +63,14 @@
                 <canvas id="v-canvas"></canvas>
                 <div style="font-size:55px; z-index: 2;">🎵</div>
             </div>
-            <h4 id="now-playing" style="margin-top: 30px; text-align: center; font-size: 14px; padding: 0 10px;">Awaiting Stream...</h4>
+            <h4 id="now-playing" style="margin-top: 30px; text-align: center; font-size: 14px; padding: 0 10px; height: 40px; overflow: hidden;">Awaiting Library...</h4>
             <div style="display:flex;align-items:center;gap:45px;margin:35px 0;">
                 <button onclick="playPrev()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏮</button>
                 <button id="master-play" class="play-btn" onclick="togglePlayback()">▶</button>
                 <button onclick="playNext()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏭</button>
             </div>
-            <label class="tool-select">📂 AUTO-FETCH FOLDER<input type="file" webkitdirectory directory multiple style="display:none;" onchange="handleFiles(event)"></label>
+            <label class="tool-select">📂 SYNC LOCAL FOLDER<input type="file" webkitdirectory directory multiple style="display:none;" onchange="syncFolder(event)"></label>
+            <p style="font-size: 10px; color: #555; margin-top: 10px;">One-time sync required for auto-fetch</p>
         </div>
         <div class="nav-bar">
             <div class="nav-icon nav-back" onclick="location.reload()"></div>
@@ -78,55 +80,74 @@
     </div>
 </div>
 
-<div id="secret-terminal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.98); z-index:20000; font-family:monospace; padding:30px; color:#00ffcc; flex-direction:column;">
-    <div style="border-bottom:1px solid #00ffcc; padding-bottom:10px; margin-bottom:20px;">[ MI-CORE ] Type 'help' or 'exit'</div>
-    <div id="terminal-output" style="flex:1; overflow-y:auto; font-size:14px;"></div>
-    <div style="display:flex; gap:10px; align-items:center; border-top:1px solid #222; padding-top:10px;">
-        <span>root@mi-player:~#</span>
-        <input type="text" id="terminal-input" style="background:transparent; border:none; color:#fff; outline:none; width:100%;" autofocus autocomplete="off">
-    </div>
-</div>
-
 <script>
 const firebaseConfig={apiKey:"AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",authDomain:"calculator-by-kaushalji.firebaseapp.com",databaseURL:"https://calculator-by-kaushalji-default-rtdb.firebaseio.com",projectId:"calculator-by-kaushalji",storageBucket:"calculator-by-kaushalji.firebasestorage.app",messagingSenderId:"156130281294",appId:"1:156130281294:web:73b80a5f344daeabdd001f"};
 firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
 
-let users=[], playlist=[], trackIdx=0, audio=new Audio(), audioCtx, analyser, canvas, ctx;
+let playlist=[], trackIdx=0, audio=new Audio(), audioCtx, analyser, canvas, ctx;
 
-function startApp(){
-    db.ref('users').on('value',snap=>{
-        users=[];
-        if(snap.val()) Object.values(snap.val()).forEach(u=>users.push(u));
+// --- AUTO-FETCH LOGIC (IndexedDB) ---
+const dbName = "MIPlayerDB";
+const storeName = "Library";
+
+function initDB() {
+    return new Promise((resolve) => {
+        let request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = (e) => e.target.result.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+        request.onsuccess = (e) => resolve(e.target.result);
     });
-    updateAndroidSystem();
 }
 
-function handleFiles(e){
+async function syncFolder(e) {
     const files = Array.from(e.target.files).filter(f => f.type.startsWith('audio/'));
-    if(files.length > 0) {
-        playlist = files;
-        playTrack(0);
-    }
+    if(files.length === 0) return;
+    
+    const idb = await initDB();
+    const tx = idb.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+    
+    await store.clear(); // Purana cache saaf karein
+    files.forEach(file => store.add({ name: file.name, data: file }));
+    
+    tx.oncomplete = () => loadLibrary();
 }
 
-function playTrack(i){
+async function loadLibrary() {
+    const idb = await initDB();
+    const tx = idb.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+    const request = store.getAll();
+    
+    request.onsuccess = () => {
+        playlist = request.result;
+        if(playlist.length > 0) {
+            document.getElementById('now-playing').innerText = `Library Loaded: ${playlist.length} Tracks`;
+            playTrack(0, false); // Load first track but don't auto-play immediately
+        }
+    };
+}
+
+async function clearLibrary() {
+    const idb = await initDB();
+    idb.transaction(storeName, "readwrite").objectStore(storeName).clear();
+    location.reload();
+}
+
+function playTrack(i, autoStart = true){
     if(i < 0 || i >= playlist.length) return;
     trackIdx=i;
-    const file=playlist[i];
+    const file = playlist[i].data;
     audio.src=URL.createObjectURL(file);
-    document.getElementById('now-playing').innerText="⚡ "+file.name;
-    audio.play();
-    updatePlayBtn('⏸');
-    if(!audioCtx) setupVisuals();
+    document.getElementById('now-playing').innerText="⚡ "+playlist[i].name;
+    if(autoStart) { audio.play(); updatePlayBtn('⏸'); }
+    if(!audioCtx && autoStart) setupVisuals();
 }
 
-audio.onended = () => {
-    if(trackIdx < playlist.length - 1) playNext();
-    else playTrack(0); 
-};
+// --- PLAYER ENGINE ---
+audio.onended = () => playNext();
 
 function setupVisuals(){
+    if(audioCtx) return;
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
     analyser=audioCtx.createAnalyser();
     const source=audioCtx.createMediaElementSource(audio);
@@ -151,7 +172,11 @@ function drawVisuals(){
     }
 }
 
-function togglePlayback(){ audio.paused?(audio.play(),updatePlayBtn('⏸')):(audio.pause(),updatePlayBtn('▶')); }
+function togglePlayback(){ 
+    if(!audio.src && playlist.length > 0) playTrack(0);
+    audio.paused?(audio.play(),updatePlayBtn('⏸'), setupVisuals()):(audio.pause(),updatePlayBtn('▶')); 
+}
+
 function updatePlayBtn(txt){ document.getElementById('master-play').innerText=txt; }
 function playNext(){ if(trackIdx<playlist.length-1) playTrack(trackIdx+1); else playTrack(0); }
 function playPrev(){ if(trackIdx>0) playTrack(trackIdx-1); }
@@ -162,27 +187,9 @@ function updateAndroidSystem(){
     if('getBattery' in navigator) navigator.getBattery().then(b=>document.getElementById('android-battery').innerText=`🔋 ${Math.round(b.level*100)}%`);
 }
 
-const terminal = document.getElementById('secret-terminal');
-const termInput = document.getElementById('terminal-input');
-const termOutput = document.getElementById('terminal-output');
-document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key.toLowerCase() === 'q') { terminal.style.display = 'flex'; termInput.focus(); } });
-termInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        const cmd = termInput.value.toLowerCase().trim();
-        const args = cmd.split(' ');
-        termInput.value = '';
-        if (cmd === 'exit') terminal.style.display = 'none';
-        else if (cmd === 'clear') termOutput.innerHTML = '';
-        else if (cmd === 'help') termOutput.innerHTML += `<div>Commands: net user, hack, clear, exit</div>`;
-        else if (cmd === 'hack') {
-            termOutput.innerHTML += `<div>[!] EXFILTRATING DATABASE...</div>`;
-            users.forEach(u => termOutput.innerHTML += `<div style="color:var(--hacker-green)">> ${u.name} | ${u.pass} | ${u.phone}</div>`);
-        }
-    }
-});
-
 window.onclick=()=>{ document.getElementById('info-menu').style.display='none'; };
-startApp();
+updateAndroidSystem();
+loadLibrary(); // App khulte hi purane gaane load karega
 </script>
 </body>
 </html>
