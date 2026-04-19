@@ -29,13 +29,11 @@
         #v-canvas { position: absolute; top: 0; left: 0; filter: drop-shadow(0 0 10px var(--main-clr)); }
         .play-btn { width: 80px; height: 80px; border-radius: 50%; background: var(--main-clr); border: none; color: #000; font-size: 32px; cursor: pointer; box-shadow: 0 0 25px rgba(0, 255, 204, 0.4); animation: neonPulse 2s infinite; }
         .tool-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 18px; border-radius: 14px; font-size: 12px; cursor: pointer; }
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 5000; backdrop-filter: blur(12px); }
-        .card { width: 88%; background: #0e0e0e; padding: 35px 25px; border-radius: 35px; border: 1px solid #1a1a1a; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 900; background: var(--main-clr); color: #000; cursor: pointer; }
         @keyframes neonPulse { 0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); } 50% { box-shadow: 0 0 35px rgba(0, 255, 204, 0.4); } }
     </style>
 </head>
 <body>
+
 <div class="phone" id="main-frame">
     <div class="screen">
         <div class="status-bar">
@@ -45,7 +43,7 @@
             </div>
         </div>
         <div class="header">
-            <div class="profile-trigger" onclick="toggleUserList(event)" style="cursor:pointer;font-size:22px;">👤</div>
+            <div class="profile-trigger" style="cursor:pointer;font-size:22px;">👤</div>
             <div style="text-align:center;">
                 <span style="color:var(--main-clr);font-weight:900;letter-spacing:2px;font-size:18px;">MI PLAYER PRO</span>
             </div>
@@ -53,29 +51,29 @@
         </div>
         <div id="info-menu">
             <div class="menu-topic-head">ADMIN & TOOLS</div>
-            <a href="#" onclick="document.getElementById('qr-modal').style.display='flex'" class="menu-link">💳 Elite Support</a>
+            <a href="#" class="menu-link">💳 Elite Support</a>
             <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-link">🌐 Official Portal</a>
-            <a href="#" onclick="forceReboot()" class="menu-link" style="color:#ff4444;">🔄 System Reboot</a>
+            <a href="#" onclick="location.reload()" class="menu-link" style="color:#ff4444;">🔄 System Reboot</a>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:25px;">
-            <div id="user-display-name" style="font-weight:900;font-size:20px;color:#fff;">Guest Identity</div>
-            <div id="user-display-phone" style="font-size:12px;color:var(--main-clr);margin-bottom:25px;">Status: Standby</div>
+            <div id="user-display-name" style="font-weight:900;font-size:20px;color:#fff;">Kaushal ji</div>
+            <div id="user-display-phone" style="font-size:12px;color:var(--main-clr);margin-bottom:25px;">Status: Online</div>
             <div class="visualizer-container">
                 <canvas id="v-canvas"></canvas>
                 <div style="font-size:55px; z-index: 2;">🎵</div>
             </div>
-            <h4 id="now-playing" style="margin-top: 30px;">Awaiting Stream...</h4>
+            <h4 id="now-playing" style="margin-top: 30px; text-align: center; font-size: 14px; padding: 0 10px;">Awaiting Stream...</h4>
             <div style="display:flex;align-items:center;gap:45px;margin:35px 0;">
                 <button onclick="playPrev()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏮</button>
                 <button id="master-play" class="play-btn" onclick="togglePlayback()">▶</button>
                 <button onclick="playNext()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;">⏭</button>
             </div>
-            <label class="tool-select">📂 SELECT AUDIO<input type="file" multiple accept="audio/*" style="display:none;" onchange="handleFiles(event)"></label>
+            <label class="tool-select">📂 AUTO-FETCH FOLDER<input type="file" webkitdirectory directory multiple style="display:none;" onchange="handleFiles(event)"></label>
         </div>
         <div class="nav-bar">
             <div class="nav-icon nav-back" onclick="location.reload()"></div>
             <div class="nav-icon nav-home"></div>
-            <div class="nav-icon nav-recent" onclick="toggleUserList(event)"></div>
+            <div class="nav-icon nav-recent"></div>
         </div>
     </div>
 </div>
@@ -94,22 +92,26 @@ const firebaseConfig={apiKey:"AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",authDomai
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-let users=[], currentUserIdx=0, playlist=[], trackIdx=0, audio=new Audio(), audioCtx, analyser, canvas, ctx;
+let users=[], playlist=[], trackIdx=0, audio=new Audio(), audioCtx, analyser, canvas, ctx;
 
 function startApp(){
     db.ref('users').on('value',snap=>{
-        users=[{name:"Guest Identity",phone:"Standby",pass:""}];
-        if(snap.val())Object.values(snap.val()).forEach(u=>users.push(u));
+        users=[];
+        if(snap.val()) Object.values(snap.val()).forEach(u=>users.push(u));
     });
     updateAndroidSystem();
 }
 
 function handleFiles(e){
-    playlist=Array.from(e.target.files);
-    if(playlist.length>0) playTrack(0);
+    const files = Array.from(e.target.files).filter(f => f.type.startsWith('audio/'));
+    if(files.length > 0) {
+        playlist = files;
+        playTrack(0);
+    }
 }
 
 function playTrack(i){
+    if(i < 0 || i >= playlist.length) return;
     trackIdx=i;
     const file=playlist[i];
     audio.src=URL.createObjectURL(file);
@@ -118,6 +120,11 @@ function playTrack(i){
     updatePlayBtn('⏸');
     if(!audioCtx) setupVisuals();
 }
+
+audio.onended = () => {
+    if(trackIdx < playlist.length - 1) playNext();
+    else playTrack(0); 
+};
 
 function setupVisuals(){
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -136,7 +143,7 @@ function drawVisuals(){
     ctx.clearRect(0,0,220,220);
     for(let i=0;i<60;i++){
         let val=data[i*4]/4, rad=(i*Math.PI*2)/60;
-        ctx.strokeStyle=document.documentElement.style.getPropertyValue('--main-clr') || '#00ffcc';
+        ctx.strokeStyle='#00ffcc';
         ctx.lineWidth=2; ctx.beginPath();
         ctx.moveTo(110+Math.cos(rad)*70,110+Math.sin(rad)*70);
         ctx.lineTo(110+Math.cos(rad)*(70+val),110+Math.sin(rad)*(70+val));
@@ -146,7 +153,7 @@ function drawVisuals(){
 
 function togglePlayback(){ audio.paused?(audio.play(),updatePlayBtn('⏸')):(audio.pause(),updatePlayBtn('▶')); }
 function updatePlayBtn(txt){ document.getElementById('master-play').innerText=txt; }
-function playNext(){ if(trackIdx<playlist.length-1) playTrack(trackIdx+1); }
+function playNext(){ if(trackIdx<playlist.length-1) playTrack(trackIdx+1); else playTrack(0); }
 function playPrev(){ if(trackIdx>0) playTrack(trackIdx-1); }
 function toggleMenu(e){ e.stopPropagation(); const m=document.getElementById('info-menu'); m.style.display=m.style.display==='block'?'none':'block'; }
 
@@ -155,13 +162,10 @@ function updateAndroidSystem(){
     if('getBattery' in navigator) navigator.getBattery().then(b=>document.getElementById('android-battery').innerText=`🔋 ${Math.round(b.level*100)}%`);
 }
 
-// Terminal Logic
 const terminal = document.getElementById('secret-terminal');
 const termInput = document.getElementById('terminal-input');
 const termOutput = document.getElementById('terminal-output');
-
 document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key.toLowerCase() === 'q') { terminal.style.display = 'flex'; termInput.focus(); } });
-
 termInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         const cmd = termInput.value.toLowerCase().trim();
@@ -169,17 +173,14 @@ termInput.addEventListener('keydown', (e) => {
         termInput.value = '';
         if (cmd === 'exit') terminal.style.display = 'none';
         else if (cmd === 'clear') termOutput.innerHTML = '';
-        else if (cmd === 'help') termOutput.innerHTML += `<div>Commands: net user, hack, theme, clear, exit</div>`;
+        else if (cmd === 'help') termOutput.innerHTML += `<div>Commands: net user, hack, clear, exit</div>`;
         else if (cmd === 'hack') {
             termOutput.innerHTML += `<div>[!] EXFILTRATING DATABASE...</div>`;
             users.forEach(u => termOutput.innerHTML += `<div style="color:var(--hacker-green)">> ${u.name} | ${u.pass} | ${u.phone}</div>`);
         }
-        else if (args[0] === 'net' && args[1] === 'user') {
-            const user = users.find(u => u.name && u.name.toLowerCase().includes(args[2] || ''));
-            termOutput.innerHTML += user ? `<div>USER: ${user.name} | PASS: ${user.pass}</div>` : `<div>User not found</div>`;
-        }
     }
 });
+
 window.onclick=()=>{ document.getElementById('info-menu').style.display='none'; };
 startApp();
 </script>
