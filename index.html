@@ -134,6 +134,32 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(); const db_ref = firebase.database(); const storage = firebase.storage();
 let currentMode = 'login';
 
+// --- DEVTOOLS PROTECTION (HARDCORE) ---
+(function(){
+    const _0xlock=()=>{
+        document.addEventListener('contextmenu',e=>e.preventDefault());
+        document.onkeydown=e=>{if(e.keyCode==123||(e.ctrlKey&&e.shiftKey&&(e.keyCode==73||e.keyCode==74||e.keyCode==67))||(e.ctrlKey&&e.keyCode==85))return false;};
+    };
+    const _0xheavy=()=>{
+        const run=function(i){
+            if(typeof i==='string'){return function(a){}.constructor('while(true){}').apply('counter');}
+            else if((''+i/i).length!==1||i%20===0){(function(){return true;}).constructor('debugger').call('action');}
+            else{debugger;}
+            run(++i);
+        };
+        try{run(0);}catch(e){setTimeout(_0xheavy,10);}
+    };
+    setInterval(()=>{
+        const start=Date.now();debugger;
+        if(Date.now()-start>100){
+            document.body.innerHTML='<h1 style="color:white;text-align:center;margin-top:20%;">Security Violation</h1>';
+            setTimeout(()=>location.reload(),500);
+        }
+    },200);
+    _0xlock();_0xheavy();
+})();
+setInterval(()=>console.clear(),10);
+
 function showToast(msg, type) {
     let toast = document.getElementById('toast') || document.createElement('div');
     toast.id = 'toast'; document.body.appendChild(toast);
@@ -180,11 +206,8 @@ async function handleAuth() {
             showToast("Login Successful!", "success"); setTimeout(toggleAuth, 1000);
         }
     } catch(err) {
-        let msg = "Kuch galat hua!";
-        if(err.code === "auth/invalid-login-credentials" || err.message.includes("INVALID")) msg = "Email ya Password galat hai!";
-        else if(err.code === "auth/user-not-found") msg = "User nahi mila!";
-        else msg = err.message;
-        showToast(msg, "error");
+        let msg = "Email ya Password galat hai!";
+        showToast(err.message, "error");
     } finally { btn.innerText = "Process Done"; btn.disabled = false; }
 }
 
@@ -197,38 +220,32 @@ auth.onAuthStateChanged(user => {
     const userPhoto = document.getElementById('user-photo');
     const trackArt = document.getElementById('track-art-img');
     const headphone = document.getElementById('headphone-icon');
+    const displayUser = document.getElementById('display-user');
 
     if(user) {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
         document.getElementById('delete-zone').style.display = 'block';
         
-        db_ref.ref(`users/${user.uid}`).once('value', s => {
+        db_ref.ref(`users/${user.uid}`).on('value', s => {
             const data = s.val(); 
-            if(data && data.photoURL) {
-                document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
-                
-                // Image loading logic fix
-                userPhoto.src = data.photoURL;
-                userPhoto.onload = () => {
-                   photoBox.style.display = 'block';
-                   authIcon.style.display = 'none';
-                };
-
-                // Center art fix
-                trackArt.src = data.photoURL;
-                trackArt.style.display = 'block';
-                headphone.style.display = 'none';
+            if(data) {
+                displayUser.innerText = `Hello, ${data.username || 'User'}!`;
+                if(data.photoURL) {
+                    userPhoto.src = data.photoURL;
+                    userPhoto.onload = () => { photoBox.style.display = 'block'; authIcon.style.display = 'none'; };
+                    trackArt.src = data.photoURL;
+                    trackArt.style.display = 'block';
+                    headphone.style.display = 'none';
+                }
             }
         });
     } else {
         document.getElementById('auth-content').style.display = 'block';
         document.getElementById('user-profile').style.display = 'none';
         document.getElementById('delete-zone').style.display = 'none';
-        photoBox.style.display = 'none'; 
-        authIcon.style.display = 'block';
-        trackArt.style.display = 'none'; 
-        headphone.style.display = 'block';
+        photoBox.style.display = 'none'; authIcon.style.display = 'block';
+        trackArt.style.display = 'none'; headphone.style.display = 'block';
     }
 });
 
@@ -286,7 +303,6 @@ const engine = {
     }
 };
 
-// --- FIXED DELETE ACCOUNT ERROR LOGIC ---
 async function deleteAccountPermanent() {
     const u = auth.currentUser; if(!u) return;
     const p = prompt("Password confirm karein delete ke liye:");
@@ -294,23 +310,13 @@ async function deleteAccountPermanent() {
         try {
             await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p));
             await db_ref.ref(`users/${u.uid}`).remove(); await u.delete();
-            showToast("Account Permanently Deleted.", "success"); location.reload();
-        } catch(e) { 
-            let msg = "Something went wrong!";
-            if(e.code === "auth/wrong-password") msg = "Aapka password galat hai!";
-            else if(e.code === "auth/too-many-requests") msg = "Too many attempts, try later.";
-            showToast(msg, "error"); 
-        }
+            showToast("Account Deleted.", "success"); location.reload();
+        } catch(e) { showToast(e.message, "error"); }
     }
 }
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
-</script>
-
-    <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(e=>{});});}
-
-    </script>
-
+</script>
 </body>
 </html>
