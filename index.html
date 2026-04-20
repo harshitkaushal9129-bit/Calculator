@@ -9,8 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-    <style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> <style>
         :root {
             --accent: #00f2ff;
             --accent-glow: rgba(0, 242, 255, 0.5);
@@ -39,6 +38,10 @@
         header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; }
         
+        /* Profile Image Styles */
+        #user-photo-box { width: 32px; height: 32px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; }
+        #user-photo { width: 100%; height: 100%; object-fit: cover; }
+        
         /* Left Side Auth Panel */
         #auth-panel {
             position: absolute; top: 0; left: -100%; width: 85%; height: 100%;
@@ -62,6 +65,16 @@
         .auth-links { margin-top: 15px; font-size: 12px; display: flex; flex-direction: column; gap: 8px; }
         .auth-links span { color: var(--text-dim); cursor: pointer; transition: 0.3s; }
         .auth-links span:hover { color: var(--accent); }
+        
+        /* Image Upload Box */
+        .img-upload-label {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: 120px; border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 12px; color: var(--text-dim); cursor: pointer; margin-bottom: 15px;
+            position: relative; overflow: hidden;
+        }
+        .img-upload-label img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; }
+        .img-upload-label span { font-size: 14px; position: relative; z-index: 5; }
 
         /* Right Side Settings Panel */
         #side-panel {
@@ -80,6 +93,7 @@
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
             border: 2px solid rgba(255,255,255,0.1); overflow: hidden;
         }
+        .album-art-proxy img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: none; }
         .album-art-proxy span { font-size: 60px; filter: grayscale(1); transition: 0.5s; }
         .playing span { filter: grayscale(0); transform: scale(1.1); }
         .track-meta { text-align: center; padding: 20px; }
@@ -97,7 +111,10 @@
 
 <div class="app-container" id="player-ui">
     <header>
-        <div class="btn-icon" onclick="toggleAuth()">👤</div>
+        <div id="user-photo-box" onclick="toggleAuth()">
+            <img id="user-photo" src="" alt="Profile">
+        </div>
+        <div class="btn-icon" id="auth-icon" onclick="toggleAuth()">👤</div>
         <div class="brand">MI PRO</div>
         <div class="btn-icon" onclick="toggleMenu()">☰</div>
     </header>
@@ -106,8 +123,17 @@
         <div class="btn-icon" style="margin-bottom: 20px;" onclick="toggleAuth()">⬅ Back</div>
         <div id="auth-content">
             <div class="auth-header"><span>🔑</span> <span id="auth-title">Login</span></div>
+            
+            <div id="register-fields" style="display:none;">
+                <label class="img-upload-label">
+                    <img id="preview-img" src="">
+                    <span>➕ Profile Picture</span>
+                    <input type="file" id="user-image" accept="image/*" style="display:none;" onchange="previewUserImage(this)">
+                </label>
+                <div class="input-group"><input type="text" id="user-name" placeholder="Username"></div>
+            </div>
+            
             <div class="input-group"><input type="email" id="user-email" placeholder="Email Address"></div>
-            <div class="input-group" id="user-box" style="display:none;"><input type="text" id="user-name" placeholder="Username"></div>
             <div class="input-group"><input type="password" id="user-pass" placeholder="Password"></div>
             <button class="auth-btn" id="auth-submit" onclick="handleAuth()">Login</button>
             
@@ -137,7 +163,9 @@
 
     <div class="visualizer-orbit">
         <canvas id="canvas-v"></canvas>
-        <div class="album-art-proxy" id="art-box"><span>🎧</span></div>
+        <div class="album-art-proxy" id="art-box">
+            <span id="headphone-icon">🎧</span>
+            <img id="track-art-img" src="" alt="Album Art"> </div>
     </div>
 
     <div class="track-meta">
@@ -169,6 +197,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db_ref = firebase.database();
+const storage = firebase.storage(); // Storage Service Initialized
 
 let currentMode = 'login';
 
@@ -180,10 +209,10 @@ function switchAuth(mode) {
     currentMode = mode;
     const title = document.getElementById('auth-title');
     const btn = document.getElementById('auth-submit');
-    const userBox = document.getElementById('user-box');
+    const regFields = document.getElementById('register-fields');
     const passBox = document.getElementById('user-pass');
 
-    userBox.style.display = (mode === 'register') ? 'block' : 'none';
+    regFields.style.display = (mode === 'register') ? 'block' : 'none';
     passBox.style.display = (mode === 'forgot-user') ? 'none' : 'block';
 
     if(mode === 'register') { title.innerText = "Register"; btn.innerText = "Create Account"; }
@@ -192,15 +221,36 @@ function switchAuth(mode) {
     else if(mode === 'forgot-user') { title.innerText = "Find User"; btn.innerText = "Check Email"; }
 }
 
+function previewUserImage(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-img').src = e.target.result;
+            document.getElementById('preview-img').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 async function handleAuth() {
     const email = document.getElementById('user-email').value;
     const pass = document.getElementById('user-pass').value;
     const name = document.getElementById('user-name').value;
+    const imageFile = document.getElementById('user-image').files[0];
 
     try {
         if(currentMode === 'register') {
+            if(!imageFile) throw new Error("Please upload a profile picture.");
+            
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db_ref.ref('users/' + res.user.uid).set({ username: name });
+            
+            // Upload Image to Storage
+            const storageRef = storage.ref('users/' + res.user.uid + '/profile.jpg');
+            await storageRef.put(imageFile);
+            const downloadURL = await storageRef.getDownloadURL();
+            
+            // Save Username & Image URL in Database
+            await db_ref.ref('users/' + res.user.uid).set({ username: name, photoURL: downloadURL });
             alert("Account Created!");
         } else if(currentMode === 'login') {
             await auth.signInWithEmailAndPassword(email, pass);
@@ -220,14 +270,41 @@ auth.onAuthStateChanged(user => {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
         db_ref.ref('users/' + user.uid).once('value', s => {
-            const name = s.val() ? s.val().username : user.email;
+            const userData = s.val();
+            const name = userData ? userData.username : user.email;
+            const photo = userData ? userData.photoURL : "";
+            
             document.getElementById('display-user').innerText = "Hi, " + name;
             document.getElementById('title').innerText = "Logged in: " + name;
+            
+            // Headphone Icon ki jagah Profile Pic set karna
+            const hIcon = document.getElementById('headphone-icon');
+            const pArt = document.getElementById('track-art-img');
+            const hPhoto = document.getElementById('user-photo');
+            const hIconBtn = document.getElementById('auth-icon');
+            const hPhotoBox = document.getElementById('user-photo-box');
+            
+            if(photo) {
+                hPhoto.src = photo;
+                hPhotoBox.style.display = 'block';
+                hIconBtn.style.display = 'none';
+                
+                pArt.src = photo; // Player center image set profile photo
+                pArt.style.display = 'block';
+                hIcon.style.display = 'none';
+            }
         });
     } else {
         document.getElementById('auth-content').style.display = 'block';
         document.getElementById('user-profile').style.display = 'none';
         document.getElementById('title').innerText = "Welcome, Kaushal ji";
+        
+        // Reset Player Icons to Default
+        document.getElementById('user-photo-box').style.display = 'none';
+        document.getElementById('auth-icon').style.display = 'block';
+        
+        document.getElementById('track-art-img').style.display = 'none';
+        document.getElementById('headphone-icon').style.display = 'block';
     }
 });
 
