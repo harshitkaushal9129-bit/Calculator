@@ -23,6 +23,18 @@
         .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
         #user-photo-box { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
         #user-photo { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Playlist Panel Styles */
+        #playlist-panel { position: absolute; top: 0; right: -100%; width: 85%; height: 100%; background: rgba(8, 8, 10, 0.98); backdrop-filter: blur(25px); z-index: 250; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 20px; display: flex; flex-direction: column; border-left: 1px solid var(--accent); }
+        .playlist-open { right: 0 !important; }
+        .playlist-header { color: var(--accent); font-size: 20px; font-weight: bold; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        #list-container { flex: 1; overflow-y: auto; padding-right: 5px; }
+        #list-container::-webkit-scrollbar { width: 4px; }
+        #list-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        .track-item { padding: 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; font-size: 14px; }
+        .track-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
+        .track-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: var(--accent); }
+
         #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; }
         .auth-open { left: 0 !important; }
         .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; font-weight: bold; }
@@ -41,10 +53,12 @@
         .album-art-proxy { position: absolute; width: 170px; height: 170px; background: var(--surface); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid rgba(255, 255, 255, 0.05); overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
         .album-art-proxy img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: none; }
         .album-art-proxy span { font-size: 65px; opacity: 0.3; }
-        .track-meta { text-align: center; padding: 20px 20px 40px; }
+        .track-meta { text-align: center; padding: 20px 20px 20px; }
         .track-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .track-artist { color: var(--accent); font-size: 14px; letter-spacing: 1px; opacity: 0.8; }
-        .player-core { padding: 40px 30px 60px; background: rgba(255, 255, 255, 0.03); border-radius: 45px 45px 0 0; backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
+        
+        .player-core { padding: 20px 30px 60px; background: rgba(255, 255, 255, 0.03); border-radius: 45px 45px 0 0; backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
+        .time-info { display: flex; justify-content: space-between; font-size: 12px; color: var(--accent); margin-bottom: 8px; font-family: monospace; letter-spacing: 1px; }
         .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; cursor: pointer; overflow: hidden; }
         .bar-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 15px var(--accent); transition: 0.1s linear; }
         .main-cmds { display: flex; justify-content: space-around; align-items: center; margin-top: 35px;}
@@ -62,8 +76,20 @@
         <div id="user-photo-box" onclick="toggleAuth()"><img id="user-photo" src="" alt="Profile"></div>
         <div class="btn-icon" id="auth-icon" onclick="toggleAuth()">👤</div>
         <div class="brand">MI PRO</div>
-        <div class="btn-icon" onclick="toggleMenu()">☰</div>
+        <div style="display: flex; gap: 15px;">
+            <div class="btn-icon" onclick="togglePlaylist()">🎶</div>
+            <div class="btn-icon" onclick="toggleMenu()">☰</div>
+        </div>
     </header>
+
+    <div id="playlist-panel">
+        <div class="playlist-header">
+            <span>PLAYLIST</span>
+            <span class="btn-icon" onclick="togglePlaylist()" style="font-size: 20px;">✕</span>
+        </div>
+        <div id="list-container">
+            </div>
+    </div>
 
     <div id="auth-panel">
         <div class="btn-icon" style="margin-bottom: 30px; font-size: 18px;" onclick="toggleAuth()">⬅ Back</div>
@@ -119,6 +145,10 @@
     </div>
 
     <div class="player-core">
+        <div class="time-info">
+            <span id="current-time">00:00</span>
+            <span id="total-duration">00:00</span>
+        </div>
         <div class="bar-bg" id="seek-bar" onclick="engine.seek(event)"><div class="bar-fill" id="fill"></div></div>
         <div class="main-cmds">
             <button class="btn-icon" onclick="engine.prev()">⏮</button>
@@ -133,7 +163,7 @@ const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", auth
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(); const db_ref = firebase.database(); const storage = firebase.storage();
 let currentMode = 'login';
-let userBase64 = ""; // Base64 image store karne ke liye
+let userBase64 = "";
 
 function showToast(msg, type) {
     let toast = document.getElementById('toast') || document.createElement('div');
@@ -144,6 +174,8 @@ function showToast(msg, type) {
 
 function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
 function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
+function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
+
 function switchAuth(mode) {
     currentMode = mode; const regFields = document.getElementById('register-fields');
     regFields.style.display = (mode === 'register') ? 'block' : 'none';
@@ -155,7 +187,7 @@ function previewUserImage(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = (e) => { 
-            userBase64 = e.target.result; // Base64 string yahan save hui
+            userBase64 = e.target.result;
             const img = document.getElementById('preview-img'); 
             img.src = userBase64; 
             img.style.display = 'block'; 
@@ -175,7 +207,6 @@ async function handleAuth() {
             const name = document.getElementById('user-name').value;
             if(!userBase64) throw { message: "Photo zaroori hai!" };
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            // Realtime Database mein Base64 image save ho rahi hai
             await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: userBase64 });
             showToast("Account ready!", "success");
         } else if(currentMode === 'login') {
@@ -195,13 +226,10 @@ auth.onAuthStateChanged(user => {
     const userPhoto = document.getElementById('user-photo');
     const trackArt = document.getElementById('track-art-img');
     const headphone = document.getElementById('headphone-icon');
-
     if(user) {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
         document.getElementById('delete-zone').style.display = 'block';
-        
-        // Listen changes in Realtime Database
         db_ref.ref(`users/${user.uid}`).on('value', s => {
             const data = s.val(); 
             if(data && data.photoURL) {
@@ -229,31 +257,59 @@ const engine = {
     audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
     init: function() { this.listeners(); this.loadLocalData(); },
     listeners: function() {
-        this.audio.ontimeupdate = () => { document.getElementById('fill').style.width = (this.audio.currentTime / this.audio.duration * 100 || 0) + "%"; };
+        this.audio.ontimeupdate = () => { 
+            const cur = this.audio.currentTime;
+            const dur = this.audio.duration;
+            document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%";
+            document.getElementById('current-time').innerText = this.formatTime(cur);
+            if(!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur);
+        };
         this.audio.onended = () => this.next();
         document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
+    },
+    formatTime: function(secs) {
+        let min = Math.floor(secs / 60);
+        let sec = Math.floor(secs % 60);
+        return `${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec}`;
     },
     handleFiles: async function(files) {
         const db = await this.getDB(); const tx = db.transaction("songs", "readwrite"); const store = tx.objectStore("songs");
         Array.from(files).filter(f => f.type.startsWith('audio/')).forEach(f => store.add({ name: f.name, data: f }));
-        tx.oncomplete = () => { showToast("Imported!", "success"); location.reload(); };
+        tx.oncomplete = () => { showToast("Imported!", "success"); this.loadLocalData(); };
     },
     loadLocalData: async function() {
         const db = await this.getDB();
-        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { this.playlist = e.target.result; if(this.playlist.length > 0) this.loadTrack(0, false); };
+        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { 
+            this.playlist = e.target.result; 
+            this.renderPlaylist();
+            if(this.playlist.length > 0 && !this.audio.src) this.loadTrack(0, false); 
+        };
+    },
+    renderPlaylist: function() {
+        const container = document.getElementById('list-container');
+        container.innerHTML = "";
+        this.playlist.forEach((song, i) => {
+            const div = document.createElement('div');
+            div.className = `track-item ${i === this.index ? 'active' : ''}`;
+            div.innerText = song.name.replace(/\.[^/.]+$/, "");
+            div.onclick = () => { this.loadTrack(i); togglePlaylist(); };
+            container.appendChild(div);
+        });
     },
     loadTrack: function(i, play = true) {
+        if(!this.playlist[i]) return;
         this.index = i; const track = this.playlist[i];
         if(this.audio.src) URL.revokeObjectURL(this.audio.src);
         this.audio.src = URL.createObjectURL(track.data);
         document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, "");
+        this.renderPlaylist();
         if(play) this.play();
     },
     toggle: function() { if(!this.playlist.length) return showToast("Music layein!", "error"); this.audio.paused ? this.play() : this.pause(); },
     play: function() { this.audio.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; this.startVisuals(); }); },
     pause: function() { this.audio.pause(); document.getElementById('play-btn').innerText = "▶"; },
-    next: function() { if(this.playlist.length > 1) { this.index = (this.index + 1) % this.playlist.length; this.loadTrack(this.index); } },
-    prev: function() { if(this.playlist.length > 1) { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.loadTrack(this.index); } },
+    next: function() { if(this.playlist.length > 0) { this.index = (this.index + 1) % this.playlist.length; this.loadTrack(this.index); } },
+    prev: function() { if(this.playlist.length > 0) { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.loadTrack(this.index); } },
     seek: function(e) { const b = document.getElementById('seek-bar'); this.audio.currentTime = (e.offsetX / b.offsetWidth) * this.audio.duration; },
     getDB: () => new Promise(res => {
         const r = indexedDB.open("MI_PRO_DB", 1);
@@ -290,16 +346,12 @@ async function deleteAccountPermanent() {
         } catch(e) { 
             let msg = "Something went wrong!";
             if(e.code === "auth/wrong-password") msg = "Aapka password galat hai!";
-            else if(e.code === "auth/too-many-requests") msg = "Too many attempts, try later.";
             showToast(msg, "error"); 
         }
     }
 }
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
-</script>
-<script>
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(e=>{});});}
 </script>
 </body>
 </html>
