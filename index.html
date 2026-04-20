@@ -22,7 +22,7 @@
         header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
         #user-photo-box { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
-        #user-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+        #user-photo { width: 100%; height: 100%; object-fit: cover; }
         #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; }
         .auth-open { left: 0 !important; }
         .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; font-weight: bold; }
@@ -190,6 +190,7 @@ async function handleAuth() {
 
 function logout() { auth.signOut(); showToast("Logged Out", "success"); }
 
+// --- FIXED AUTH STATE LOGIC ---
 auth.onAuthStateChanged(user => {
     const photoBox = document.getElementById('user-photo-box');
     const authIcon = document.getElementById('auth-icon');
@@ -201,26 +202,33 @@ auth.onAuthStateChanged(user => {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
         document.getElementById('delete-zone').style.display = 'block';
+        
         db_ref.ref(`users/${user.uid}`).once('value', s => {
-            const data = s.val(); if(data) {
+            const data = s.val(); 
+            if(data && data.photoURL) {
                 document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
-                if(data.photoURL) { 
-                    userPhoto.src = data.photoURL; 
-                    photoBox.style.display = 'block'; 
-                    authIcon.style.display = 'none';
-                    // Center art display fix
-                    trackArt.src = data.photoURL;
-                    trackArt.style.display = 'block';
-                    headphone.style.display = 'none';
-                }
+                
+                // Image loading logic fix
+                userPhoto.src = data.photoURL;
+                userPhoto.onload = () => {
+                   photoBox.style.display = 'block';
+                   authIcon.style.display = 'none';
+                };
+
+                // Center art fix
+                trackArt.src = data.photoURL;
+                trackArt.style.display = 'block';
+                headphone.style.display = 'none';
             }
         });
     } else {
         document.getElementById('auth-content').style.display = 'block';
         document.getElementById('user-profile').style.display = 'none';
         document.getElementById('delete-zone').style.display = 'none';
-        photoBox.style.display = 'none'; authIcon.style.display = 'block';
-        trackArt.style.display = 'none'; headphone.style.display = 'block';
+        photoBox.style.display = 'none'; 
+        authIcon.style.display = 'block';
+        trackArt.style.display = 'none'; 
+        headphone.style.display = 'block';
     }
 });
 
@@ -278,6 +286,7 @@ const engine = {
     }
 };
 
+// --- FIXED DELETE ACCOUNT ERROR LOGIC ---
 async function deleteAccountPermanent() {
     const u = auth.currentUser; if(!u) return;
     const p = prompt("Password confirm karein delete ke liye:");
@@ -285,10 +294,11 @@ async function deleteAccountPermanent() {
         try {
             await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p));
             await db_ref.ref(`users/${u.uid}`).remove(); await u.delete();
-            showToast("Account Deleted Permanently.", "success"); location.reload();
+            showToast("Account Permanently Deleted.", "success"); location.reload();
         } catch(e) { 
-            let msg = "Password galat hai!"; 
-            if(e.code === "auth/wrong-password") msg = "Confirmation password galat hai!";
+            let msg = "Something went wrong!";
+            if(e.code === "auth/wrong-password") msg = "Aapka password galat hai!";
+            else if(e.code === "auth/too-many-requests") msg = "Too many attempts, try later.";
             showToast(msg, "error"); 
         }
     }
