@@ -23,6 +23,7 @@
             --text-dim: #94a3b8; 
         }
 
+        /* --- GLOBAL & SCROLLABLE BODY --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background: var(--bg); 
@@ -30,7 +31,7 @@
             font-family: 'Segoe UI', sans-serif; 
             margin: 0; 
             overflow-x: hidden; 
-            overflow-y: auto; 
+            overflow-y: auto; /* Scrollable Enabled */
             min-height: 100vh;
         }
 
@@ -40,10 +41,11 @@
             margin: 0 auto; 
             position: relative; 
             min-height: 100vh;
-            padding-bottom: 150px; 
+            padding-bottom: 120px; /* Space for Fixed Player */
             background: radial-gradient(circle at top right, #0f172a, #000000);
         }
 
+        /* --- DASHBOARD STYLE HEADER --- */
         header { 
             padding: 25px; 
             display: flex; 
@@ -56,9 +58,10 @@
             backdrop-filter: blur(10px);
         }
 
-        .brand { font-weight: 900; letter-spacing: 2px; font-size: 18px; color: var(--accent); font-style: italic; }
+        .brand { font-weight: 900; letter-spacing: 2px; font-size: 18px; color: var(--accent); italic; }
         .user-trigger { width: 40px; height: 40px; border-radius: 12px; background: var(--surface); border: 1px solid var(--accent); overflow: hidden; cursor: pointer; }
 
+        /* --- VISUALIZER SECTION --- */
         .visual-box { 
             height: 350px; 
             display: flex; 
@@ -79,49 +82,54 @@
         }
         .art-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
 
-        /* --- MODALS (System Info & Auth) --- */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 2000; }
-        .system-panel {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); width: 320px;
-            background: var(--card-bg); border-radius: 35px;
-            padding: 30px; z-index: 2001; text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .panel-video-box {
-            width: 110px; height: 110px; border-radius: 50%;
-            margin: -75px auto 20px; border: 3px solid var(--accent);
-            overflow: hidden; background: #000; box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .panel-video-box video { width: 100%; height: 100%; object-fit: cover; }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2002; display: none; flex-direction: column; padding: 40px 25px; backdrop-filter: blur(15px); }
-        .modal-open { display: flex !important; }
-
-        /* --- CONTENT AREA --- */
+        /* --- DATA CARDS (DASHBOARD STYLE) --- */
         .content-area { padding: 20px; }
         .section-tag { 
-            color: var(--accent); font-size: 10px; font-weight: 900; 
-            text-transform: uppercase; letter-spacing: 2px; 
-            border-left: 3px solid var(--accent); padding-left: 10px; 
-            margin: 20px 0 10px 0; display: block; 
+            color: var(--accent); 
+            font-size: 10px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            border-left: 3px solid var(--accent); 
+            padding-left: 10px; 
+            margin: 20px 0 10px 0; 
+            display: block; 
         }
 
         .info-card { 
-            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08); 
-            border-radius: 24px; padding: 20px; margin-bottom: 15px; 
+            background: var(--card-bg); 
+            border: 1px solid rgba(255,255,255,0.08); 
+            border-radius: 24px; 
+            padding: 20px; 
+            margin-bottom: 15px; 
             backdrop-filter: blur(12px);
         }
 
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .info-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 10px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+        }
         .info-label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; font-weight: 800; }
         .info-value { color: var(--accent); font-size: 13px; font-weight: 700; }
 
-        /* --- PLAYER CONTROLS --- */
+        /* --- TRACK META --- */
+        .track-info { text-align: center; margin-bottom: 20px; }
+        .track-title { font-size: 22px; font-weight: 900; color: white; margin-bottom: 5px; }
+        .track-artist { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- FIXED BOTTOM PLAYER --- */
         .bottom-player { 
-            position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); 
-            border-top: 1px solid var(--accent); padding: 15px 25px 30px; z-index: 1000; 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(20px); 
+            border-top: 1px solid var(--accent); 
+            padding: 15px 25px 30px; 
+            z-index: 1000; 
         }
         .bar-bg { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 15px; cursor: pointer; }
         .bar-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 10px var(--accent); }
@@ -129,12 +137,13 @@
         .c-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
         .play-main { width: 60px; height: 60px; background: var(--accent); color: black; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 25px; box-shadow: 0 0 20px var(--accent-glow); }
 
-        .open-video-btn {
-            background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent);
-            color: var(--accent); padding: 8px 12px; border-radius: 10px;
-            font-size: 10px; font-weight: 900; cursor: pointer;
-        }
+        /* --- MODALS --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; padding: 40px 25px; backdrop-filter: blur(15px); }
+        .modal-open { display: flex !important; }
+        .auth-input { width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-bottom: 15px; outline: none; }
+        .primary-btn { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 15px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
 
+        /* --- TOAST --- */
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 10px; z-index: 9999; display: none; font-weight: bold; }
     </style>
 </head>
@@ -149,9 +158,9 @@
             <div id="user-placeholder" style="height: 100%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user text-accent"></i></div>
         </div>
         <div class="brand">MI <span style="color:white">PLAYER</span></div>
-        <div style="display: flex; gap: 15px; color: var(--accent); font-size: 18px;">
-            <i class="fas fa-list-ul" onclick="togglePlaylist()"></i>
-            <i class="fas fa-cog" onclick="togglePanel(true)"></i>
+        <div style="display: flex; gap: 15px;">
+            <i class="fas fa-list-ul text-accent" onclick="togglePlaylist()"></i>
+            <i class="fas fa-cog text-accent" onclick="toggleMenu()"></i>
         </div>
     </header>
 
@@ -163,24 +172,35 @@
         </div>
     </div>
 
-    <div class="track-info" style="text-align: center; margin-bottom: 20px;">
-        <h2 class="track-title" id="title" style="font-size: 22px; font-weight: 900;">Next-Gen Player</h2>
-        <p class="track-artist" id="artist" style="color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">System Ready</p>
+    <div class="track-info">
+        <h2 class="track-title" id="title">Next-Gen Player</h2>
+        <p class="track-artist" id="artist">System Ready</p>
     </div>
 
     <div class="content-area">
+        <span class="section-tag">System & App Info</span>
+        <div class="info-card">
+            <div class="info-row"><span class="info-label">Version</span><span class="info-value">v3.5.2 Pro</span></div>
+            <div class="info-row"><span class="info-label">Engine</span><span class="info-value">AudioCore-X</span></div>
+            <div class="info-row"><span class="info-label">Developer</span><span class="info-value">Kaushal Ji</span></div>
+            <div class="info-row"><span class="info-label">Power Status</span><span class="info-value" id="battery-status">Detecting...</span></div>
+        </div>
+
         <span class="section-tag">User Identity</span>
         <div class="info-card">
             <div class="info-row"><span class="info-label">Profile Name</span><span class="info-value" id="display-user">Guest User</span></div>
-            <div class="info-row"><span class="info-label">Status</span><span class="info-value">Authorized</span></div>
+            <div class="info-row"><span class="info-label">Status</span><span class="info-value text-emerald-400">Authorized</span></div>
+            <div class="info-row" style="border:none; margin-top: 10px;">
+                <button onclick="toggleAuth()" class="text-[10px] font-black uppercase text-accent border border-accent/30 px-4 py-2 rounded-lg">Switch Account</button>
+            </div>
         </div>
 
-        <span class="section-tag">Library</span>
+        <span class="section-tag">Local Library</span>
         <div id="list-container" class="space-y-2">
-            <p class="text-center text-xs text-slate-500 py-4 italic">No songs imported...</p>
+            <p class="text-center text-xs text-slate-500 py-4 italic">No songs imported yet...</p>
         </div>
 
-        <label class="block p-8 border-2 border-dashed border-accent/30 rounded-[30px] text-center mt-6 cursor-pointer">
+        <label class="block p-8 border-2 border-dashed border-accent/30 rounded-[30px] text-center mt-6 cursor-pointer active:scale-95 transition-all">
             <i class="fas fa-folder-plus text-accent text-2xl mb-2"></i>
             <p class="text-[10px] font-black uppercase tracking-widest text-accent">Import Folder</p>
             <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
@@ -189,7 +209,7 @@
 </div>
 
 <div class="bottom-player">
-    <div style="display:flex; justify-content: space-between; font-size: 10px; color: var(--accent); margin-bottom: 5px;">
+    <div class="flex justify-between text-[10px] font-mono text-accent mb-1">
         <span id="current-time">00:00</span>
         <span id="total-duration">00:00</span>
     </div>
@@ -200,28 +220,17 @@
         <button class="c-btn" onclick="engine.prev()"><i class="fas fa-step-backward"></i></button>
         <button class="play-main" id="play-btn" onclick="engine.toggle()"><i class="fas fa-play"></i></button>
         <button class="c-btn" onclick="engine.next()"><i class="fas fa-step-forward"></i></button>
-        <button class="open-video-btn" onclick="togglePanel(true)">OPEN VIDEO</button>
     </div>
-</div>
-
-<div class="overlay" id="overlay" onclick="togglePanel(false)"></div>
-<div class="system-panel" id="panel">
-    <div class="panel-video-box">
-        <video id="pVideo" loop muted playsinline><source src="your-video.mp4" type="video/mp4"></video>
-    </div>
-    <h3 style="font-style: italic; letter-spacing: 3px; margin-bottom: 20px;">SYSTEM INFO</h3>
-    <div class="info-row"><span class="info-label">POWER</span><span class="info-value" id="battery-status">--%</span></div>
-    <div class="info-row"><span class="info-label">VERSION</span><span class="info-value">v3.5.2 Pro</span></div>
-    <div class="info-row"><span class="info-label">DEVELOPER</span><span class="info-value">Kaushal Ji</span></div>
-    <button onclick="togglePanel(false)" style="background:var(--accent); border:none; padding:12px; width:100%; border-radius:15px; margin-top:20px; font-weight:bold;">CLOSE</button>
 </div>
 
 <div id="auth-panel" class="modal">
-    <h2 style="color:var(--accent); font-weight:900; margin-bottom:20px;">USER GATEWAY</h2>
-    <input type="email" id="user-email" class="auth-input" placeholder="Email" style="width:100%; padding:15px; margin-bottom:10px; background:rgba(255,255,255,0.05); border:1px solid var(--accent); color:white;">
-    <input type="password" id="user-pass" class="auth-input" placeholder="Password" style="width:100%; padding:15px; margin-bottom:20px; background:rgba(255,255,255,0.05); border:1px solid var(--accent); color:white;">
-    <button class="primary-btn" onclick="handleAuth()" style="width:100%; padding:15px; background:var(--accent); border:none; font-weight:bold;">SIGN IN</button>
-    <button onclick="toggleAuth()" style="margin-top:20px; color:gray; background:none; border:none;">CLOSE</button>
+    <h2 class="text-2xl font-black italic mb-8 text-accent">USER GATEWAY</h2>
+    <div id="auth-form">
+        <input type="email" id="user-email" class="auth-input" placeholder="Email Address">
+        <input type="password" id="user-pass" class="auth-input" placeholder="Password">
+        <button class="primary-btn" onclick="handleAuth()">Sign In</button>
+    </div>
+    <button onclick="toggleAuth()" class="mt-10 text-xs font-bold text-slate-500 uppercase tracking-widest">Close Panel</button>
 </div>
 
 <script>
@@ -237,21 +246,16 @@
     }
 
     function toggleAuth() { document.getElementById('auth-panel').classList.toggle('modal-open'); }
-    function togglePanel(show) {
-        document.getElementById('panel').style.display = show ? 'block' : 'none';
-        document.getElementById('overlay').style.display = show ? 'block' : 'none';
-        const v = document.getElementById('pVideo');
-        show ? v.play() : v.pause();
-    }
     function togglePlaylist() { window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'}); }
 
+    // --- CORE MUSIC ENGINE ---
     const engine = {
         audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
         init: function() { 
-            this.listeners(); this.loadLocalData();
+            this.listeners(); 
+            this.loadLocalData();
             if (navigator.getBattery) navigator.getBattery().then(b => {
-                const up = () => document.getElementById('battery-status').innerText = Math.round(b.level * 100) + "%";
-                up(); b.onlevelchange = up;
+                document.getElementById('battery-status').innerText = Math.round(b.level * 100) + "%";
             });
         },
         listeners: function() {
@@ -264,7 +268,10 @@
             this.audio.onended = () => this.next();
             document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
         },
-        formatTime: s => { let m=Math.floor(s/60), sec=Math.floor(s%60); return `${m<10?'0'+m:m}:${sec<10?'0'+sec:sec}`; },
+        formatTime: s => {
+            let m = Math.floor(s/60); let sec = Math.floor(s%60);
+            return `${m < 10 ? '0'+m : m}:${sec < 10 ? '0'+sec : sec}`;
+        },
         handleFiles: async function(files) {
             const db = await this.getDB(); const tx = db.transaction("songs", "readwrite");
             const store = tx.objectStore("songs");
@@ -282,9 +289,11 @@
             const container = document.getElementById('list-container');
             if(this.playlist.length === 0) return;
             container.innerHTML = this.playlist.map((s, i) => `
-                <div class="info-card flex items-center gap-4 p-3 ${i === this.index ? 'border-accent' : ''}" onclick="engine.loadTrack(${i})" style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                    <i class="fas fa-play text-accent"></i>
-                    <p style="font-size:12px; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name.replace(/\.[^/.]+$/, "")}</p>
+                <div class="info-card flex items-center gap-4 p-3 ${i === this.index ? 'border-accent' : ''}" onclick="engine.loadTrack(${i})">
+                    <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center text-accent"><i class="fas fa-play text-[10px]"></i></div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-xs font-bold truncate">${s.name.replace(/\.[^/.]+$/, "")}</p>
+                    </div>
                 </div>
             `).join('');
         },
@@ -295,8 +304,15 @@
             document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, "");
             this.renderPlaylist(); if(play) this.play();
         },
-        toggle: function() { this.audio.paused ? this.play() : this.pause(); },
-        play: function() { this.audio.play(); document.getElementById('play-btn').innerHTML = '<i class="fas fa-pause"></i>'; this.startVisuals(); },
+        toggle: function() { 
+            if(this.playlist.length === 0) return showToast("No Music Found!", "#ff4757");
+            this.audio.paused ? this.play() : this.pause(); 
+        },
+        play: function() { 
+            this.audio.play(); 
+            document.getElementById('play-btn').innerHTML = '<i class="fas fa-pause"></i>'; 
+            this.startVisuals();
+        },
         pause: function() { this.audio.pause(); document.getElementById('play-btn').innerHTML = '<i class="fas fa-play"></i>'; },
         next: function() { this.index = (this.index + 1) % this.playlist.length; this.loadTrack(this.index); },
         prev: function() { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.loadTrack(this.index); },
@@ -313,6 +329,7 @@
             const src = this.ctx.createMediaElementSource(this.audio);
             src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
             const canvas = document.getElementById('canvas-v'); const c = canvas.getContext('2d');
+            canvas.width = 300; canvas.height = 300;
             const draw = () => {
                 requestAnimationFrame(draw); const fbc = new Uint8Array(this.analyser.frequencyBinCount);
                 this.analyser.getByteFrequencyData(fbc); c.clearRect(0,0,300,300);
@@ -345,14 +362,17 @@
     });
 
     async function handleAuth() {
-        const e = document.getElementById('user-email').value, p = document.getElementById('user-pass').value;
-        try { await auth.signInWithEmailAndPassword(e, p); showToast("Welcome Back!"); toggleAuth(); } 
-        catch(err) { showToast(err.message, "#ff4757"); }
+        const e = document.getElementById('user-email').value;
+        const p = document.getElementById('user-pass').value;
+        try {
+            await auth.signInWithEmailAndPassword(e, p);
+            showToast("Authenticated!"); toggleAuth();
+        } catch(err) { showToast(err.message, "#ff4757"); }
     }
 
     engine.init();
 </script>
-    <script>
+<script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
             // Background Sync Register karna
@@ -370,6 +390,6 @@
             window.location.reload();
         });
     }
-    </script>
+</script>
 </body>
 </html>
