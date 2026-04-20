@@ -11,158 +11,82 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
     <style>
-        :root {
-            --accent: #00f2ff;
-            --accent-glow: rgba(0, 242, 255, 0.5);
-            --bg: #08080a;
-            --surface: rgba(255, 255, 255, 0.05);
-            --text-main: #ffffff;
-            --text-dim: #a0a0a0;
-            --error: #ff4757;
-            --success: #00ff88;
-        }
+        :root { --accent: #00f2ff; --accent-glow: rgba(0, 242, 255, 0.5); --bg: #08080a; --surface: rgba(255, 255, 255, 0.05); --text-main: #ffffff; --text-dim: #a0a0a0; --error: #ff4757; --success: #00ff88; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Segoe UI', sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        .app-container {
-            width: 100%; max-width: 420px; height: 100%;
-            background: radial-gradient(circle at top right, #1a1a2e, #08080a);
-            position: relative; display: flex; flex-direction: column; overflow: hidden;
-            border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* Pro Toast Notification */
-        #toast {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            padding: 12px 25px; border-radius: 12px; font-weight: 600; z-index: 9999;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 14px;
-            backdrop-filter: blur(10px); width: 80%; text-align: center;
-        }
-        .toast-success { background: rgba(0, 255, 136, 0.2); color: var(--success); border: 1px solid var(--success); }
-        .toast-error { background: rgba(255, 71, 87, 0.2); color: var(--error); border: 1px solid var(--error); }
+        body { background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .app-container { width: 100%; max-width: 420px; height: 100%; background: radial-gradient(circle at top right, #1a1a2e, #08080a); position: relative; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); }
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 700; z-index: 9999; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 15px; backdrop-filter: blur(15px); width: 85%; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .toast-success { background: rgba(0, 255, 136, 0.2); color: var(--success); border-color: var(--success); }
+        .toast-error { background: rgba(255, 71, 87, 0.2); color: var(--error); border-color: var(--error); }
         .toast-show { top: 30px !important; }
-
         header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
-        
-        #user-photo-box { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
+        #user-photo-box { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
         #user-photo { width: 100%; height: 100%; object-fit: cover; }
-        
-        #auth-panel {
-            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px);
-            z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1);
-            padding: 60px 30px;
-        }
+        #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; }
         .auth-open { left: 0 !important; }
         .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; font-weight: bold; }
         .input-group { margin-bottom: 18px; }
-        .input-group input {
-            width: 100%; padding: 14px; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
-            color: white; outline: none; transition: 0.3s; font-size: 15px;
-        }
+        .input-group input { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; outline: none; transition: 0.3s; font-size: 15px; }
         .input-group input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); box-shadow: 0 0 15px rgba(0,242,255,0.1); }
-        
-        .auth-btn {
-            width: 100%; padding: 14px; background: var(--accent); border: none;
-            border-radius: 12px; color: #000; font-weight: 700; cursor: pointer; 
-            margin-top: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .auth-btn { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: 12px; color: #000; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .auth-links { margin-top: 20px; font-size: 13px; display: flex; flex-direction: column; gap: 12px; }
         .auth-links span { color: var(--text-dim); cursor: pointer; transition: 0.3s; }
         .auth-links span:hover { color: var(--accent); }
-        
-        /* Side Panel Styling */
-        #side-panel {
-            position: absolute; top: 0; right: -100%; width: 85%; height: 100%;
-            background: rgba(10,10,15,0.98); backdrop-filter: blur(25px);
-            z-index: 300; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1);
-            padding: 60px 30px; border-left: 1px solid rgba(0, 242, 255, 0.2);
-        }
+        #side-panel { position: absolute; top: 0; right: -100%; width: 85%; height: 100%; background: rgba(10,10,15,0.98); backdrop-filter: blur(25px); z-index: 300; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; border-left: 1px solid rgba(0, 242, 255, 0.2); }
         .panel-open { right: 0 !important; }
-
-        /* Visualizer Orbit */
         .visualizer-orbit { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         #canvas-v { width: 340px; height: 340px; filter: drop-shadow(0 0 25px var(--accent-glow)); }
-        .album-art-proxy {
-            position: absolute; width: 170px; height: 170px; background: var(--surface);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            border: 3px solid rgba(255, 255, 255, 0.05); overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
+        .album-art-proxy { position: absolute; width: 170px; height: 170px; background: var(--surface); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid rgba(255, 255, 255, 0.05); overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
         .album-art-proxy img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: none; }
         .album-art-proxy span { font-size: 65px; opacity: 0.3; }
-
-        /* Player Controls */
         .track-meta { text-align: center; padding: 20px 20px 40px; }
         .track-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .track-artist { color: var(--accent); font-size: 14px; letter-spacing: 1px; opacity: 0.8; }
-        
         .player-core { padding: 40px 30px 60px; background: rgba(255, 255, 255, 0.03); border-radius: 45px 45px 0 0; backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
         .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; cursor: pointer; overflow: hidden; }
         .bar-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 15px var(--accent); transition: 0.1s linear; }
-        
         .main-cmds { display: flex; justify-content: space-around; align-items: center; margin-top: 35px;}
         .btn-icon { background: none; border: none; color: white; font-size: 26px; cursor: pointer; transition: 0.2s; opacity: 0.8; }
         .btn-icon:active { transform: scale(0.9); opacity: 1; }
-        .play-trigger { 
-            width: 75px; height: 75px; border-radius: 50%; background: var(--accent); 
-            color: #000; font-size: 32px; display: flex; justify-content: center; 
-            align-items: center; box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .menu-item { padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-main); text-decoration: none; display: block; font-size: 16px; }
+        .play-trigger { width: 75px; height: 75px; border-radius: 50%; background: var(--accent); color: #000; font-size: 32px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px var(--accent-glow); }
+        .menu-item { padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-main); text-decoration: none; display: block; font-size: 16px; transition: 0.3s; }
+        .menu-item:hover { color: var(--accent); padding-left: 5px; }
     </style>
 </head>
 <body>
 
 <div class="app-container" id="player-ui">
     <header>
-        <div id="user-photo-box" onclick="toggleAuth()">
-            <img id="user-photo" src="" alt="Profile">
-        </div>
+        <div id="user-photo-box" onclick="toggleAuth()"><img id="user-photo" src="" alt="Profile"></div>
         <div class="btn-icon" id="auth-icon" onclick="toggleAuth()">👤</div>
         <div class="brand">MI PRO</div>
         <div class="btn-icon" onclick="toggleMenu()">☰</div>
     </header>
 
     <div id="auth-panel">
-        <div class="btn-icon" style="margin-bottom: 30px; font-size: 18px;" onclick="toggleAuth()">⬅ Back to Player</div>
-        
+        <div class="btn-icon" style="margin-bottom: 30px; font-size: 18px;" onclick="toggleAuth()">⬅ Back</div>
         <div id="auth-content">
             <div class="auth-header"><span id="auth-emoji">🔑</span> <span id="auth-title">Login</span></div>
-            
             <div id="register-fields" style="display:none;">
-                <label class="img-upload-label" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 120px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 15px; margin-bottom: 20px; cursor: pointer; overflow: hidden; position: relative;">
-                    <img id="preview-img" src="" style="width: 100%; height: 100%; object-fit: cover; display: none; position: absolute;">
-                    <span style="z-index: 5; font-size: 14px;">➕ Profile Picture</span>
+                <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 120px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 15px; margin-bottom: 20px; cursor: pointer; overflow: hidden; position: relative;">
+                    <img id="preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none; position: absolute;">
+                    <span style="z-index: 5; font-size: 14px;">➕ Profile Photo</span>
                     <input type="file" id="user-image" accept="image/*" style="display:none;" onchange="previewUserImage(this)">
                 </label>
-                <div class="input-group"><input type="text" id="user-name" placeholder="Username (Kaushal ji)"></div>
+                <div class="input-group"><input type="text" id="user-name" placeholder="Full Name"></div>
             </div>
-            
             <div class="input-group"><input type="email" id="user-email" placeholder="Email Address"></div>
             <div class="input-group"><input type="password" id="user-pass" placeholder="Password"></div>
             <button class="auth-btn" id="auth-submit" onclick="handleAuth()">Sign In</button>
-            
             <div class="auth-links">
                 <span onclick="switchAuth('register')">🆕 Don't have an account? Register</span>
                 <span onclick="switchAuth('forgot-pass')">❓ Forgot Password?</span>
             </div>
         </div>
-
         <div id="user-profile" style="display:none;">
-            <div class="auth-header"><span>🚀</span> Connected</div>
+            <div class="auth-header"><span>🚀</span> Welcome</div>
             <p id="display-user" style="color: var(--accent); margin-bottom: 25px; font-size: 18px;"></p>
             <button class="auth-btn" onclick="logout()" style="background: var(--surface); color: white;">Logout Session</button>
         </div>
@@ -173,14 +97,11 @@
         <h2 style="margin-bottom: 25px; color: var(--accent); letter-spacing: 2px;">SETTINGS</h2>
         <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 SNT Official Portal</a>
         <div class="menu-item" onclick="clearData()" style="color: #ff9f43; cursor: pointer;">🗑 Clear Local Library</div>
-        
         <div id="delete-zone" style="display:none; margin-top: 30px;">
             <div class="menu-item" onclick="deleteAccountPermanent()" style="color: #ff4757; cursor: pointer; border-bottom: none; font-weight: bold;">⚠️ DELETE ACCOUNT</div>
         </div>
-
         <label style="display: block; width: 100%; padding: 20px; border: 2px dashed var(--accent); color: var(--accent); text-align: center; border-radius: 20px; margin-top: 30px; cursor: pointer; font-weight: bold;">
-            🎵 IMPORT MUSIC FOLDER
-            <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
+            🎵 IMPORT FOLDER <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
         </label>
     </div>
 
@@ -198,7 +119,7 @@
     </div>
 
     <div class="player-core">
-        <div class="bar-bg" id="seek-bar"><div class="bar-fill" id="fill"></div></div>
+        <div class="bar-bg" id="seek-bar" onclick="engine.seek(event)"><div class="bar-fill" id="fill"></div></div>
         <div class="main-cmds">
             <button class="btn-icon" onclick="engine.prev()">⏮</button>
             <button class="btn-icon play-trigger" id="play-btn" onclick="engine.toggle()">▶</button>
@@ -208,61 +129,31 @@
 </div>
 
 <script>
-// Firebase Config
-const firebaseConfig = {
-    apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",
-    authDomain: "calculator-by-kaushalji.firebaseapp.com",
-    databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com",
-    projectId: "calculator-by-kaushalji",
-    storageBucket: "calculator-by-kaushalji.firebasestorage.app",
-    messagingSenderId: "156130281294",
-    appId: "1:156130281294:web:73b80a5f344daeabdd001f"
-};
+const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", authDomain: "calculator-by-kaushalji.firebaseapp.com", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com", projectId: "calculator-by-kaushalji", storageBucket: "calculator-by-kaushalji.firebasestorage.app", messagingSenderId: "156130281294", appId: "1:156130281294:web:73b80a5f344daeabdd001f" };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db_ref = firebase.database();
-const storage = firebase.storage();
-
+const auth = firebase.auth(); const db_ref = firebase.database(); const storage = firebase.storage();
 let currentMode = 'login';
 
-// Pro Toast Logic
 function showToast(msg, type) {
-    let toast = document.getElementById('toast');
-    if(!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast';
-        document.body.appendChild(toast);
-    }
-    toast.innerText = msg;
-    toast.className = `toast-${type} toast-show`;
+    let toast = document.getElementById('toast') || document.createElement('div');
+    toast.id = 'toast'; document.body.appendChild(toast);
+    toast.innerText = msg; toast.className = `toast-${type} toast-show`;
     setTimeout(() => toast.classList.remove('toast-show'), 3500);
 }
 
 function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
 function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
-
 function switchAuth(mode) {
-    currentMode = mode;
-    const title = document.getElementById('auth-title');
-    const btn = document.getElementById('auth-submit');
-    const regFields = document.getElementById('register-fields');
-    const emoji = document.getElementById('auth-emoji');
-
+    currentMode = mode; const regFields = document.getElementById('register-fields');
     regFields.style.display = (mode === 'register') ? 'block' : 'none';
-    
-    if(mode === 'register') { title.innerText = "Create Account"; btn.innerText = "Register Now"; emoji.innerText = "📝"; }
-    else if(mode === 'login') { title.innerText = "Login"; btn.innerText = "Sign In"; emoji.innerText = "🔑"; }
-    else if(mode === 'forgot-pass') { title.innerText = "Reset Access"; btn.innerText = "Send Email"; emoji.innerText = "📧"; }
+    if(mode === 'register') { document.getElementById('auth-title').innerText = "Create Account"; document.getElementById('auth-submit').innerText = "Register"; }
+    else { document.getElementById('auth-title').innerText = "Login"; document.getElementById('auth-submit').innerText = "Sign In"; }
 }
 
 function previewUserImage(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.getElementById('preview-img');
-            img.src = e.target.result;
-            img.style.display = 'block';
-        }
+        reader.onload = (e) => { const img = document.getElementById('preview-img'); img.src = e.target.result; img.style.display = 'block'; };
         reader.readAsDataURL(input.files[0]);
     }
 }
@@ -271,139 +162,85 @@ async function handleAuth() {
     const email = document.getElementById('user-email').value;
     const pass = document.getElementById('user-pass').value;
     const btn = document.getElementById('auth-submit');
-
-    if(!email || (currentMode !== 'forgot-pass' && !pass)) {
-        showToast("Details fill kijiye, Kaushal ji!", "error");
-        return;
-    }
-
-    btn.innerText = "Processing...";
-    btn.disabled = true;
-
+    if(!email || (currentMode !== 'forgot-pass' && !pass)) { showToast("Details fill karein!", "error"); return; }
+    btn.innerText = "Wait..."; btn.disabled = true;
     try {
         if(currentMode === 'register') {
             const name = document.getElementById('user-name').value;
             const imageFile = document.getElementById('user-image').files[0];
-            if(!imageFile) throw { message: "Photo upload karna zaroori hai!" };
-            
+            if(!imageFile) throw { message: "Photo zaroori hai!" };
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            const storageRef = storage.ref(`users/${res.user.uid}/profile.jpg`);
-            await storageRef.put(imageFile);
-            const url = await storageRef.getDownloadURL();
+            const sRef = storage.ref(`users/${res.user.uid}/profile.jpg`);
+            await sRef.put(imageFile);
+            const url = await sRef.getDownloadURL();
             await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: url });
-            showToast("Welcome! Account Ban gaya.", "success");
-        } 
-        else if(currentMode === 'login') {
+            showToast("Account ready!", "success");
+        } else if(currentMode === 'login') {
             await auth.signInWithEmailAndPassword(email, pass);
-            showToast("Login Success! Welcome back.", "success");
-            setTimeout(toggleAuth, 1000);
-        }
-        else if(currentMode === 'forgot-pass') {
-            await auth.sendPasswordResetEmail(email);
-            showToast("Reset link aapki email par bhej di hai.", "success");
+            showToast("Login Successful!", "success"); setTimeout(toggleAuth, 1000);
         }
     } catch(err) {
-        let msg = err.message;
-        if(err.code === "auth/invalid-login-credentials") msg = "Email ya Password galat hai!";
-        if(err.code === "auth/user-not-found") msg = "Ye email registered nahi hai.";
+        let msg = "Kuch galat hua!";
+        if(err.code === "auth/invalid-login-credentials" || err.message.includes("INVALID")) msg = "Email ya Password galat hai!";
+        else if(err.code === "auth/user-not-found") msg = "User nahi mila!";
+        else msg = err.message;
         showToast(msg, "error");
-    } finally {
-        btn.innerText = currentMode === 'login' ? "Sign In" : "Register Now";
-        btn.disabled = false;
-    }
+    } finally { btn.innerText = "Process Done"; btn.disabled = false; }
 }
 
-function logout() { auth.signOut(); showToast("Logged Out Successfully", "success"); }
+function logout() { auth.signOut(); showToast("Logged Out", "success"); }
 
-// Data Management
 auth.onAuthStateChanged(user => {
-    const deleteZone = document.getElementById('delete-zone');
-    const authContent = document.getElementById('auth-content');
-    const userProfile = document.getElementById('user-profile');
     const photoBox = document.getElementById('user-photo-box');
     const authIcon = document.getElementById('auth-icon');
-    const userPhoto = document.getElementById('user-photo');
-
     if(user) {
-        authContent.style.display = 'none';
-        userProfile.style.display = 'block';
-        deleteZone.style.display = 'block';
-        
+        document.getElementById('auth-content').style.display = 'none';
+        document.getElementById('user-profile').style.display = 'block';
+        document.getElementById('delete-zone').style.display = 'block';
         db_ref.ref(`users/${user.uid}`).once('value', s => {
-            const data = s.val();
-            const name = data ? data.username : "User";
-            document.getElementById('display-user').innerText = `Kaushal ji, welcome ${name}!`;
-            document.getElementById('artist').innerText = "Logged in as " + name;
-            
-            if(data && data.photoURL) {
-                userPhoto.src = data.photoURL;
-                photoBox.style.display = 'block';
-                authIcon.style.display = 'none';
-                document.getElementById('track-art-img').src = data.photoURL;
-                document.getElementById('track-art-img').style.display = 'block';
-                document.getElementById('headphone-icon').style.display = 'none';
+            const data = s.val(); if(data) {
+                document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
+                if(data.photoURL) { document.getElementById('user-photo').src = data.photoURL; photoBox.style.display = 'block'; authIcon.style.display = 'none'; }
             }
         });
     } else {
-        authContent.style.display = 'block';
-        userProfile.style.display = 'none';
-        deleteZone.style.display = 'none';
-        photoBox.style.display = 'none';
-        authIcon.style.display = 'block';
-        document.getElementById('track-art-img').style.display = 'none';
-        document.getElementById('headphone-icon').style.display = 'block';
+        document.getElementById('auth-content').style.display = 'block';
+        document.getElementById('user-profile').style.display = 'none';
+        document.getElementById('delete-zone').style.display = 'none';
+        photoBox.style.display = 'none'; authIcon.style.display = 'block';
     }
 });
 
-// Player Engine Logic
 const engine = {
     audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
     init: function() { this.listeners(); this.loadLocalData(); },
     listeners: function() {
-        this.audio.ontimeupdate = () => {
-            const p = (this.audio.currentTime / this.audio.duration) * 100 || 0;
-            document.getElementById('fill').style.width = p + "%";
-        };
+        this.audio.ontimeupdate = () => { document.getElementById('fill').style.width = (this.audio.currentTime / this.audio.duration * 100 || 0) + "%"; };
         this.audio.onended = () => this.next();
         document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
     },
     handleFiles: async function(files) {
-        const db = await this.getDB();
-        const tx = db.transaction("songs", "readwrite");
-        const store = tx.objectStore("songs");
-        const audioFiles = Array.from(files).filter(f => f.type.startsWith('audio/'));
-        if(audioFiles.length === 0) { showToast("Koi music file nahi mili!", "error"); return; }
-        audioFiles.forEach(f => store.add({ name: f.name, data: f }));
-        tx.oncomplete = () => { showToast("Music Imported!", "success"); location.reload(); };
+        const db = await this.getDB(); const tx = db.transaction("songs", "readwrite"); const store = tx.objectStore("songs");
+        Array.from(files).filter(f => f.type.startsWith('audio/')).forEach(f => store.add({ name: f.name, data: f }));
+        tx.oncomplete = () => { showToast("Imported!", "success"); location.reload(); };
     },
     loadLocalData: async function() {
         const db = await this.getDB();
-        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => {
-            this.playlist = e.target.result;
-            if(this.playlist.length > 0) this.loadTrack(0, false);
-        };
+        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { this.playlist = e.target.result; if(this.playlist.length > 0) this.loadTrack(0, false); };
     },
     loadTrack: function(i, play = true) {
-        this.index = i;
-        const track = this.playlist[i];
+        this.index = i; const track = this.playlist[i];
         if(this.audio.src) URL.revokeObjectURL(this.audio.src);
         this.audio.src = URL.createObjectURL(track.data);
         document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, "");
         if(play) this.play();
     },
-    toggle: function() { 
-        if(this.playlist.length === 0) { showToast("Pehle Music Import karein!", "error"); return; }
-        (this.audio.paused) ? this.play() : this.pause(); 
-    },
-    play: function() {
-        this.audio.play().then(() => {
-            document.getElementById('play-btn').innerText = "⏸";
-            this.startVisuals();
-        }).catch(e => showToast("Play error: Interacted first?", "error"));
-    },
+    toggle: function() { if(!this.playlist.length) return showToast("Music layein!", "error"); this.audio.paused ? this.play() : this.pause(); },
+    play: function() { this.audio.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; this.startVisuals(); }); },
     pause: function() { this.audio.pause(); document.getElementById('play-btn').innerText = "▶"; },
     next: function() { if(this.playlist.length > 1) { this.index = (this.index + 1) % this.playlist.length; this.loadTrack(this.index); } },
     prev: function() { if(this.playlist.length > 1) { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.loadTrack(this.index); } },
+    seek: function(e) { const b = document.getElementById('seek-bar'); this.audio.currentTime = (e.offsetX / b.offsetWidth) * this.audio.duration; },
     getDB: () => new Promise(res => {
         const r = indexedDB.open("MI_PRO_DB", 1);
         r.onupgradeneeded = (e) => e.target.result.createObjectStore("songs", { keyPath: "id", autoIncrement: true });
@@ -411,48 +248,35 @@ const engine = {
     }),
     startVisuals: function() {
         if(this.ctx) return;
-        try {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            this.analyser = this.ctx.createAnalyser();
-            const src = this.ctx.createMediaElementSource(this.audio);
-            src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
-            const canvas = document.getElementById('canvas-v');
-            const ctx = canvas.getContext('2d');
-            const draw = () => {
-                requestAnimationFrame(draw);
-                const fbc = new Uint8Array(this.analyser.frequencyBinCount);
-                this.analyser.getByteFrequencyData(fbc);
-                ctx.clearRect(0,0,340,340);
-                for(let i=0; i<80; i++) {
-                    const bar_h = fbc[i] * 0.45;
-                    ctx.strokeStyle = '#00f2ff'; ctx.lineWidth = 3; ctx.beginPath();
-                    ctx.moveTo(170 + Math.cos(i*0.08)*95, 170 + Math.sin(i*0.08)*95);
-                    ctx.lineTo(170 + Math.cos(i*0.08)*(95+bar_h), 170 + Math.sin(i*0.08)*(95+bar_h));
-                    ctx.stroke();
-                }
-            };
-            draw();
-        } catch(e) { console.log("Visualizer blocked by browser policy"); }
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.analyser = this.ctx.createAnalyser();
+        const src = this.ctx.createMediaElementSource(this.audio);
+        src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
+        const canvas = document.getElementById('canvas-v'); const c = canvas.getContext('2d');
+        const draw = () => {
+            requestAnimationFrame(draw); const fbc = new Uint8Array(this.analyser.frequencyBinCount);
+            this.analyser.getByteFrequencyData(fbc); c.clearRect(0,0,340,340);
+            for(let i=0; i<80; i++) {
+                const h = fbc[i] * 0.45; c.strokeStyle = '#00f2ff'; c.lineWidth = 3; c.beginPath();
+                c.moveTo(170+Math.cos(i*0.08)*95, 170+Math.sin(i*0.08)*95);
+                c.lineTo(170+Math.cos(i*0.08)*(95+h), 170+Math.sin(i*0.08)*(95+h)); c.stroke();
+            }
+        }; draw();
     }
 };
 
 async function deleteAccountPermanent() {
-    const user = auth.currentUser;
-    if(!user) return;
-    const pass = prompt("DANGER: Account hamesha ke liye delete ho jayega.\nConfirm karne ke liye password daalein:");
-    if (pass) {
+    const u = auth.currentUser; if(!u) return;
+    const p = prompt("Password confirm karein delete ke liye:");
+    if(p) {
         try {
-            const cred = firebase.auth.EmailAuthProvider.credential(user.email, pass);
-            await user.reauthenticateWithCredential(cred);
-            await db_ref.ref(`users/${user.uid}`).remove();
-            await user.delete();
-            showToast("Account Deleted.", "success");
-            location.reload();
-        } catch (err) { showToast(err.message, "error"); }
+            await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p));
+            await db_ref.ref(`users/${u.uid}`).remove(); await u.delete();
+            showToast("Deleted", "success"); location.reload();
+        } catch(e) { showToast(e.message, "error"); }
     }
 }
-
-function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Library Cleared", "success"); setTimeout(() => location.reload(), 1000); }
+function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
 </script>
 </body>
