@@ -309,48 +309,8 @@ engine.init();
 
     <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(e=>{});});}
-(function(){
-    // 1. Kill-Switch: Agar DevTools khula toh tab crash kar do ya blank kar do
-    const _0xvc=()=>{
-        const devtools=function(){};
-        devtools.toString=function(){
-            document.body.innerHTML='<div style="background:#000;color:#00f2ff;height:100vh;display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-weight:bold;text-align:center;padding:20px;"><h1>ACCESS DENIED</h1><p>Developer Tools are disabled for security reasons.</p></div>';
-            location.reload();
-            return 'blocked';
-        };
-        console.log('%c', devtools);
-    };
 
-    // 2. Heavy Recursive Debugger (Memory Lock)
-    const _0xdg=function(i){
-        if((''+i/i).length!==1||i%20===0){(function(){return false;}).constructor('debugger').apply('stateObject');}
-        else{debugger;}
-        _0xdg(++i);
-    };
-
-    // 3. Constant Monitoring
-    setInterval(()=>{
-        _0xvc();
-        const s=Date.now();debugger;
-        if(Date.now()-s>50){
-            // Agar browser pause hua toh turant action
-            window.location.href="about:blank";
-        }
-    },100);
-
-    // 4. Strict Key Controls
-    document.addEventListener('contextmenu',e=>e.preventDefault());
-    document.addEventListener('keydown',e=>{
-        if(e.keyCode==123||(e.ctrlKey&&e.shiftKey&&(e.keyCode==73||e.keyCode==74||e.keyCode==67||e.keyCode==75))||(e.ctrlKey&&e.keyCode==85)) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    try{_0xdg(0);}catch(e){setTimeout(()=>_0xdg(0),50);}
-})();
-setInterval(()=>console.clear(),5);
-</script>
+    </script>
 
 </body>
 </html>
