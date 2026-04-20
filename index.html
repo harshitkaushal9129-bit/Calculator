@@ -353,15 +353,26 @@ async function deleteAccountPermanent() {
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
 </script>
-    <script>
+<script>
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker: Registered (Scope: ' + reg.scope + ')'))
-                .catch(err => console.log('Service Worker: Error - ' + err));
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            // Background Sync Register karna
+            if ('sync' in reg) {
+                window.addEventListener('online', () => {
+                    reg.sync.register('check-for-updates');
+                    console.log("Net wapas aaya! Update checking in background...");
+                });
+            }
+        });
+
+        // Agar naya version mil jaye toh user ko bataye bina refresh kar dena
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log("Naya Update mil gaya! App refresh ho rahi hai...");
+            window.location.reload();
         });
     }
 </script>
+
 
 </body>
 </html>
