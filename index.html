@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -96,7 +95,7 @@
     <div id="side-panel">
         <div class="btn-icon" style="margin-bottom: 40px;" onclick="toggleMenu()">✕ Close</div>
         <h2 style="margin-bottom: 25px; color: var(--accent); letter-spacing: 2px;">SETTINGS</h2>
-        <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 SNT Official Portal</a>
+        <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 Official Portal</a>
         <div class="menu-item" onclick="clearData()" style="color: #ff9f43; cursor: pointer;">🗑 Clear Local Library</div>
         <div id="delete-zone" style="display:none; margin-top: 30px;">
             <div class="menu-item" onclick="deleteAccountPermanent()" style="color: #ff4757; cursor: pointer; border-bottom: none; font-weight: bold;">⚠️ DELETE ACCOUNT</div>
@@ -134,6 +133,7 @@ const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", auth
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(); const db_ref = firebase.database(); const storage = firebase.storage();
 let currentMode = 'login';
+let userBase64 = ""; // Base64 image store karne ke liye
 
 function showToast(msg, type) {
     let toast = document.getElementById('toast') || document.createElement('div');
@@ -154,7 +154,12 @@ function switchAuth(mode) {
 function previewUserImage(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = (e) => { const img = document.getElementById('preview-img'); img.src = e.target.result; img.style.display = 'block'; };
+        reader.onload = (e) => { 
+            userBase64 = e.target.result; // Base64 string yahan save hui
+            const img = document.getElementById('preview-img'); 
+            img.src = userBase64; 
+            img.style.display = 'block'; 
+        };
         reader.readAsDataURL(input.files[0]);
     }
 }
@@ -168,30 +173,22 @@ async function handleAuth() {
     try {
         if(currentMode === 'register') {
             const name = document.getElementById('user-name').value;
-            const imageFile = document.getElementById('user-image').files[0];
-            if(!imageFile) throw { message: "Photo zaroori hai!" };
+            if(!userBase64) throw { message: "Photo zaroori hai!" };
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            const sRef = storage.ref(`users/${res.user.uid}/profile.jpg`);
-            await sRef.put(imageFile);
-            const url = await sRef.getDownloadURL();
-            await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: url });
+            // Realtime Database mein Base64 image save ho rahi hai
+            await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: userBase64 });
             showToast("Account ready!", "success");
         } else if(currentMode === 'login') {
             await auth.signInWithEmailAndPassword(email, pass);
             showToast("Login Successful!", "success"); setTimeout(toggleAuth, 1000);
         }
     } catch(err) {
-        let msg = "Kuch galat hua!";
-        if(err.code === "auth/invalid-login-credentials" || err.message.includes("INVALID")) msg = "Email ya Password galat hai!";
-        else if(err.code === "auth/user-not-found") msg = "User nahi mila!";
-        else msg = err.message;
-        showToast(msg, "error");
-    } finally { btn.innerText = "Process Done"; btn.disabled = false; }
+        showToast(err.message, "error");
+    } finally { btn.innerText = "Done"; btn.disabled = false; }
 }
 
 function logout() { auth.signOut(); showToast("Logged Out", "success"); }
 
-// --- FIXED AUTH STATE LOGIC ---
 auth.onAuthStateChanged(user => {
     const photoBox = document.getElementById('user-photo-box');
     const authIcon = document.getElementById('auth-icon');
@@ -204,19 +201,14 @@ auth.onAuthStateChanged(user => {
         document.getElementById('user-profile').style.display = 'block';
         document.getElementById('delete-zone').style.display = 'block';
         
-        db_ref.ref(`users/${user.uid}`).once('value', s => {
+        // Listen changes in Realtime Database
+        db_ref.ref(`users/${user.uid}`).on('value', s => {
             const data = s.val(); 
             if(data && data.photoURL) {
                 document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
-                
-                // Image loading logic fix
                 userPhoto.src = data.photoURL;
-                userPhoto.onload = () => {
-                   photoBox.style.display = 'block';
-                   authIcon.style.display = 'none';
-                };
-
-                // Center art fix
+                photoBox.style.display = 'block';
+                authIcon.style.display = 'none';
                 trackArt.src = data.photoURL;
                 trackArt.style.display = 'block';
                 headphone.style.display = 'none';
@@ -287,7 +279,6 @@ const engine = {
     }
 };
 
-// --- FIXED DELETE ACCOUNT ERROR LOGIC ---
 async function deleteAccountPermanent() {
     const u = auth.currentUser; if(!u) return;
     const p = prompt("Password confirm karein delete ke liye:");
@@ -307,11 +298,8 @@ async function deleteAccountPermanent() {
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
 </script>
-
-    <script>
+<script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(e=>{});});}
-
-    </script>
-
+</script>
 </body>
 </html>
