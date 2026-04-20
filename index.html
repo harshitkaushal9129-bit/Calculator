@@ -15,7 +15,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body { background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         
-        /* Sidebar Links */
+        /* Sidebar Links (Background Area) */
         .side-links { position: fixed; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 1; padding: 20px; }
         .side-links.left { left: 20px; }
         .side-links.right { right: 20px; }
@@ -26,38 +26,7 @@
 
         .app-container { width: 100%; max-width: 420px; height: 100%; background: radial-gradient(circle at top right, #1a1a2e, #08080a); position: relative; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); z-index: 10; box-shadow: 0 0 50px rgba(0,0,0,1); }
         
-        /* Dashboard Header Fix */
-        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; }
-        .logout-btn { background: rgba(255, 71, 87, 0.1); color: #ff4757; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 10px; letter-spacing: 1px; cursor: pointer; }
-        .laptop-view-pill { background: rgba(0, 242, 255, 0.1); color: var(--accent); border: 1px solid rgba(0, 242, 255, 0.2); padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .header-center-brand { font-weight: 900; font-style: italic; color: #fff; font-size: 16px; }
-        .header-center-brand span { color: var(--accent); }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
-        .action-circle { width: 35px; height: 35px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 14px; position: relative; }
-        .notif-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ff4757; border-radius: 50%; border: 2px solid var(--bg); }
-
-        /* User Banner */
-        .user-banner { margin: 10px 15px; padding: 15px; background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 25px; display: flex; align-items: center; gap: 15px; }
-        .user-avatar-wrapper { position: relative; width: 60px; height: 60px; }
-        .user-avatar { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
-        .online-status { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #00ff88; border: 2px solid var(--bg); border-radius: 50%; }
-        .user-info-text { display: flex; flex-direction: column; }
-        .greeting { font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .user-name-h { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
-        .user-email-h { font-size: 11px; color: var(--text-dim); font-style: italic; }
-
-        /* System Info Overlay */
-        #sys-info-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; display: none; justify-content: center; align-items: center; }
-        .sys-card { width: 85%; background: #151921; border-radius: 30px; padding: 30px; border: 1px solid rgba(255,255,255,0.05); }
-        .sys-card h2 { text-align: center; letter-spacing: 3px; font-style: italic; margin-bottom: 30px; font-size: 20px; }
-        .sys-row { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 12px; }
-        .sys-label { color: var(--text-dim); font-weight: bold; }
-        .sys-val { font-weight: 800; color: #fff; }
-        .sys-val.blue { color: var(--accent); }
-        .social-icons { display: flex; justify-content: center; gap: 15px; margin: 25px 0; font-size: 20px; }
-        .close-sys-btn { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 15px; color: #000; font-weight: 900; letter-spacing: 1px; cursor: pointer; }
-
-        /* Original App Styles Restored Below */
+        /* App Info Div (Dashboard Style) */
         .app-info-container { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 15px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
         .info-label { color: var(--text-dim); }
@@ -67,6 +36,10 @@
         .toast-success { background: rgba(0, 255, 136, 0.2); color: var(--success); border-color: var(--success); }
         .toast-error { background: rgba(255, 71, 87, 0.2); color: var(--error); border-color: var(--error); }
         .toast-show { top: 30px !important; }
+        header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
+        #user-photo-box { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
+        #user-photo { width: 100%; height: 100%; object-fit: cover; }
         
         #playlist-panel { position: absolute; top: 0; right: -100%; width: 85%; height: 100%; background: rgba(8, 8, 10, 0.98); backdrop-filter: blur(25px); z-index: 250; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 20px; display: flex; flex-direction: column; border-left: 1px solid var(--accent); }
         .playlist-open { right: 0 !important; }
@@ -80,7 +53,7 @@
 
         #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; }
         .auth-open { left: 0 !important; }
-        .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; font-weight: bold; }
+        .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 30px; display: flex; align-items: center; gap: 129px; font-weight: bold; }
         .input-group { margin-bottom: 18px; }
         .input-group input { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; outline: none; transition: 0.3s; font-size: 15px; }
         .input-group input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); box-shadow: 0 0 15px rgba(0,242,255,0.1); }
@@ -107,6 +80,7 @@
         .bar-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 15px var(--accent); transition: 0.1s linear; }
         .main-cmds { display: flex; justify-content: space-around; align-items: center; margin-top: 25px;}
         .btn-icon { background: none; border: none; color: white; font-size: 26px; cursor: pointer; transition: 0.2s; opacity: 0.8; }
+        .btn-icon:active { transform: scale(0.9); opacity: 1; }
         .play-trigger { width: 75px; height: 75px; border-radius: 50%; background: var(--accent); color: #000; font-size: 32px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px var(--accent-glow); }
         .menu-item { padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-main); text-decoration: none; display: block; font-size: 16px; transition: 0.3s; }
         .menu-item:hover { color: var(--accent); padding-left: 5px; }
@@ -129,40 +103,15 @@
 </div>
 
 <div class="app-container" id="player-ui">
-    <div class="header-top">
-        <button class="logout-btn" onclick="logout()">LOGOUT</button>
-        <div class="laptop-view-pill">💻 LAPTOP VIEW ▾</div>
-        <div class="header-center-brand">SNT <span>OFFICIAL</span></div>
-        <div class="header-actions">
-            <div class="action-circle" id="theme-btn">🌙</div>
-            <div class="action-circle" id="notif-btn">🔔<div class="notif-dot"></div></div>
-            <div class="action-circle" onclick="toggleSysInfo()">ℹ️</div>
+    <header>
+        <div id="user-photo-box" onclick="toggleAuth()"><img id="user-photo" src="" alt="Profile"></div>
+        <div class="btn-icon" id="auth-icon" onclick="toggleAuth()">👤</div>
+        <div class="brand">MI PRO</div>
+        <div style="display: flex; gap: 15px;">
+            <div class="btn-icon" onclick="togglePlaylist()">🎶</div>
+            <div class="btn-icon" onclick="toggleMenu()">☰</div>
         </div>
-    </div>
-
-    <div class="user-banner">
-        <div class="user-avatar-wrapper" onclick="toggleAuth()">
-            <img id="user-photo" src="" class="user-avatar" alt="User">
-            <div class="online-status"></div>
-        </div>
-        <div class="user-info-text">
-            <span class="greeting">GOOD EVENING</span>
-            <span class="user-name-h" id="h-user-name">Guest User</span>
-            <span class="user-email-h" id="h-user-email">guest@snt.com</span>
-        </div>
-    </div>
-
-    <div id="sys-info-overlay">
-        <div class="sys-card">
-            <h2>SYSTEM INFO</h2>
-            <div class="sys-row"><span class="sys-label">POWER STATUS</span><span class="sys-val">64%</span></div>
-            <div class="sys-row"><span class="sys-label">SOFTWARE</span><span class="sys-val">v3.0.0 Pro</span></div>
-            <div class="sys-row"><span class="sys-label">DEVELOPER</span><span class="sys-val blue">Kaushal Ji</span></div>
-            <div class="sys-row"><span class="sys-label">CONNECTIVITY</span><div class="social-icons">🟢 🔵 🔴 🟣</div></div>
-            <div class="sys-row"><span class="sys-label">PAYMENTS</span><button style="background:none; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; border-radius:5px;">OPEN QR CODE</button></div>
-            <button class="close-sys-btn" onclick="toggleSysInfo()">CLOSE PANEL</button>
-        </div>
-    </div>
+    </header>
 
     <div id="playlist-panel">
         <div class="playlist-header"><span>PLAYLIST</span><span class="btn-icon" onclick="togglePlaylist()" style="font-size: 20px;">✕</span></div>
@@ -172,7 +121,7 @@
     <div id="auth-panel">
         <div class="btn-icon" style="margin-bottom: 30px; font-size: 18px;" onclick="toggleAuth()">⬅ Back</div>
         <div id="auth-content">
-            <div class="auth-header"><span>🔑</span> <span>Login</span></div>
+            <div class="auth-header"><span id="auth-emoji">🔑</span> <span id="auth-title">Login</span></div>
             <div id="register-fields" style="display:none;">
                 <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 120px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 15px; margin-bottom: 20px; cursor: pointer; overflow: hidden; position: relative;">
                     <img id="preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none; position: absolute;">
@@ -186,6 +135,7 @@
             <button class="auth-btn" id="auth-submit" onclick="handleAuth()">Sign In</button>
             <div class="auth-links">
                 <span onclick="switchAuth('register')">🆕 Don't have an account? Register</span>
+                <span onclick="switchAuth('forgot-pass')">❓ Forgot Password?</span>
             </div>
         </div>
         <div id="user-profile" style="display:none;">
@@ -200,6 +150,9 @@
         <h2 style="margin-bottom: 25px; color: var(--accent); letter-spacing: 2px;">SETTINGS</h2>
         <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 Official Portal</a>
         <div class="menu-item" onclick="clearData()" style="color: #ff9f43; cursor: pointer;">🗑 Clear Local Library</div>
+        <div id="delete-zone" style="display:none; margin-top: 30px;">
+            <div class="menu-item" onclick="deleteAccountPermanent()" style="color: #ff4757; cursor: pointer; border-bottom: none; font-weight: bold;">⚠️ DELETE ACCOUNT</div>
+        </div>
         <label style="display: block; width: 100%; padding: 20px; border: 2px dashed var(--accent); color: var(--accent); text-align: center; border-radius: 20px; margin-top: 30px; cursor: pointer; font-weight: bold;">
             🎵 IMPORT FOLDER <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
         </label>
@@ -234,25 +187,17 @@
             <button class="btn-icon" onclick="engine.prev()">⏮</button>
             <button class="btn-icon play-trigger" id="play-btn" onclick="engine.toggle()">▶</button>
             <button class="btn-icon" onclick="engine.next()">⏭</button>
-            <button class="btn-icon" onclick="togglePlaylist()">🎶</button>
         </div>
     </div>
 </div>
 
 <script>
-// Logic Functions
+// Firebase & Core Logic (Same as before)
 const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", authDomain: "calculator-by-kaushalji.firebaseapp.com", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com", projectId: "calculator-by-kaushalji", storageBucket: "calculator-by-kaushalji.firebasestorage.app", messagingSenderId: "156130281294", appId: "1:156130281294:web:73b80a5f344daeabdd001f" };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(); const db_ref = firebase.database();
-
-function toggleSysInfo() { 
-    const overlay = document.getElementById('sys-info-overlay');
-    overlay.style.display = (overlay.style.display === 'flex') ? 'none' : 'flex';
-}
-
-function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
-function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
-function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
+const auth = firebase.auth(); const db_ref = firebase.database(); const storage = firebase.storage();
+let currentMode = 'login';
+let userBase64 = "";
 
 function showToast(msg, type) {
     let toast = document.getElementById('toast') || document.createElement('div');
@@ -261,34 +206,74 @@ function showToast(msg, type) {
     setTimeout(() => toast.classList.remove('toast-show'), 3500);
 }
 
+function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
+function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
+function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
+
+function switchAuth(mode) {
+    currentMode = mode; const regFields = document.getElementById('register-fields');
+    regFields.style.display = (mode === 'register') ? 'block' : 'none';
+    if(mode === 'register') { document.getElementById('auth-title').innerText = "Create Account"; document.getElementById('auth-submit').innerText = "Register"; }
+    else { document.getElementById('auth-title').innerText = "Login"; document.getElementById('auth-submit').innerText = "Sign In"; }
+}
+
+function previewUserImage(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { userBase64 = e.target.result; const img = document.getElementById('preview-img'); img.src = userBase64; img.style.display = 'block'; };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+async function handleAuth() {
+    const email = document.getElementById('user-email').value;
+    const pass = document.getElementById('user-pass').value;
+    const btn = document.getElementById('auth-submit');
+    if(!email || (currentMode !== 'forgot-pass' && !pass)) { showToast("Details fill karein!", "error"); return; }
+    btn.innerText = "Wait..."; btn.disabled = true;
+    try {
+        if(currentMode === 'register') {
+            const name = document.getElementById('user-name').value;
+            if(!userBase64) throw { message: "Photo zaroori hai!" };
+            const res = await auth.createUserWithEmailAndPassword(email, pass);
+            await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: userBase64 });
+            showToast("Account ready!", "success");
+        } else if(currentMode === 'login') {
+            await auth.signInWithEmailAndPassword(email, pass);
+            showToast("Login Successful!", "success"); setTimeout(toggleAuth, 1000);
+        }
+    } catch(err) { showToast(err.message, "error"); } finally { btn.innerText = "Done"; btn.disabled = false; }
+}
+
+function logout() { auth.signOut(); showToast("Logged Out", "success"); }
+
 auth.onAuthStateChanged(user => {
+    const photoBox = document.getElementById('user-photo-box');
+    const authIcon = document.getElementById('auth-icon');
     const userPhoto = document.getElementById('user-photo');
     const trackArt = document.getElementById('track-art-img');
     const headphone = document.getElementById('headphone-icon');
-    const hName = document.getElementById('h-user-name');
-    const hEmail = document.getElementById('h-user-email');
-
     if(user) {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
+        document.getElementById('delete-zone').style.display = 'block';
         db_ref.ref(`users/${user.uid}`).on('value', s => {
             const data = s.val(); 
             if(data && data.photoURL) {
-                userPhoto.src = data.photoURL;
+                document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
+                userPhoto.src = data.photoURL; photoBox.style.display = 'block'; authIcon.style.display = 'none';
                 trackArt.src = data.photoURL; trackArt.style.display = 'block'; headphone.style.display = 'none';
-                hName.innerText = data.username.toUpperCase();
-                hEmail.innerText = user.email;
             }
         });
     } else {
         document.getElementById('auth-content').style.display = 'block';
         document.getElementById('user-profile').style.display = 'none';
-        userPhoto.src = ""; hName.innerText = "GUEST USER"; hEmail.innerText = "Please Login";
+        document.getElementById('delete-zone').style.display = 'none';
+        photoBox.style.display = 'none'; authIcon.style.display = 'block';
         trackArt.style.display = 'none'; headphone.style.display = 'block';
     }
 });
 
-// engine.init() and visualizer logic (kept identical to original)
 const engine = {
     audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
     init: function() { this.listeners(); this.loadLocalData(); },
@@ -366,8 +351,22 @@ const engine = {
     }
 };
 
+async function deleteAccountPermanent() {
+    const u = auth.currentUser; if(!u) return;
+    const p = prompt("Password confirm karein delete ke liye:");
+    if(p) {
+        try {
+            await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p));
+            await db_ref.ref(`users/${u.uid}`).remove(); await u.delete();
+            showToast("Account Permanently Deleted.", "success"); location.reload();
+        } catch(e) { showToast("Error: " + e.message, "error"); }
+    }
+}
+function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
-</script>    
+</script>
+
+        
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
@@ -386,6 +385,7 @@ engine.init();
             window.location.reload();
         });
     }
-</script>  
+</script>
+
 </body>
 </html>
