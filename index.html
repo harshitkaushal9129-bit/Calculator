@@ -9,7 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> <style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
+    <style>
         :root {
             --accent: #00f2ff;
             --accent-glow: rgba(0, 242, 255, 0.5);
@@ -38,11 +39,9 @@
         header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; }
         
-        /* Profile Image Styles */
         #user-photo-box { width: 32px; height: 32px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; }
         #user-photo { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Left Side Auth Panel */
         #auth-panel {
             position: absolute; top: 0; left: -100%; width: 85%; height: 100%;
             background: rgba(10,10,15,0.98); backdrop-filter: blur(25px);
@@ -66,7 +65,6 @@
         .auth-links span { color: var(--text-dim); cursor: pointer; transition: 0.3s; }
         .auth-links span:hover { color: var(--accent); }
         
-        /* Image Upload Box */
         .img-upload-label {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             width: 100%; height: 120px; border: 2px dashed rgba(255,255,255,0.1);
@@ -76,7 +74,6 @@
         .img-upload-label img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; }
         .img-upload-label span { font-size: 14px; position: relative; z-index: 5; }
 
-        /* Right Side Settings Panel */
         #side-panel {
             position: absolute; top: 0; right: -100%; width: 80%; height: 100%;
             background: rgba(10,10,15,0.98); backdrop-filter: blur(20px);
@@ -85,7 +82,6 @@
         }
         .panel-open { right: 0 !important; }
         
-        /* UI Elements */
         .visualizer-orbit { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         #canvas-v { width: 320px; height: 320px; filter: drop-shadow(0 0 20px var(--accent-glow)); }
         .album-art-proxy {
@@ -146,7 +142,7 @@
         <div id="user-profile" style="display:none;">
             <div class="auth-header"><span>✅</span> Active Session</div>
             <p id="display-user" style="color: var(--accent); margin-bottom: 20px;"></p>
-            <button class="auth-btn" onclick="logout()" style="background: var(--error); color: white;">Logout</button>
+            <button class="auth-btn" onclick="logout()" style="background: var(--surface); color: white; margin-bottom: 10px;">Logout</button>
         </div>
     </div>
 
@@ -154,7 +150,12 @@
         <div class="btn-icon" style="margin-bottom: 30px;" onclick="toggleMenu()">✕ Close</div>
         <h2 style="margin-bottom: 20px; color: var(--accent);">Settings</h2>
         <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 Official Portal</a>
-        <div class="menu-item" onclick="clearData()" style="color: #ff4757; cursor: pointer;">🗑 Reset Library</div>
+        <div class="menu-item" onclick="clearData()" style="color: #ff9f43; cursor: pointer;">🗑 Reset Library</div>
+        
+        <div id="delete-zone" style="display:none; margin-top: 20px;">
+            <div class="menu-item" onclick="deleteAccountPermanent()" style="color: #ff4757; cursor: pointer; border-bottom: none; font-weight: bold;">⚠️ DELETE ACCOUNT PERMANENTLY</div>
+        </div>
+
         <label style="display: block; width: 100%; padding: 15px; border: 2px dashed var(--accent); color: var(--accent); text-align: center; border-radius: 15px; margin-top: 20px; cursor: pointer;">
             📁 IMPORT MUSIC
             <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
@@ -197,11 +198,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db_ref = firebase.database();
-const storage = firebase.storage(); // Storage Service Initialized
+const storage = firebase.storage();
 
 let currentMode = 'login';
 
-// Auth Functions
 function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
 function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
 
@@ -241,15 +241,10 @@ async function handleAuth() {
     try {
         if(currentMode === 'register') {
             if(!imageFile) throw new Error("Please upload a profile picture.");
-            
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            
-            // Upload Image to Storage
             const storageRef = storage.ref('users/' + res.user.uid + '/profile.jpg');
             await storageRef.put(imageFile);
             const downloadURL = await storageRef.getDownloadURL();
-            
-            // Save Username & Image URL in Database
             await db_ref.ref('users/' + res.user.uid).set({ username: name, photoURL: downloadURL });
             alert("Account Created!");
         } else if(currentMode === 'login') {
@@ -265,10 +260,40 @@ async function handleAuth() {
 
 function logout() { auth.signOut(); }
 
+// Permanent Account Deletion Logic
+async function deleteAccountPermanent() {
+    const user = auth.currentUser;
+    if(!user) return;
+
+    const pass = prompt("DANGER: This action cannot be undone!\nPlease enter your password to confirm deletion:");
+    
+    if (pass) {
+        try {
+            // Step 1: Re-authenticate user (required for deletion)
+            const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
+            await user.reauthenticateWithCredential(credential);
+
+            // Step 2: Delete Data from Database and Storage
+            await db_ref.ref('users/' + user.uid).remove();
+            try { await storage.ref('users/' + user.uid + '/profile.jpg').delete(); } catch(e) {}
+
+            // Step 3: Delete the User Account
+            await user.delete();
+            alert("Your account has been permanently deleted.");
+            location.reload();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    }
+}
+
 auth.onAuthStateChanged(user => {
+    const deleteZone = document.getElementById('delete-zone');
     if(user) {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
+        deleteZone.style.display = 'block'; // Show delete button in settings
+        
         db_ref.ref('users/' + user.uid).once('value', s => {
             const userData = s.val();
             const name = userData ? userData.username : user.email;
@@ -277,7 +302,6 @@ auth.onAuthStateChanged(user => {
             document.getElementById('display-user').innerText = "Hi, " + name;
             document.getElementById('title').innerText = "Logged in: " + name;
             
-            // Headphone Icon ki jagah Profile Pic set karna
             const hIcon = document.getElementById('headphone-icon');
             const pArt = document.getElementById('track-art-img');
             const hPhoto = document.getElementById('user-photo');
@@ -288,8 +312,7 @@ auth.onAuthStateChanged(user => {
                 hPhoto.src = photo;
                 hPhotoBox.style.display = 'block';
                 hIconBtn.style.display = 'none';
-                
-                pArt.src = photo; // Player center image set profile photo
+                pArt.src = photo; 
                 pArt.style.display = 'block';
                 hIcon.style.display = 'none';
             }
@@ -297,18 +320,16 @@ auth.onAuthStateChanged(user => {
     } else {
         document.getElementById('auth-content').style.display = 'block';
         document.getElementById('user-profile').style.display = 'none';
+        deleteZone.style.display = 'none';
         document.getElementById('title').innerText = "Welcome, Kaushal ji";
-        
-        // Reset Player Icons to Default
         document.getElementById('user-photo-box').style.display = 'none';
         document.getElementById('auth-icon').style.display = 'block';
-        
         document.getElementById('track-art-img').style.display = 'none';
         document.getElementById('headphone-icon').style.display = 'block';
     }
 });
 
-// Player Engine (Same as yours but integrated)
+// Player Engine
 const engine = {
     audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
     init: function() { this.listeners(); this.loadLocalData(); },
