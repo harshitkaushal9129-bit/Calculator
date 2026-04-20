@@ -22,7 +22,7 @@
         header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
         #user-photo-box { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
-        #user-photo { width: 100%; height: 100%; object-fit: cover; }
+        #user-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
         #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; }
         .auth-open { left: 0 !important; }
         .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; font-weight: bold; }
@@ -193,6 +193,10 @@ function logout() { auth.signOut(); showToast("Logged Out", "success"); }
 auth.onAuthStateChanged(user => {
     const photoBox = document.getElementById('user-photo-box');
     const authIcon = document.getElementById('auth-icon');
+    const userPhoto = document.getElementById('user-photo');
+    const trackArt = document.getElementById('track-art-img');
+    const headphone = document.getElementById('headphone-icon');
+
     if(user) {
         document.getElementById('auth-content').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
@@ -200,7 +204,15 @@ auth.onAuthStateChanged(user => {
         db_ref.ref(`users/${user.uid}`).once('value', s => {
             const data = s.val(); if(data) {
                 document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
-                if(data.photoURL) { document.getElementById('user-photo').src = data.photoURL; photoBox.style.display = 'block'; authIcon.style.display = 'none'; }
+                if(data.photoURL) { 
+                    userPhoto.src = data.photoURL; 
+                    photoBox.style.display = 'block'; 
+                    authIcon.style.display = 'none';
+                    // Center art display fix
+                    trackArt.src = data.photoURL;
+                    trackArt.style.display = 'block';
+                    headphone.style.display = 'none';
+                }
             }
         });
     } else {
@@ -208,6 +220,7 @@ auth.onAuthStateChanged(user => {
         document.getElementById('user-profile').style.display = 'none';
         document.getElementById('delete-zone').style.display = 'none';
         photoBox.style.display = 'none'; authIcon.style.display = 'block';
+        trackArt.style.display = 'none'; headphone.style.display = 'block';
     }
 });
 
@@ -272,8 +285,12 @@ async function deleteAccountPermanent() {
         try {
             await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p));
             await db_ref.ref(`users/${u.uid}`).remove(); await u.delete();
-            showToast("Deleted", "success"); location.reload();
-        } catch(e) { showToast(e.message, "error"); }
+            showToast("Account Deleted Permanently.", "success"); location.reload();
+        } catch(e) { 
+            let msg = "Password galat hai!"; 
+            if(e.code === "auth/wrong-password") msg = "Confirmation password galat hai!";
+            showToast(msg, "error"); 
+        }
     }
 }
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
