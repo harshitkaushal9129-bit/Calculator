@@ -33,6 +33,10 @@
         .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
         .info-label { color: var(--text-dim); }
         .info-value { color: var(--accent); font-weight: bold; }
+/* Connectivity icons ko align karne ke liye */
+.info-row div { display: flex;gap: 15px;align-items: center;margin-top: 5px;}
+.info-row a {text-decoration: none;font-size: 20px;transition: 0.3s;}
+.info-row a:hover {transform: scale(1.2);}
 
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 700; z-index: 9999; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 15px; backdrop-filter: blur(15px); width: 85%; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         .toast-success { background: rgba(0, 255, 136, 0.2); color: var(--success); border-color: var(--success); }
@@ -155,15 +159,16 @@
         <div class="info-row"><span class="info-label">Developer:</span> <span class="info-value">Kaushal Ji</span></div>
         <div class="info-row"><span class="info-label">Powered By:</span> <span class="info-value">SNT Official</span></div>
         <div class="info-row">
-                    <span class="info-label">Connectivity</span>
-                    <div class="flex gap-4 items-center">
-                        <a href="https://wa.me/919129191898" target="_blank" class="text-green-500 text-xl"><i class="fab fa-whatsapp"></i></a>
-                        <a href="tel:919129191898" class="text-sky-400 text-xl"><i class="fas fa-phone"></i></a>
-                        <a href="https://www.instagram.com/snt_computer_institute?igsh=MTgwMGc3bjh5OGV0eg==" target="_blank" class="text-pink-600 text-xl"><i class="fab fa-instagram"></i></a>
-                        <a href="https://youtube.com/@programmingby-kaushalji?si=upy9Y55Ijd4xNPJ7" target="_blank" class="text-red-600 text-xl"><i class="fab fa-youtube"></i></a>
-                   <a href="https://www.facebook.com/share/r/18ZG6co1Gu/" target="_blank" class="text-blue-600 text-xl"><i class="fab fa-facebook"></i></a>
- </div>
-        </div>            
+    <span class="info-label">Connectivity</span>
+    <div>
+        <a href="https://wa.me/919129191898" target="_blank" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
+        <a href="tel:919129191898" style="color: #00acee;"><i class="fas fa-phone"></i></a>
+        <a href="https://www.instagram.com/snt_computer_institute" target="_blank" style="color: #E1306C;"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/@programmingby-kaushalji" target="_blank" style="color: #FF0000;"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.facebook.com/share/r/18ZG6co1Gu/" target="_blank" style="color: #1877F2;"><i class="fab fa-facebook"></i></a>
+    </div>
+</div>
+            
     </div>
 
         <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 Official Portal</a>
