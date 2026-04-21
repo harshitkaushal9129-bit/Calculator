@@ -161,7 +161,9 @@
         <div class="info-row"><span class="info-label">App Version:</span> <span class="info-value">3.0.0 (Pro)</span></div>
         <div class="info-row"><span class="info-label">Developer:</span> <span class="info-value">Kaushal Ji</span></div>
         <div class="info-row"><span class="info-label">Powered By:</span> <span class="info-value">SNT Official</span></div>
-
+     <button onclick="shareApp()" class="w-10 h-10 bg-sky-500/20 rounded-full flex items-center justify-center text-sky-400 border border-sky-500/30 active:scale-90 transition-all">
+    <i class="fas fa-share-nodes"></i>
+     </button>
                     <div class="info-row" style="flex-direction: column; align-items: flex-start; gap: 8px; margin: 0;">
     <span class="info-label" style="margin: 0;">Connect with us:</span>
     <div class="social-list" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
@@ -386,6 +388,28 @@ async function deleteAccountPermanent() {
 }
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); showToast("Cleared", "success"); setTimeout(()=>location.reload(),1000); }
 engine.init();
+       
+    // Isse apne <script type="module"> ke andar sabse niche paste karein
+window.shareApp = async () => {
+    const shareData = {
+        title: 'SNT Official Portal',
+        text: 'Access the official SNT Institute student portal for Results, PDF Notes, and ID Cards.',
+        url: 'https://harshitkaushal9129-bit.github.io/Calculator/index.html'
+    };
+
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            await navigator.clipboard.writeText(shareData.url);
+            alert("Link Copied!");
+        }
+    } catch (err) {
+        console.log("Error:", err);
+    }
+};
+
+    
 </script>
 
         
