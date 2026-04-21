@@ -42,6 +42,9 @@
     .connect-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); font-size: 13px; background: rgba(255, 255, 255, 0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.2s ease; }
     .connect-link:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); transform: translateX(5px); }
     .connect-link i { width: 18px; text-align: center; }
+.action-btn { display: flex; align-items: center; gap: 12px; color: var(--text-main); font-size: 13px; background: rgba(255, 255, 255, 0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.2s ease; cursor: pointer; width: 100%; }
+.action-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); transform: translateX(5px); }
+.action-btn i { width: 18px; text-align: center; }
 
     .app-info-container { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 18px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
 
@@ -204,24 +207,27 @@
             <div class="info-row"><span class="info-label">Powered By:</span> <span class="info-value">SNT Official</span></div>
             <button onclick="shareApp()" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:5px 15px; border-radius:10px; cursor:pointer;">Share App</button>
         </div>
-<div class="social-list" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
+
+            <div class="social-list" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
     <a href="https://wa.me/919129191898" target="_blank" class="connect-link"><i class="fab fa-whatsapp" style="color: #25D366;"></i> <span>WhatsApp Support</span> </a>
     <a href="tel:919129191898" class="connect-link"><i class="fas fa-phone" style="color: #00acee;"></i> <span>Direct Call</span></a>
     <a href="https://www.instagram.com/snt_computer_institute" target="_blank" class="connect-link"><i class="fab fa-instagram" style="color: #E1306C;"></i> <span>Instagram Feed</span></a>
     <a href="https://youtube.com/@programmingby-kaushalji" target="_blank" class="connect-link"><i class="fab fa-youtube" style="color: #FF0000;"></i> <span>YouTube Tutorials</span></a>
     <a href="https://www.facebook.com/share/r/18ZG6co1Gu/" target="_blank" class="connect-link"> <i class="fab fa-facebook" style="color: #1877F2;"></i> <span>Facebook Page</span></a>
-    <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="menu-item">🌐 Official Portal</a>
- 
+    <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="connect-link"><i>🌐</i> <span>Official Portal</span></a>
+
+    <div class="action-btn" onclick="clearData()"><i class="fas fa-trash-alt" style="color: #a0a0a0;"></i> <span>Clear Local Library</span></div>
+
+    <div id="delete-zone" style="width: 100%;">
+        <div class="action-btn" onclick="deleteAccountPermanent()"><i class="fas fa-exclamation-triangle" style="color: #ff4757;"></i> <span style="color: #ff4757;">DELETE ACCOUNT</span></div>
+    </div>
+
+    <label class="action-btn" style="border: 1px dashed var(--accent); margin-top: 10px; justify-content: center;">
+        <i class="fas fa-folder-plus"></i> <span>IMPORT FOLDER</span>
+        <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
+    </label>
 </div>
 
-               <div class="menu-item" onclick="clearData()" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">🗑 Clear Local Library</div>
-        <div id="delete-zone" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
-            <div class="menu-item" onclick="deleteAccountPermanent()" style="color: #ff4757; cursor: pointer;">⚠️ DELETE ACCOUNT</div>
-        </div>
-        <label style="display: block; width: 100%; padding: 20px; border: 2px dashed var(--accent); color: var(--accent); text-align: center; border-radius: 20px; margin-top: 20px; cursor: pointer;">
-            🎵 IMPORT FOLDER <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none">
-        </label>
-    </div>
 
     <div class="visualizer-orbit">
         <canvas id="canvas-v"></canvas>
