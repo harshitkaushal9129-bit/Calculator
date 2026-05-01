@@ -23,6 +23,90 @@
         --error: #ff4757; 
         --success: #00ff88; 
     }
+/* --- CYBER CALC STYLING --- */
+
+/* Calculator Buttons ki Basic Design */
+.calc-btn {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: none;
+}
+
+/* Hover Effect: Jab button pe mouse le jayein */
+.calc-btn:hover {
+    background: rgba(0, 242, 255, 0.1);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
+}
+
+/* Active Effect: Jab button click karein */
+.calc-btn:active {
+    transform: scale(0.95);
+}
+
+/* Operator Buttons (/, *, -, +) */
+.calc-btn.op {
+    color: var(--accent);
+    background: rgba(0, 242, 255, 0.05);
+}
+
+/* Equals (=) Button */
+.calc-btn.eq {
+    background: var(--accent) !important;
+    color: #000 !important;
+    grid-column: span 2;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* Clear (C) aur DEL Buttons */
+.calc-btn[innerText="C"], 
+.calc-btn[innerText="DEL"] {
+    color: var(--error);
+}
+
+/* History List Styling */
+#calc-history-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+#calc-history-list::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
+
+#calc-history-list div {
+    padding: 4px 0;
+    letter-spacing: 1px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 400px) {
+    #calc-modal {
+        width: 90% !important;
+        padding: 15px !important;
+    }
+    .calc-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
@@ -238,6 +322,24 @@
     <label class="action-btn" style="border: 1px dashed var(--accent); margin-top: 10px; justify-content: center;"><i class="fas fa-folder-plus"></i> <span>IMPORT FOLDER</span><input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none"></label>
 </div>
     </div>
+<div id="calc-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 340px; background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--accent); border-radius: 25px; z-index: 1000; padding: 20px; display: none; transition: 0.3s; box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 2px;">CYBER CALC PRO</span>
+        <div style="display: flex; gap: 15px;">
+            <span onclick="clearCalcHistory()" title="Clear History" style="cursor: pointer; color: var(--text-dim); font-size: 14px;"><i class="fas fa-trash-alt"></i></span>
+            <span onclick="toggleCalc()" style="cursor: pointer; color: var(--error); font-size: 18px;">✕</span>
+        </div>
+    </div>
+
+    <input type="text" id="calc-display" readonly style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); text-align: right; padding: 15px; font-size: 26px; border-radius: 12px; margin-bottom: 5px; outline: none; font-family: 'Courier New', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+    
+    <div id="calc-history-list" style="height: 60px; overflow-y: auto; font-size: 11px; color: var(--text-dim); margin-bottom: 15px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right;">
+        </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="calc-buttons">
+        </div>
+</div>
 
 
     <div class="visualizer-orbit">
@@ -520,6 +622,89 @@ window.shareApp = async () => {
 };
 
 engine.init();
+
+
+    // --- CALCULATOR LOGIC START ---
+function toggleCalc() {
+    const modal = document.getElementById('calc-modal');
+    if(!modal) return;
+    if(modal.style.display === 'none' || modal.style.display === '') {
+        modal.style.display = 'block';
+        renderHistory(); // Open hote hi history load karega
+        setTimeout(() => modal.style.transform = 'translate(-50%, -50%) scale(1)', 10);
+    } else {
+        modal.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        setTimeout(() => modal.style.display = 'none', 200);
+    }
+}
+
+const calcDisplay = document.getElementById('calc-display');
+const historyList = document.getElementById('calc-history-list');
+
+function renderHistory() {
+    if(!historyList) return;
+    const history = JSON.parse(localStorage.getItem('calc_history') || "[]");
+    historyList.innerHTML = history.map(item => `<div style="margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.02)">${item}</div>`).join('');
+    historyList.scrollTop = historyList.scrollHeight;
+}
+
+function saveToHistory(expression, result) {
+    let history = JSON.parse(localStorage.getItem('calc_history') || "[]");
+    history.push(`${expression} = ${result}`);
+    if(history.length > 20) history.shift();
+    localStorage.setItem('calc_history', JSON.stringify(history));
+    renderHistory();
+}
+
+function clearCalcHistory() {
+    if(confirm("Saari history delete kar dein?")) {
+        localStorage.removeItem('calc_history');
+        renderHistory();
+        if(typeof showToast === "function") showToast("History Cleared", "success");
+    }
+}
+
+const calcButtons = ['C', '/', '*', 'DEL', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '=', '0', '.'];
+const btnContainer = document.getElementById('calc-buttons');
+
+if(btnContainer) {
+    calcButtons.forEach(btn => {
+        const b = document.createElement('button');
+        b.innerText = btn;
+        b.className = 'calc-btn';
+        if(['/','*','-','+','C','DEL'].includes(btn)) b.style.color = 'var(--accent)';
+        if(btn === '=') { 
+            b.style.background = 'var(--accent)'; 
+            b.style.color = '#000'; 
+            b.style.gridColumn = 'span 2'; 
+        }
+        
+        b.onclick = () => {
+            if(btn === 'C') calcDisplay.value = '';
+            else if(btn === 'DEL') calcDisplay.value = calcDisplay.value.slice(0, -1);
+            else if(btn === '=') {
+                try {
+                    let expression = calcDisplay.value;
+                    let result = eval(expression);
+                    if(expression !== "" && expression !== result) {
+                        saveToHistory(expression, result);
+                        calcDisplay.value = result;
+                    }
+                } catch {
+                    calcDisplay.value = 'Error';
+                    setTimeout(() => calcDisplay.value = '', 1000);
+                }
+            } else {
+                calcDisplay.value += btn;
+            }
+        };
+        btnContainer.appendChild(b);
+    });
+}
+// --- CALCULATOR LOGIC END ---
+
+
+    
 </script>
 <script>
     if ('serviceWorker' in navigator) {
