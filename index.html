@@ -9,586 +9,337 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
     :root { 
-        --accent: #00f2ff; 
-        --accent-glow: rgba(0, 242, 255, 0.5); 
-        --bg: #08080a; 
-        --surface: rgba(255, 255, 255, 0.05); 
-        --text-main: #ffffff; 
-        --text-dim: #a0a0a0; 
-        --error: #ff4757; 
-        --success: #00ff88; 
+        --accent: #00f2ff; --accent-glow: rgba(0, 242, 255, 0.5); 
+        --bg: #08080a; --surface: rgba(255, 255, 255, 0.05); 
+        --text-main: #ffffff; --text-dim: #a0a0a0; 
+        --error: #ff4757; --success: #00ff88; 
     }
-
-/* --- CYBER CALC STYLING --- */
-.calc-btn {
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--text-main);
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 16px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    outline: none;
-}
-
-.calc-btn:hover {
-    background: rgba(0, 242, 255, 0.1);
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
-}
-
-.calc-btn:active {
-    transform: scale(0.95);
-}
-
-.calc-btn.op {
-    color: var(--accent);
-    background: rgba(0, 242, 255, 0.05);
-}
-
-.calc-btn.eq {
-    background: var(--accent) !important;
-    color: #000 !important;
-    grid-column: span 2;
-    box-shadow: 0 0 20px var(--accent-glow);
-}
-
-#calc-history-list::-webkit-scrollbar {
-    width: 3px;
-}
-
-#calc-history-list::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
-}
-
-#calc-history-list div {
-    padding: 4px 0;
-    letter-spacing: 1px;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateX(10px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@media (max-width: 400px) {
-    #calc-modal {
-        width: 90% !important;
-        padding: 15px !important;
-    }
-    .calc-btn {
-        padding: 12px;
-        font-size: 14px;
-    }
-}
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    body { background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
 
-    body { background: var(--bg); color: var(--text-main); font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    
-    .side-links { position: fixed; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 25px; z-index: 5; padding: 15px; transition: 0.3s; }
-    .side-links.left { left: 15px; }
-    .side-links.right { right: 15px; }
-
-    .nav-icon-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px; opacity: 0.5; transition: 0.3s ease; }
-    .nav-icon-link:hover { opacity: 1; transform: scale(1.15); }
-    .nav-icon-link span { font-size: 26px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
-    .nav-icon-link label { font-size: 10px; color: var(--accent); font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
-
-    .app-container { width: 100%; max-width: 420px; height: 100%; background: radial-gradient(circle at top right, #1a1a2e, #08080a); position: relative; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); z-index: 10; box-shadow: 0 0 80px rgba(0,0,0,0.8); }
-
-    .connect-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); font-size: 13px; background: rgba(255, 255, 255, 0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.2s ease; }
-    .connect-link:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); transform: translateX(5px); }
-    .connect-link i { width: 18px; text-align: center; }
-    
-    .action-btn { display: flex; align-items: center; gap: 12px; color: var(--text-main); font-size: 13px; background: rgba(255, 255, 255, 0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.2s ease; cursor: pointer; width: 100%; }
-    .action-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); transform: translateX(5px); }
-    .action-btn i { width: 18px; text-align: center; }
-
-    .app-info-container { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 18px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
-    .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; }
-    .info-label { color: var(--text-dim); }
-    .info-value { color: var(--accent); font-weight: bold; }
-
-    #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 12px; font-weight: 700; z-index: 9999; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 15px; backdrop-filter: blur(15px); width: 85%; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-    .toast-success { background: rgba(0, 255, 136, 0.2); color: var(--success); border-color: var(--success); }
-    .toast-error { background: rgba(255, 71, 87, 0.2); color: var(--error); border-color: var(--error); }
-    .toast-show { top: 30px !important; }
-
-    header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-    .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
-    
-    #user-photo-box { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); overflow: hidden; display: none; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
-    #user-photo { width: 100%; height: 100%; object-fit: cover; }
-    
-    #playlist-panel { position: absolute; top: 0; right: -100%; width: 85%; height: 100%; background: rgba(8, 8, 10, 0.98); backdrop-filter: blur(25px); z-index: 250; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 20px; display: flex; flex-direction: column; border-left: 1px solid var(--accent); }
-    .playlist-open { right: 0 !important; }
-    .playlist-header { color: var(--accent); font-size: 20px; font-weight: bold; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-    
-    #list-container { flex: 1; overflow-y: auto; padding-right: 5px; }
-    #list-container::-webkit-scrollbar { width: 4px; }
-    #list-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-    
-    .track-item { padding: 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; font-size: 14px; }
-    .track-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
-    .track-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: var(--accent); }
-
-    #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 50px 30px; overflow-y: auto; }
-    .auth-open { left: 0 !important; }
-    .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold; }
-    
-    .input-group { margin-bottom: 12px; }
-    .input-group input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; outline: none; transition: 0.3s; font-size: 14px; }
-    .input-group input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
-
-    .captcha-container { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
-    #captcha-box { flex: 1; background: #111; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; text-align: center; font-weight: bold; color: var(--accent); letter-spacing: 4px; font-style: italic; user-select: none; }
-    .refresh-captcha { cursor: pointer; color: var(--accent); font-size: 20px; }
-    
-    .auth-btn { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: 12px; color: #000; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-    .auth-links { margin-top: 20px; font-size: 12px; display: flex; flex-direction: column; gap: 10px; }
-    .auth-links span { color: var(--text-dim); cursor: pointer; transition: 0.3s; text-decoration: underline; }
-    
-    #side-panel { position: absolute; top: 0; right: -100%; width: 85%; height: 100%; background: rgba(10,10,15,0.98); backdrop-filter: blur(25px); z-index: 300; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 30px; border-left: 1px solid rgba(0, 242, 255, 0.2); }
-    .panel-open { right: 0 !important; }
-    
-    .visualizer-orbit { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-    #canvas-v { width: 340px; height: 340px; filter: drop-shadow(0 0 25px var(--accent-glow)); }
-    
-    .album-art-proxy { position: absolute; width: 170px; height: 170px; background: var(--surface); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid rgba(255, 255, 255, 0.05); overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-    .album-art-proxy img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: none; }
-    
-    .track-meta { text-align: center; padding: 20px 20px 10px; }
-    .track-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    
-    .player-core { padding: 20px 30px 40px; background: rgba(255, 255, 255, 0.03); border-radius: 45px 45px 0 0; backdrop-filter: blur(20px); }
-    .time-info { display: flex; justify-content: space-between; font-size: 12px; color: var(--accent); margin-bottom: 8px; }
-    .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; cursor: pointer; }
-    .bar-fill { height: 100%; background: var(--accent); width: 0%; }
-    
-    .main-cmds { display: flex; justify-content: space-around; align-items: center; margin-top: 25px;}
-    .play-trigger { width: 75px; height: 75px; border-radius: 50%; background: var(--accent); color: #000; font-size: 32px; border: none; cursor: pointer; }
-
-@media (max-width: 800px) {
-    .app-container { width: 100%; max-width: 100%; border: none; z-index: 2; }
-    .side-links { gap: 20px; padding: 10px; background: rgba(8, 8, 10, 0.6); backdrop-filter: blur(10px); border-radius: 20px; z-index: 100; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+    /* SIDE LINKS */
+    .side-links { position: fixed; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; z-index: 100; padding: 15px; background: rgba(8,8,10,0.6); backdrop-filter: blur(10px); border-radius: 20px; }
     .side-links.left { left: 10px; }
     .side-links.right { right: 10px; }
-    .nav-icon-link span { font-size: 20px; }
-    .nav-icon-link label { font-size: 8px; }
-}
+    .nav-icon-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: 0.6; transition: 0.3s; }
+    .nav-icon-link:hover { opacity: 1; transform: scale(1.1); }
+    .nav-icon-link span { font-size: 22px; }
+    .nav-icon-link label { font-size: 8px; color: var(--accent); font-weight: bold; text-transform: uppercase; text-align: center; cursor: pointer; }
+
+    /* APP CONTAINER */
+    .app-container { width: 100%; max-width: 420px; height: 100%; background: radial-gradient(circle at top right, #1a1a2e, #08080a); position: relative; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 80px rgba(0,0,0,0.8); z-index: 10; }
+
+    header { padding: 50px 25px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+    .brand { font-weight: 800; letter-spacing: 4px; font-size: 14px; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+    #user-photo-box { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--accent); overflow: hidden; cursor: pointer; display: none; }
+    #user-photo { width: 100%; height: 100%; object-fit: cover; }
+
+    /* PANELS (Playlist, Auth, Settings) */
+    .side-panel { position: absolute; top: 0; width: 85%; height: 100%; background: rgba(8, 8, 10, 0.98); backdrop-filter: blur(25px); z-index: 250; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1); padding: 60px 20px; border-left: 1px solid var(--accent); right: -100%; }
+    .auth-panel { left: -100%; right: auto; width: 100%; border-right: 1px solid var(--accent); border-left: none; }
+    .open-right { right: 0 !important; }
+    .open-left { left: 0 !important; }
+
+    /* CALCULATOR */
+    #calc-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 320px; background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--accent); border-radius: 25px; z-index: 1000; padding: 20px; display: none; transition: 0.3s; }
+    .calc-btn { padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; cursor: pointer; font-weight: bold; }
+    .calc-btn:hover { background: var(--accent); color: black; }
+    #calc-display { width: 100%; background: #000; border: 1px solid var(--accent); color: var(--accent); padding: 15px; font-size: 24px; text-align: right; border-radius: 10px; margin-bottom: 10px; }
+
+    /* PLAYER CORE */
+    .visualizer-orbit { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+    #canvas-v { width: 300px; height: 300px; }
+    .album-art-proxy { position: absolute; width: 150px; height: 150px; background: var(--surface); border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 2px solid var(--accent); }
+    .player-core { padding: 30px; background: rgba(255,255,255,0.03); border-radius: 40px 40px 0 0; }
+    .bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; margin: 15px 0; }
+    .bar-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 10px; }
+
+    /* INPUTS & BUTTONS */
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"] { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; }
+    .auth-btn { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+    .connect-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 5px; font-size: 13px; }
+
+    #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 10px; z-index: 2000; transition: 0.5s; text-align: center; width: 80%; }
+    .toast-show { top: 20px !important; }
     </style>
 </head>
 <body>
 
-<div id="toast"></div>
+<div id="toast" style="background: var(--accent); color: #000;"></div>
 
 <div class="side-links left">
-    <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="nav-icon-link"><span>🏛️</span><label>Official Portal</label></a>
-    <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" class="nav-icon-link"><span>📁</span><label>SNT PDF Vault</label></a>
-    <a href="https://harshitkaushal9129-bit.github.io/Snt-institute.id-card/" class="nav-icon-link"><span>📇</span><label>ID Generator</label></a>
+    <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="nav-icon-link"><span>🏛️</span><label>Portal</label></a>
+    <a href="https://harshitkaushal9129-bit.github.io/Pdf-reader/" class="nav-icon-link"><span>📁</span><label>Vault</label></a>
+    <a href="https://harshitkaushal9129-bit.github.io/Snt-institute.id-card/" class="nav-icon-link"><span>📇</span><label>ID Gen</label></a>
 </div>
 
 <div class="side-links right">
-    <div class="nav-icon-link" onclick="toggleCalc()"><span>💻</span><label>Cyber Calc</label></div>
-    <div class="nav-icon-link"><span>🛡️</span><label>Shadow OS</label></div>
-    <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" class="nav-icon-link"><span>🛠️</span><label>neilet-mcqs</label></a>
+    <div class="nav-icon-link" onclick="toggleCalc()"><span>💻</span><label>Calc</label></div>
+    <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" class="nav-icon-link"><span>🛠️</span><label>MCQs</label></a>
 </div>
 
-<div class="app-container" id="player-ui">
+<div class="app-container">
     <header>
-        <div id="user-photo-box" onclick="toggleAuth()"><img id="user-photo" src="" alt="Profile"></div>
-        <div class="btn-icon" id="auth-icon" onclick="toggleAuth()" style="cursor:pointer; font-size: 26px;">👤</div>
+        <div id="user-photo-box" onclick="toggleAuth()"><img id="user-photo" src=""></div>
+        <div id="auth-icon" onclick="toggleAuth()" style="cursor:pointer; font-size: 24px;">👤</div>
         <div class="brand">MI PRO</div>
-        <div style="display: flex; gap: 15px;">
-            <div class="btn-icon" onclick="togglePlaylist()" style="cursor:pointer; font-size: 22px;">🎶</div>
-            <div class="btn-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 22px;">☰</div>
+        <div style="display:flex; gap:15px;">
+            <div onclick="togglePlaylist()" style="cursor:pointer;">🎶</div>
+            <div onclick="toggleMenu()" style="cursor:pointer;">☰</div>
         </div>
     </header>
 
-    <div id="playlist-panel">
-        <div class="playlist-header"><span>PLAYLIST</span><span onclick="togglePlaylist()" style="cursor:pointer;">✕</span></div>
-        <div id="list-container"></div>
-    </div>
-
-    <div id="auth-panel">
-        <div style="cursor:pointer; margin-bottom: 20px;" onclick="toggleAuth()">⬅ Back</div>
-        <div id="auth-content">
-            <div class="auth-header"><span id="auth-emoji">🔑</span> <span id="auth-title">Login</span></div>
-            <div id="register-fields" style="display:none;">
-                <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 15px; margin-bottom: 15px; cursor: pointer; overflow: hidden;">
-                    <img id="preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                    <span id="photo-placeholder" style="font-size: 12px;">➕ Profile Photo</span>
-                    <input type="file" id="user-image" accept="image/*" style="display:none;" onchange="previewUserImage(this)">
-                </label>
-                <div class="input-group"><input type="text" id="user-name" placeholder="Full Name"></div>
-            </div>
-            <div class="input-group"><input type="email" id="user-email" placeholder="Email Address"></div>
-            <div id="password-field-group" class="input-group"><input type="password" id="user-pass" placeholder="Password"></div>
-            <div id="mobile-field-group" class="input-group" style="display:none;"><input type="number" id="user-mobile" placeholder="Mobile Number"></div>
-            <div id="captcha-section" style="display:none;">
-                <div class="captcha-container">
-                    <div id="captcha-box"></div>
-                    <div class="refresh-captcha" onclick="generateCaptcha()">🔄</div>
-                </div>
-                <div class="input-group"><input type="text" id="captcha-input" placeholder="Enter Captcha Code"></div>
-            </div>
-            <button class="auth-btn" id="auth-submit" onclick="handleAuth()">Sign In</button>
-            <div class="auth-links">
-                <span id="toggle-reg" onclick="switchAuth('register')">🆕 Don't have an account? Register</span>
-                <span id="toggle-pass" onclick="switchAuth('forgot-pass')">❓ Forgot Password?</span>
-                <span id="toggle-user" onclick="switchAuth('forgot-user')">🆔 Forgot Username?</span>
-                <span id="toggle-login" style="display:none;" onclick="switchAuth('login')">⬅ Back to Login</span>
-            </div>
-        </div>
-        <div id="user-profile" style="display:none; text-align: center;">
-            <div class="auth-header"><span>🚀</span> Welcome</div>
-            <p id="display-user" style="color: var(--accent); margin-bottom: 5px; font-size: 18px;"></p>
-            <p id="display-mobile" style="color: var(--text-dim); font-size: 12px; margin-bottom: 20px;"></p>
-            <button class="auth-btn" onclick="logout()" style="background: var(--surface); color: white;">Logout Session</button>
-        </div>
-    </div>
-
-    <div id="side-panel">
-        <div style="cursor:pointer; margin-bottom: 30px;" onclick="toggleMenu()">✕ Close</div>
-        <h2 style="margin-bottom: 25px; color: var(--accent); letter-spacing: 2px;">SETTINGS</h2>
-        <div class="app-info-container">
-            <div class="info-row"><span class="info-label">App Version:</span> <span class="info-value">3.0.0 (Pro)</span></div>
-            <div class="info-row"><span class="info-label">Developer:</span> <span class="info-value">Kaushal Ji</span></div>
-            <div class="info-row"><span class="info-label">Powered By:</span> <span class="info-value">SNT Official</span></div>
-            <button onclick="shareApp()" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:5px 15px; border-radius:10px; cursor:pointer;">Share App</button>
-        </div>
-        <div class="social-list" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
-            <a href="https://wa.me/919129191898" target="_blank" class="connect-link"><i class="fab fa-whatsapp" style="color: #25D366;"></i> <span>WhatsApp Support</span> </a>
-            <a href="tel:919129191898" class="connect-link"><i class="fas fa-phone" style="color: #00acee;"></i> <span>Direct Call</span></a>
-            <a href="https://www.instagram.com/snt_computer_institute" target="_blank" class="connect-link"><i class="fab fa-instagram" style="color: #E1306C;"></i> <span>Instagram Feed</span></a>
-            <a href="https://youtube.com/@programmingby-kaushalji" target="_blank" class="connect-link"><i class="fab fa-youtube" style="color: #FF0000;"></i> <span>YouTube Tutorials</span></a>
-            <a href="https://www.facebook.com/share/r/18ZG6co1Gu/" target="_blank" class="connect-link"> <i class="fab fa-facebook" style="color: #1877F2;"></i> <span>Facebook Page</span></a>
-            <div class="action-btn" onclick="clearData()"><i class="fas fa-trash-alt"></i> <span>Clear Local Library</span></div>
-            <div id="delete-zone" style="width: 100%;"><div class="action-btn" onclick="deleteAccountPermanent()"><i class="fas fa-exclamation-triangle" style="color: #ff4757;"></i> <span style="color: #ff4757;">DELETE ACCOUNT</span></div></div>
-            <label class="action-btn" style="border: 1px dashed var(--accent); margin-top: 10px; justify-content: center;"><i class="fas fa-folder-plus"></i> <span>IMPORT FOLDER</span><input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none"></label>
-        </div>
-    </div>
-
     <div class="visualizer-orbit">
         <canvas id="canvas-v"></canvas>
-        <div class="album-art-proxy" id="art-box">
-            <span id="headphone-icon" style="font-size: 50px; opacity:0.3;">🎧</span>
-            <img id="track-art-img" src="" alt="Album Art"> 
+        <div class="album-art-proxy">
+            <img id="track-art-img" style="display:none; width:100%; height:100%; object-fit:cover;">
+            <span id="def-icon">🎧</span>
         </div>
     </div>
 
-    <div class="track-meta">
-        <div class="track-title" id="title">MI Player Pro</div>
-        <div class="track-artist" id="artist" style="color:var(--accent); font-size:13px; opacity:0.8;">Ready to Play</div>
+    <div style="text-align:center; padding:10px;">
+        <h3 id="title">MI Player Pro</h3>
+        <p id="artist" style="color:var(--accent); font-size:12px;">Welcome Back</p>
     </div>
 
     <div class="player-core">
-        <div class="time-info">
+        <div style="display:flex; justify-content:space-between; font-size:10px;">
             <span id="current-time">00:00</span>
             <span id="total-duration">00:00</span>
         </div>
         <div class="bar-bg" id="seek-bar" onclick="engine.seek(event)"><div class="bar-fill" id="fill"></div></div>
-        <div class="main-cmds">
-            <button class="btn-icon" onclick="engine.prev()" style="background:none; border:none; color:white; font-size:24px;">⏮</button>
-            <button class="play-trigger" id="play-btn" onclick="engine.toggle()">▶</button>
-            <button class="btn-icon" onclick="engine.next()" style="background:none; border:none; color:white; font-size:24px;">⏭</button>
+        <div style="display:flex; justify-content:space-around; align-items:center;">
+            <button onclick="engine.prev()" style="background:none; border:none; color:white; font-size:20px;">⏮</button>
+            <button id="play-btn" onclick="engine.toggle()" style="width:60px; height:60px; border-radius:50%; background:var(--accent); border:none; font-size:24px;">▶</button>
+            <button onclick="engine.next()" style="background:none; border:none; color:white; font-size:20px;">⏭</button>
         </div>
+    </div>
+
+    <div id="playlist-panel" class="side-panel">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h3>PLAYLIST</h3><span onclick="togglePlaylist()">✕</span></div>
+        <div id="list-container"></div>
+    </div>
+
+    <div id="auth-panel" class="side-panel auth-panel">
+        <div onclick="toggleAuth()" style="margin-bottom:20px; cursor:pointer;">⬅ Back</div>
+        <div id="auth-form">
+            <h2 id="auth-title">Login</h2>
+            <div id="reg-extra" style="display:none;">
+                <input type="text" id="user-name" placeholder="Full Name">
+                <input type="number" id="user-mobile" placeholder="Mobile Number">
+                <input type="file" id="user-image" onchange="previewImg(this)" style="font-size:10px; margin-bottom:10px;">
+            </div>
+            <input type="email" id="user-email" placeholder="Email">
+            <input type="password" id="user-pass" placeholder="Password">
+            <button class="auth-btn" onclick="handleAuth()">Submit</button>
+            <p onclick="switchAuth()" style="font-size:12px; margin-top:15px; cursor:pointer; text-decoration:underline;">New user? Register</p>
+        </div>
+        <div id="user-profile" style="display:none; text-align:center;">
+            <h3 id="display-name"></h3>
+            <p id="display-mobile" style="font-size:12px; color:var(--accent);"></p>
+            <button class="auth-btn" onclick="logout()" style="margin-top:20px; background:var(--error);">Logout</button>
+        </div>
+    </div>
+
+    <div id="side-panel" class="side-panel">
+        <div onclick="toggleMenu()" style="margin-bottom:20px; cursor:pointer;">✕ Close</div>
+        <a href="https://wa.me/919129191898" class="connect-link"><i class="fab fa-whatsapp"></i> WhatsApp Support</a>
+        <label class="connect-link" style="cursor:pointer;"><i class="fas fa-folder-plus"></i> Import Music <input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none"></label>
+        <div class="connect-link" onclick="clearData()" style="color:var(--error); cursor:pointer;"><i class="fas fa-trash"></i> Reset App</div>
     </div>
 </div>
 
-<div id="calc-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 340px; background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--accent); border-radius: 25px; z-index: 1000; padding: 20px; display: none; transition: 0.3s; box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 2px;">CYBER CALC PRO</span>
-        <div style="display: flex; gap: 15px;">
-            <span onclick="clearCalcHistory()" title="Clear History" style="cursor: pointer; color: var(--text-dim); font-size: 14px;"><i class="fas fa-trash-alt"></i></span>
-            <span onclick="toggleCalc()" style="cursor: pointer; color: var(--error); font-size: 18px;">✕</span>
-        </div>
+<div id="calc-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="color:var(--accent); font-size:10px;">CYBER CALC</span>
+        <span onclick="toggleCalc()" style="cursor:pointer; color:var(--error);">✕</span>
     </div>
-    <input type="text" id="calc-display" readonly style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); text-align: right; padding: 15px; font-size: 26px; border-radius: 12px; margin-bottom: 5px; outline: none; font-family: 'Courier New', monospace;">
-    <div id="calc-history-list" style="height: 60px; overflow-y: auto; font-size: 11px; color: var(--text-dim); margin-bottom: 15px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right;"></div>
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="calc-buttons"></div>
+    <input type="text" id="calc-display" readonly>
+    <div id="calc-history" style="height:40px; font-size:10px; color:var(--text-dim); text-align:right; overflow-y:auto; margin-bottom:10px;"></div>
+    <div id="calc-buttons" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;"></div>
 </div>
 
 <script>
 const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", authDomain: "calculator-by-kaushalji.firebaseapp.com", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com", projectId: "calculator-by-kaushalji", storageBucket: "calculator-by-kaushalji.firebasestorage.app", messagingSenderId: "156130281294", appId: "1:156130281294:web:73b80a5f344daeabdd001f" };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(); const db_ref = firebase.database();
-let currentMode = 'login';
-let userBase64 = "";
-let captchaCode = "";
+const auth = firebase.auth(); const db = firebase.database();
+let currentMode = 'login', userBase64 = "";
 
-function showToast(msg, type) {
-    let toast = document.getElementById('toast');
-    toast.innerText = msg; toast.className = `toast-${type} toast-show`;
-    setTimeout(() => toast.classList.remove('toast-show'), 3000);
+function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('toast-show'); setTimeout(()=>t.classList.remove('toast-show'),3000); }
+function toggleAuth() { document.getElementById('auth-panel').classList.toggle('open-left'); }
+function toggleMenu() { document.getElementById('side-panel').classList.toggle('open-right'); }
+function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('open-right'); }
+
+function switchAuth() {
+    currentMode = (currentMode === 'login' ? 'register' : 'login');
+    document.getElementById('auth-title').innerText = (currentMode === 'login' ? 'Login' : 'Create Account');
+    document.getElementById('reg-extra').style.display = (currentMode === 'login' ? 'none' : 'block');
 }
 
-function generateCaptcha() {
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    captchaCode = "";
-    for(let i=0; i<6; i++) captchaCode += chars[Math.floor(Math.random()*chars.length)];
-    document.getElementById('captcha-box').innerText = captchaCode;
-}
-
-function switchAuth(mode) {
-    currentMode = mode;
-    const regFields = document.getElementById('register-fields');
-    const passField = document.getElementById('password-field-group');
-    const mobileField = document.getElementById('mobile-field-group');
-    const captchaSec = document.getElementById('captcha-section');
-    const title = document.getElementById('auth-title');
-    const btn = document.getElementById('auth-submit');
-
-    regFields.style.display = 'none';
-    passField.style.display = 'block';
-    mobileField.style.display = 'none';
-    captchaSec.style.display = 'none';
-    document.getElementById('toggle-login').style.display = 'block';
-
-    if(mode === 'register') {
-        title.innerText = "Create Account"; btn.innerText = "Register";
-        regFields.style.display = 'block'; mobileField.style.display = 'block';
-    } else if(mode === 'forgot-pass') {
-        title.innerText = "Reset Password"; btn.innerText = "Send Reset Link";
-        mobileField.style.display = 'block'; captchaSec.style.display = 'block';
-        passField.style.display = 'none'; generateCaptcha();
-    } else if(mode === 'forgot-user') {
-        title.innerText = "Recover Username"; btn.innerText = "Find Username";
-        mobileField.style.display = 'block'; captchaSec.style.display = 'block';
-        passField.style.display = 'block'; generateCaptcha();
-    } else {
-        title.innerText = "Login"; btn.innerText = "Sign In";
-        document.getElementById('toggle-login').style.display = 'none';
+function previewImg(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => userBase64 = e.target.result;
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
 async function handleAuth() {
     const email = document.getElementById('user-email').value;
     const pass = document.getElementById('user-pass').value;
-    const mobile = document.getElementById('user-mobile').value;
-    const captchaIn = document.getElementById('captcha-input').value;
-    const btn = document.getElementById('auth-submit');
-
-    if(!email) return showToast("Email bhariye!", "error");
-    if((currentMode === 'forgot-pass' || currentMode === 'forgot-user') && captchaIn !== captchaCode) return showToast("Captcha Wrong!", "error");
-
-    btn.innerText = "Processing..."; btn.disabled = true;
-
+    if(!email || !pass) return showToast("Fields empty!");
+    
     try {
         if(currentMode === 'register') {
             const name = document.getElementById('user-name').value;
-            if(!mobile || !name || !userBase64) throw {message: "Saari details bhariye!"};
+            const mob = document.getElementById('user-mobile').value;
             const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: userBase64, mobile: mobile, email: email });
-            showToast("Welcome!", "success");
-        } 
-        else if(currentMode === 'login') {
+            await db.ref(`users/${res.user.uid}`).set({ name, mobile: mob, photo: userBase64 });
+            showToast("Registered!");
+        } else {
             await auth.signInWithEmailAndPassword(email, pass);
-            showToast("Logged In", "success"); setTimeout(toggleAuth, 1000);
+            showToast("Welcome Back!"); toggleAuth();
         }
-    } catch(err) { showToast(err.message, "error"); }
-    finally { btn.innerText = "Done"; btn.disabled = false; }
-}
-
-function previewUserImage(input) {
-    if(input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => { 
-            userBase64 = e.target.result; 
-            const img = document.getElementById('preview-img'); 
-            img.src = userBase64; img.style.display = 'block';
-            document.getElementById('photo-placeholder').style.display = 'none';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+    } catch(e) { showToast(e.message); }
 }
 
 auth.onAuthStateChanged(user => {
     if(user) {
-        document.getElementById('auth-content').style.display = 'none';
+        document.getElementById('auth-form').style.display = 'none';
         document.getElementById('user-profile').style.display = 'block';
-        db_ref.ref(`users/${user.uid}`).on('value', s => {
-            const data = s.val(); 
-            if(data) {
-                document.getElementById('display-user').innerText = `Hello, ${data.username}!`;
-                document.getElementById('display-mobile').innerText = `Mobile: ${data.mobile || 'N/A'}`;
-                if(data.photoURL) {
-                    document.getElementById('user-photo').src = data.photoURL;
+        db.ref(`users/${user.uid}`).on('value', s => {
+            const d = s.val();
+            if(d) {
+                document.getElementById('display-name').innerText = d.name;
+                document.getElementById('display-mobile').innerText = d.mobile;
+                if(d.photo) {
+                    document.getElementById('user-photo').src = d.photo;
                     document.getElementById('user-photo-box').style.display = 'block';
                     document.getElementById('auth-icon').style.display = 'none';
-                    document.getElementById('track-art-img').src = data.photoURL;
+                    document.getElementById('track-art-img').src = d.photo;
                     document.getElementById('track-art-img').style.display = 'block';
-                    document.getElementById('headphone-icon').style.display = 'none';
+                    document.getElementById('def-icon').style.display = 'none';
                 }
             }
         });
     } else {
-        document.getElementById('auth-content').style.display = 'block';
+        document.getElementById('auth-form').style.display = 'block';
         document.getElementById('user-profile').style.display = 'none';
         document.getElementById('user-photo-box').style.display = 'none';
         document.getElementById('auth-icon').style.display = 'block';
     }
 });
 
-function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
-function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
-function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
-function logout() { auth.signOut(); showToast("Logged Out", "success"); }
+function logout() { auth.signOut(); showToast("Logged Out"); }
 
+// --- CALCULATOR ---
+function toggleCalc() {
+    const m = document.getElementById('calc-modal');
+    if(m.style.display === 'none' || m.style.display === '') {
+        m.style.display = 'block';
+        setTimeout(() => m.style.transform = 'translate(-50%, -50%) scale(1)', 10);
+    } else {
+        m.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        setTimeout(() => m.style.display = 'none', 200);
+    }
+}
+
+const calcKeys = ['C','/','*','DEL','7','8','9','-','4','5','6','+','1','2','3','=','0','.'];
+const cDisp = document.getElementById('calc-display');
+const cHist = document.getElementById('calc-history');
+
+calcKeys.forEach(k => {
+    const b = document.createElement('button'); b.innerText = k; b.className = 'calc-btn';
+    if(k === '=') b.style.gridColumn = 'span 2';
+    b.onclick = () => {
+        if(k === 'C') cDisp.value = '';
+        else if(k === 'DEL') cDisp.value = cDisp.value.slice(0,-1);
+        else if(k === '=') {
+            try {
+                let res = eval(cDisp.value);
+                cHist.innerHTML += `<div>${cDisp.value} = ${res}</div>`;
+                cDisp.value = res;
+                cHist.scrollTop = cHist.scrollHeight;
+            } catch { cDisp.value = "Error"; }
+        } else cDisp.value += k;
+    };
+    document.getElementById('calc-buttons').appendChild(b);
+});
+
+// --- MEDIA ENGINE ---
 const engine = {
     audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
-    init: function() { this.listeners(); this.loadLocalData(); },
-    listeners: function() {
-        this.audio.ontimeupdate = () => { 
+    init() {
+        this.audio.ontimeupdate = () => {
             const cur = this.audio.currentTime, dur = this.audio.duration;
-            document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%";
+            document.getElementById('fill').style.width = (cur/dur*100) + "%";
             document.getElementById('current-time').innerText = this.formatTime(cur);
             if(!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur);
         };
-        this.audio.onended = () => this.next();
         document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
+        this.loadLocal();
     },
     formatTime: (s) => { let m=Math.floor(s/60), r=Math.floor(s%60); return `${m<10?'0'+m:m}:${r<10?'0'+r:r}`; },
     handleFiles: async function(files) {
-        const db = await this.getDB(), tx = db.transaction("songs", "readwrite"), store = tx.objectStore("songs");
-        Array.from(files).filter(f => f.type.startsWith('audio/')).forEach(f => store.add({ name: f.name, data: f }));
-        tx.oncomplete = () => { showToast("Imported!", "success"); this.loadLocalData(); };
+        const db = await this.getDB(), tx = db.transaction("songs","readwrite"), s = tx.objectStore("songs");
+        Array.from(files).filter(f => f.type.startsWith('audio/')).forEach(f => s.add({name:f.name, data:f}));
+        tx.oncomplete = () => this.loadLocal();
     },
-    loadLocalData: async function() {
+    loadLocal: async function() {
         const db = await this.getDB();
-        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { 
-            this.playlist = e.target.result; this.renderPlaylist();
-            if(this.playlist.length > 0 && !this.audio.src) this.loadTrack(0, false); 
+        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => {
+            this.playlist = e.target.result; this.render();
         };
     },
-    renderPlaylist: function() {
-        const container = document.getElementById('list-container'); container.innerHTML = "";
-        this.playlist.forEach((song, i) => {
-            const div = document.createElement('div');
-            div.className = `track-item ${i === this.index ? 'active' : ''}`;
-            div.innerText = song.name.replace(/\.[^/.]+$/, "");
-            div.onclick = () => { this.loadTrack(i); togglePlaylist(); };
-            container.appendChild(div);
+    render() {
+        const c = document.getElementById('list-container'); c.innerHTML = "";
+        this.playlist.forEach((s, i) => {
+            const d = document.createElement('div'); d.innerText = s.name;
+            d.style.padding="10px"; d.style.borderBottom="1px solid rgba(255,255,255,0.05)";
+            d.onclick = () => { this.load(i); togglePlaylist(); };
+            c.appendChild(d);
         });
     },
-    loadTrack: function(i, play = true) {
-        if(!this.playlist[i]) return;
-        this.index = i; const track = this.playlist[i];
-        if(this.audio.src) URL.revokeObjectURL(this.audio.src);
-        this.audio.src = URL.createObjectURL(track.data);
-        document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, "");
-        this.renderPlaylist(); if(play) this.play();
+    load(i) {
+        this.index = i; if(this.audio.src) URL.revokeObjectURL(this.audio.src);
+        this.audio.src = URL.createObjectURL(this.playlist[i].data);
+        document.getElementById('title').innerText = this.playlist[i].name; this.play();
     },
-    toggle: function() { if(!this.playlist.length) return showToast("Music layein!", "error"); this.audio.paused ? this.play() : this.pause(); },
-    play: function() { this.audio.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; this.startVisuals(); }); },
-    pause: function() { this.audio.pause(); document.getElementById('play-btn').innerText = "▶"; },
-    next: function() { if(this.playlist.length > 0) { this.index = (this.index+1)%this.playlist.length; this.loadTrack(this.index); } },
-    prev: function() { if(this.playlist.length > 0) { this.index = (this.index-1+this.playlist.length)%this.playlist.length; this.loadTrack(this.index); } },
-    seek: function(e) { const b = document.getElementById('seek-bar'); this.audio.currentTime = (e.offsetX / b.offsetWidth) * this.audio.duration; },
+    toggle() { this.audio.paused ? this.play() : this.pause(); },
+    play() { this.audio.play(); document.getElementById('play-btn').innerText = "⏸"; this.startVis(); },
+    pause() { this.audio.pause(); document.getElementById('play-btn').innerText = "▶"; },
+    next() { this.load((this.index+1)%this.playlist.length); },
+    prev() { this.load((this.index-1+this.playlist.length)%this.playlist.length); },
+    seek(e) { this.audio.currentTime = (e.offsetX / document.getElementById('seek-bar').offsetWidth) * this.audio.duration; },
     getDB: () => new Promise(res => {
-        const r = indexedDB.open("MI_PRO_DB", 1);
-        r.onupgradeneeded = (e) => e.target.result.createObjectStore("songs", { keyPath: "id", autoIncrement: true });
+        const r = indexedDB.open("MI_DB", 1);
+        r.onupgradeneeded = (e) => e.target.result.createObjectStore("songs", {keyPath:"id", autoIncrement:true});
         r.onsuccess = () => res(r.result);
     }),
-    startVisuals: function() {
-        if(this.ctx) return;
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    startVis() {
+        if(this.ctx) return; this.ctx = new AudioContext();
         this.analyser = this.ctx.createAnalyser();
         const src = this.ctx.createMediaElementSource(this.audio);
         src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
-        const canvas = document.getElementById('canvas-v'), c = canvas.getContext('2d');
+        const can = document.getElementById('canvas-v'), c = can.getContext('2d');
         const draw = () => {
-            requestAnimationFrame(draw); const fbc = new Uint8Array(this.analyser.frequencyBinCount);
-            this.analyser.getByteFrequencyData(fbc); c.clearRect(0,0,340,340);
-            for(let i=0; i<80; i++) {
-                const h = fbc[i] * 0.45; c.strokeStyle = '#00f2ff'; c.lineWidth = 3; c.beginPath();
-                c.moveTo(170+Math.cos(i*0.08)*95, 170+Math.sin(i*0.08)*95);
-                c.lineTo(170+Math.cos(i*0.08)*(95+h), 170+Math.sin(i*0.08)*(95+h)); c.stroke();
+            requestAnimationFrame(draw); const f = new Uint8Array(this.analyser.frequencyBinCount);
+            this.analyser.getByteFrequencyData(f); c.clearRect(0,0,300,300);
+            for(let i=0; i<60; i++) {
+                const h = f[i]*0.4; c.strokeStyle = '#00f2ff'; c.lineWidth=2; c.beginPath();
+                c.moveTo(150+Math.cos(i*0.1)*80, 150+Math.sin(i*0.1)*80);
+                c.lineTo(150+Math.cos(i*0.1)*(80+h), 150+Math.sin(i*0.1)*(80+h)); c.stroke();
             }
         }; draw();
     }
 };
 
-async function deleteAccountPermanent() {
-    const u = auth.currentUser; if(!u) return;
-    const p = prompt("Password confirm karein delete ke liye:");
-    if(p) {
-        try {
-            await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p));
-            await db_ref.ref(`users/${u.uid}`).remove(); await u.delete();
-            showToast("Deleted.", "success"); location.reload();
-        } catch(e) { showToast(e.message, "error"); }
-    }
-}
-
-function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); location.reload(); }
-
-window.shareApp = async () => {
-    try { await navigator.share({title: 'MI Player Pro', url: 'https://harshitkaushal9129-bit.github.io/Calculator/'}); } 
-    catch (err) { alert("Link Copied!"); }
-};
-
-// --- CALCULATOR LOGIC ---
-function toggleCalc() {
-    const modal = document.getElementById('calc-modal');
-    if(modal.style.display === 'none' || modal.style.display === '') {
-        modal.style.display = 'block'; renderHistory();
-        setTimeout(() => modal.style.transform = 'translate(-50%, -50%) scale(1)', 10);
-    } else {
-        modal.style.transform = 'translate(-50%, -50%) scale(0.9)';
-        setTimeout(() => modal.style.display = 'none', 200);
-    }
-}
-
-const calcDisplay = document.getElementById('calc-display');
-const historyList = document.getElementById('calc-history-list');
-
-function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('calc_history') || "[]");
-    historyList.innerHTML = history.map(item => `<div>${item}</div>`).join('');
-    historyList.scrollTop = historyList.scrollHeight;
-}
-
-function saveToHistory(expr, res) {
-    let history = JSON.parse(localStorage.getItem('calc_history') || "[]");
-    history.push(`${expr} = ${res}`); if(history.length > 20) history.shift();
-    localStorage.setItem('calc_history', JSON.stringify(history)); renderHistory();
-}
-
-function clearCalcHistory() { if(confirm("History delete?")) { localStorage.removeItem('calc_history'); renderHistory(); } }
-
-const calcButtons = ['C', '/', '*', 'DEL', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '=', '0', '.'];
-calcButtons.forEach(btn => {
-    const b = document.createElement('button');
-    b.innerText = btn; b.className = 'calc-btn';
-    if(btn === '=') b.classList.add('eq');
-    b.onclick = () => {
-        if(btn === 'C') calcDisplay.value = '';
-        else if(btn === 'DEL') calcDisplay.value = calcDisplay.value.slice(0, -1);
-        else if(btn === '=') {
-            try { 
-                let res = eval(calcDisplay.value); 
-                saveToHistory(calcDisplay.value, res); calcDisplay.value = res; 
-            } catch { calcDisplay.value = 'Error'; }
-        } else calcDisplay.value += btn;
-    };
-    document.getElementById('calc-buttons').appendChild(b);
-});
-
+function clearData() { if(confirm("Clear everything?")) { indexedDB.deleteDatabase("MI_DB"); location.reload(); } }
 engine.init();
 </script>
     <script>
