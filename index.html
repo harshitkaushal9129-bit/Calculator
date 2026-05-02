@@ -234,6 +234,23 @@
 </div>
 
 <div class="side-links right">
+            
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 2px;">CYBER CALC PRO</span>
+        <div style="display: flex; gap: 15px;">
+            <span onclick="clearCalcHistory()" title="Clear History" style="cursor: pointer; color: var(--text-dim); font-size: 14px;"><i class="fas fa-trash-alt"></i></span>
+            <span onclick="toggleCalc()" style="cursor: pointer; color: var(--error); font-size: 18px;">✕</span>
+        </div>
+    </div>
+
+    <input type="text" id="calc-display" readonly style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); text-align: right; padding: 15px; font-size: 26px; border-radius: 12px; margin-bottom: 5px; outline: none; font-family: 'Courier New', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+    
+    <div id="calc-history-list" style="height: 60px; overflow-y: auto; font-size: 11px; color: var(--text-dim); margin-bottom: 15px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right;">
+        </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="calc-buttons">
+        </div>
+</div>
     <a href="#" class="nav-icon-link"><span>💻</span><label>Cyber Calc</label></a>
     <a href="#" class="nav-icon-link"><span>🛡️</span><label>Shadow OS</label></a>
     <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" class="nav-icon-link"><span>🛠️</span><label>neilet-mcqs</label></a>
@@ -339,24 +356,7 @@
 
 
 <div id="calc-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 340px; background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--accent); border-radius: 25px; z-index: 1000; padding: 20px; display: none; transition: 0.3s; box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 2px;">CYBER CALC PRO</span>
-        <div style="display: flex; gap: 15px;">
-            <span onclick="clearCalcHistory()" title="Clear History" style="cursor: pointer; color: var(--text-dim); font-size: 14px;"><i class="fas fa-trash-alt"></i></span>
-            <span onclick="toggleCalc()" style="cursor: pointer; color: var(--error); font-size: 18px;">✕</span>
-        </div>
-    </div>
 
-    <input type="text" id="calc-display" readonly style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); text-align: right; padding: 15px; font-size: 26px; border-radius: 12px; margin-bottom: 5px; outline: none; font-family: 'Courier New', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
-    
-    <div id="calc-history-list" style="height: 60px; overflow-y: auto; font-size: 11px; color: var(--text-dim); margin-bottom: 15px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right;">
-        </div>
-
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="calc-buttons">
-        </div>
-</div>
-            
         <div class="track-artist" id="artist" style="color:var(--accent); font-size:13px; opacity:0.8;">Ready to Play</div>
     </div>
 
