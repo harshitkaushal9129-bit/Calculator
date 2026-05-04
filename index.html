@@ -22,9 +22,6 @@
         --error: #ff4757; 
         --success: #00ff88; 
     }
-/* --- CYBER CALC STYLING --- */
-
-/* Calculator Buttons ki Basic Design */
 .calc-btn {
     padding: 16px;
     background: rgba(255, 255, 255, 0.04);
@@ -40,62 +37,20 @@
     align-items: center;
     outline: none;
 }
-
-/* Hover Effect: Jab button pe mouse le jayein */
-.calc-btn:hover {
-    background: rgba(0, 242, 255, 0.1);
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
-}
-
-/* Active Effect: Jab button click karein */
-.calc-btn:active {
-    transform: scale(0.95);
-}
-
-/* Operator Buttons (/, *, -, +) */
-.calc-btn.op {
-    color: var(--accent);
-    background: rgba(0, 242, 255, 0.05);
-}
-
-/* Equals (=) Button */
-.calc-btn.eq {
-    background: var(--accent) !important;
-    color: #000 !important;
-    grid-column: span 2;
-    box-shadow: 0 0 20px var(--accent-glow);
-}
-
-/* Clear (C) aur DEL Buttons */
-.calc-btn[innerText="C"], 
-.calc-btn[innerText="DEL"] {
-    color: var(--error);
-}
-
-/* History List Styling */
-#calc-history-list::-webkit-scrollbar {
-    width: 3px;
-}
-
-#calc-history-list::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
-}
-
-#calc-history-list div {
-    padding: 4px 0;
-    letter-spacing: 1px;
-    animation: fadeIn 0.3s ease;
-}
+.calc-btn:hover {background: rgba(0, 242, 255, 0.1);border-color: var(--accent);transform: translateY(-2px);box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);}
+.calc-btn:active {transform: scale(0.95);}
+.calc-btn.op {color: var(--accent);background: rgba(0, 242, 255, 0.05);}
+.calc-btn.eq {background: var(--accent) !important;color: #000 !important;grid-column: span 2;box-shadow: 0 0 20px var(--accent-glow);}
+.calc-btn[innerText="C"],.calc-btn[innerText="DEL"] {color: var(--error);}
+#calc-history-list::-webkit-scrollbar {width: 3px;}
+#calc-history-list::-webkit-scrollbar-thumb {background: var(--accent);border-radius: 10px;}
+#calc-history-list div {padding: 4px 0;letter-spacing: 1px;animation: fadeIn 0.3s ease;}
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateX(10px); }
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 400px) {
     #calc-modal {
         width: 90% !important;
@@ -158,7 +113,6 @@
     .track-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
     .track-item.active { background: rgba(0, 242, 255, 0.1); border-color: var(--accent); color: var(--accent); }
 
-    /* AUTH PANEL IMPROVED */
     #auth-panel { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(8, 8, 10, 0.95); backdrop-filter: blur(30px); z-index: 200; transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1); padding: 50px 30px; overflow-y: auto; }
     .auth-open { left: 0 !important; }
     .auth-header { color: var(--accent); font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: bold; }
@@ -167,7 +121,6 @@
     .input-group input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; outline: none; transition: 0.3s; font-size: 14px; }
     .input-group input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
-    /* CAPTCHA STYLE */
     .captcha-container { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
     #captcha-box { flex: 1; background: #111; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; text-align: center; font-weight: bold; color: var(--accent); letter-spacing: 4px; font-style: italic; user-select: none; }
     .refresh-captcha { cursor: pointer; color: var(--accent); font-size: 20px; }
@@ -534,7 +487,7 @@ function toggleMenu() { document.getElementById('side-panel').classList.toggle('
 function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
 function logout() { auth.signOut(); showToast("Logged Out", "success"); }
 
-const engine = {
+  const engine = {
     audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
     init: function() { 
         this.listeners(); this.loadLocalData(); 
@@ -578,13 +531,30 @@ const engine = {
         if(this.audio.src) URL.revokeObjectURL(this.audio.src);
         this.audio.src = URL.createObjectURL(track.data);
         document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, "");
-        this.renderPlaylist(); if(play) this.play();
+        this.renderPlaylist(); 
+        if(play) this.play();
     },
     toggle: function() { if(!this.playlist.length) return showToast("Music layein!", "error"); this.audio.paused ? this.play() : this.pause(); },
-    play: function() { this.audio.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; this.startVisuals(); }); },
+    play: function() { this.audio.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; this.startVisuals(); }).catch(e => console.log("Playback failed", e)); },
     pause: function() { this.audio.pause(); document.getElementById('play-btn').innerText = "▶"; },
-    next: function() { if(this.playlist.length > 0) { this.index = (this.index+1)%this.playlist.length; this.loadTrack(this.index); } },
-    prev: function() { if(this.playlist.length > 0) { this.index = (this.index-1+this.playlist.length)%this.playlist.length; this.loadTrack(this.index); } },
+    
+    // --- NEXT & PREVIOUS LOGIC ---
+    next: function() { 
+        if(this.playlist.length > 0) { 
+            this.index = (this.index + 1) % this.playlist.length; 
+            this.loadTrack(this.index, true); 
+        } 
+    },
+    prev: function() { 
+        if(this.playlist.length > 0) { 
+            this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; 
+            this.loadTrack(this.index, true); 
+        } 
+    },
+  
+    skipForward: function() { this.audio.currentTime = Math.min(this.audio.currentTime + 10, this.audio.duration); },
+    skipBackward: function() { this.audio.currentTime = Math.max(this.audio.currentTime - 10, 0); },
+    
     seek: function(e) { const b = document.getElementById('seek-bar'); this.audio.currentTime = (e.offsetX / b.offsetWidth) * this.audio.duration; },
     getDB: () => new Promise(res => {
         const r = indexedDB.open("MI_PRO_DB", 1);
@@ -632,8 +602,6 @@ window.shareApp = async () => {
 
 engine.init();
 
-
-    // --- CALCULATOR LOGIC START ---
 function toggleCalc() {
     const modal = document.getElementById('calc-modal');
     if(!modal) return;
@@ -710,15 +678,11 @@ if(btnContainer) {
         btnContainer.appendChild(b);
     });
 }
-// --- CALCULATOR LOGIC END ---
-
-
-    
+  
 </script>
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
-            // Background Sync Register karna
             if ('sync' in reg) {
                 window.addEventListener('online', () => {
                     reg.sync.register('check-for-updates');
@@ -727,8 +691,7 @@ if(btnContainer) {
             }
         });
 
-        // Agar naya version mil jaye toh user ko bataye bina refresh kar dena
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
             console.log("Naya Update mil gaya! App refresh ho rahi hai...");
             window.location.reload();
         });
