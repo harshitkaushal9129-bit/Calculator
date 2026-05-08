@@ -523,7 +523,16 @@ function logout() { auth.signOut(); showToast("Logged Out", "success"); }
                 document.getElementById('current-time').innerText = this.formatTime(cur);
                 if (!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur);
             };
-            media.onended = () => this.next();
+            // engine.listeners ke andar ise replace karein:
+media.onended = () => {
+    // Agar mode 'next' hai toh agli track, warna wahi track wapas
+    if (this.autoMode === 'next') {
+        this.next();
+    } else {
+        this.play(); // Auto-Repeat logic
+    }
+};
+
         });
 
         document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
@@ -770,7 +779,36 @@ if(btnContainer) {
         btnContainer.appendChild(b);
     });
 }
-  
+  // Default mode load karein ya 'next' set karein
+engine.autoMode = localStorage.getItem('mi_player_auto_mode') || 'next';
+
+function updateAutoBtnUI() {
+    const btn = document.getElementById('auto-mode-btn');
+    if (engine.autoMode === 'next') {
+        btn.innerText = "AUTO-NEXT: ON";
+        btn.style.background = "rgba(0, 242, 255, 0.1)";
+        btn.style.boxShadow = "0 0 10px var(--accent-glow)";
+    } else {
+        btn.innerText = "AUTO-REPEAT: ON";
+        btn.style.background = "rgba(255, 255, 255, 0.05)";
+        btn.style.boxShadow = "none";
+    }
+}
+
+function toggleAutoMode() {
+    // Toggle logic
+    engine.autoMode = (engine.autoMode === 'next') ? 'repeat' : 'next';
+    
+    // Browser mein save karein taaki hamesha yaad rahe
+    localStorage.setItem('mi_player_auto_mode', engine.autoMode);
+    
+    updateAutoBtnUI();
+    showToast(engine.autoMode === 'next' ? "Auto-Next Enabled" : "Auto-Repeat Enabled", "success");
+}
+
+// Page load hote hi UI update karein
+updateAutoBtnUI();
+
 </script>
 <script>
     if ('serviceWorker' in navigator) {
