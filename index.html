@@ -61,6 +61,7 @@
         font-size: 14px;
     }
 }
+#video-v.active {display: block !important;}
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
@@ -284,12 +285,15 @@
     </div>
 
     <div class="visualizer-orbit">
-        <canvas id="canvas-v"></canvas>
-        <div class="album-art-proxy" id="art-box">
-            <span id="headphone-icon" style="font-size: 50px; opacity:0.3;">🎧</span>
-            <img id="track-art-img" src="" alt="Album Art"> 
-        </div>
+    <video id="video-v" style="width: 100%; height: 100%; display: none; object-fit: contain; z-index: 5; position: absolute; background: #000;"></video>
+    
+    <canvas id="canvas-v"></canvas>
+    <div class="album-art-proxy" id="art-box">
+        <span id="headphone-icon" style="font-size: 50px; opacity:0.3;">🎧</span>
+        <img id="track-art-img" src="" alt="Album Art"> 
     </div>
+</div>
+
 
     <div class="track-meta">
         <div class="track-title" id="title">MI Player Pro</div>
