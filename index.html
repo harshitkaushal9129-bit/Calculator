@@ -492,95 +492,177 @@ function togglePlaylist() { document.getElementById('playlist-panel').classList.
 function logout() { auth.signOut(); showToast("Logged Out", "success"); }
 
   const engine = {
-    audio: new Audio(), playlist: [], index: 0, ctx: null, analyser: null,
-    init: function() { 
-        this.listeners(); this.loadLocalData(); 
+    audio: new Audio(),
+    video: document.getElementById('video-v'), 
+    activeMedia: null, 
+    playlist: [],
+    index: 0,
+    ctx: null,
+    analyser: null,
+
+    init: function() {
+        this.activeMedia = this.audio; // Default starting with audio
+        this.listeners();
+        this.loadLocalData();
     },
+
     listeners: function() {
-        this.audio.ontimeupdate = () => { 
-            const cur = this.audio.currentTime; const dur = this.audio.duration;
-            document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%";
-            document.getElementById('current-time').innerText = this.formatTime(cur);
-            if(!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur);
-        };
-        this.audio.onended = () => this.next();
+        // Audio aur Video dono ke liye common event handlers
+        [this.audio, this.video].forEach(media => {
+            media.ontimeupdate = () => {
+                if (this.activeMedia !== media) return;
+                const cur = media.currentTime;
+                const dur = media.duration;
+                document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%";
+                document.getElementById('current-time').innerText = this.formatTime(cur);
+                if (!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur);
+            };
+            media.onended = () => this.next();
+        });
+
         document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
     },
-    formatTime: (s) => { let m=Math.floor(s/60), r=Math.floor(s%60); return `${m<10?'0'+m:m}:${r<10?'0'+r:r}`; },
-    handleFiles: async function(files) {
-        const db = await this.getDB(), tx = db.transaction("songs", "readwrite"), store = tx.objectStore("songs");
-        Array.from(files).filter(f => f.type.startsWith('audio/')).forEach(f => store.add({ name: f.name, data: f }));
-        tx.oncomplete = () => { showToast("Imported!", "success"); this.loadLocalData(); };
+
+    formatTime: (s) => {
+        let m = Math.floor(s / 60), r = Math.floor(s % 60);
+        return `${m < 10 ? '0' + m : m}:${r < 10 ? '0' + r : r}`;
     },
-    loadLocalData: async function() {
+
+    handleFiles: async function(files) {
         const db = await this.getDB();
-        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { 
-            this.playlist = e.target.result; this.renderPlaylist();
-            if(this.playlist.length > 0 && !this.audio.src) this.loadTrack(0, false); 
+        const tx = db.transaction("songs", "readwrite");
+        const store = tx.objectStore("songs");
+
+        // Audio aur Video dono filter honge
+        Array.from(files).filter(f => f.type.startsWith('audio/') || f.type.startsWith('video/')).forEach(f => {
+            store.add({ name: f.name, data: f, type: f.type });
+        });
+
+        tx.oncomplete = () => {
+            showToast("Library Updated!", "success");
+            this.loadLocalData();
         };
     },
+
+    loadLocalData: async function() {
+        const db = await this.getDB();
+        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => {
+            this.playlist = e.target.result;
+            this.renderPlaylist();
+            if (this.playlist.length > 0 && !this.activeMedia.src) this.loadTrack(0, false);
+        };
+    },
+
     renderPlaylist: function() {
-        const container = document.getElementById('list-container'); container.innerHTML = "";
-        this.playlist.forEach((song, i) => {
+        const container = document.getElementById('list-container');
+        container.innerHTML = "";
+        this.playlist.forEach((item, i) => {
+            const isVid = item.type && item.type.startsWith('video/');
             const div = document.createElement('div');
             div.className = `track-item ${i === this.index ? 'active' : ''}`;
-            div.innerText = song.name.replace(/\.[^/.]+$/, "");
+            div.innerHTML = `${isVid ? '📹 ' : '🎵 '}${item.name.replace(/\.[^/.]+$/, "")}`;
             div.onclick = () => { this.loadTrack(i); togglePlaylist(); };
             container.appendChild(div);
         });
     },
+
     loadTrack: function(i, play = true) {
-        if(!this.playlist[i]) return;
-        this.index = i; const track = this.playlist[i];
-        if(this.audio.src) URL.revokeObjectURL(this.audio.src);
-        this.audio.src = URL.createObjectURL(track.data);
+        if (!this.playlist[i]) return;
+        this.index = i;
+        const track = this.playlist[i];
+        const isVideo = track.type && track.type.startsWith('video/');
+
+        // Reset elements
+        this.audio.pause();
+        this.video.pause();
+        this.video.style.display = 'none';
+        document.getElementById('canvas-v').style.display = 'block';
+        document.getElementById('art-box').style.display = 'flex';
+
+        if (isVideo) {
+            this.activeMedia = this.video;
+            this.video.src = URL.createObjectURL(track.data);
+            this.video.style.display = 'block';
+            document.getElementById('canvas-v').style.display = 'none'; // Visualizer off for video
+            document.getElementById('art-box').style.display = 'none';   
+        } else {
+            this.activeMedia = this.audio;
+            if (this.audio.src) URL.revokeObjectURL(this.audio.src);
+            this.audio.src = URL.createObjectURL(track.data);
+        }
+
         document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, "");
-        this.renderPlaylist(); 
-        if(play) this.play();
+        this.renderPlaylist();
+        if (play) this.play();
     },
-    toggle: function() { if(!this.playlist.length) return showToast("Music layein!", "error"); this.audio.paused ? this.play() : this.pause(); },
-    play: function() { this.audio.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; this.startVisuals(); }).catch(e => console.log("Playback failed", e)); },
-    pause: function() { this.audio.pause(); document.getElementById('play-btn').innerText = "▶"; },
-    
-    // --- NEXT & PREVIOUS LOGIC ---
-    next: function() { 
-        if(this.playlist.length > 0) { 
-            this.index = (this.index + 1) % this.playlist.length; 
-            this.loadTrack(this.index, true); 
-        } 
+
+    toggle: function() {
+        if (!this.playlist.length) return showToast("Media load karein!", "error");
+        this.activeMedia.paused ? this.play() : this.pause();
     },
-    prev: function() { 
-        if(this.playlist.length > 0) { 
-            this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; 
-            this.loadTrack(this.index, true); 
-        } 
+
+    play: function() {
+        this.activeMedia.play().then(() => {
+            document.getElementById('play-btn').innerText = "⏸";
+            if (this.activeMedia === this.audio) this.startVisuals();
+        }).catch(e => console.log("Playback failed", e));
     },
-  
-    skipForward: function() { this.audio.currentTime = Math.min(this.audio.currentTime + 10, this.audio.duration); },
-    skipBackward: function() { this.audio.currentTime = Math.max(this.audio.currentTime - 10, 0); },
-    
-    seek: function(e) { const b = document.getElementById('seek-bar'); this.audio.currentTime = (e.offsetX / b.offsetWidth) * this.audio.duration; },
+
+    pause: function() {
+        this.activeMedia.pause();
+        document.getElementById('play-btn').innerText = "▶";
+    },
+
+    next: function() {
+        if (this.playlist.length > 0) {
+            this.index = (this.index + 1) % this.playlist.length;
+            this.loadTrack(this.index, true);
+        }
+    },
+
+    prev: function() {
+        if (this.playlist.length > 0) {
+            this.index = (this.index - 1 + this.playlist.length) % this.playlist.length;
+            this.loadTrack(this.index, true);
+        }
+    },
+
+    seek: function(e) {
+        const b = document.getElementById('seek-bar');
+        this.activeMedia.currentTime = (e.offsetX / b.offsetWidth) * this.activeMedia.duration;
+    },
+
     getDB: () => new Promise(res => {
         const r = indexedDB.open("MI_PRO_DB", 1);
         r.onupgradeneeded = (e) => e.target.result.createObjectStore("songs", { keyPath: "id", autoIncrement: true });
         r.onsuccess = () => res(r.result);
     }),
+
     startVisuals: function() {
-        if(this.ctx) return;
+        if (this.ctx) return;
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         this.analyser = this.ctx.createAnalyser();
         const src = this.ctx.createMediaElementSource(this.audio);
-        src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
+        src.connect(this.analyser);
+        this.analyser.connect(this.ctx.destination);
         const canvas = document.getElementById('canvas-v'), c = canvas.getContext('2d');
         const draw = () => {
-            requestAnimationFrame(draw); const fbc = new Uint8Array(this.analyser.frequencyBinCount);
-            this.analyser.getByteFrequencyData(fbc); c.clearRect(0,0,340,340);
-            for(let i=0; i<80; i++) {
-                const h = fbc[i] * 0.45; c.strokeStyle = '#00f2ff'; c.lineWidth = 3; c.beginPath();
-                c.moveTo(170+Math.cos(i*0.08)*95, 170+Math.sin(i*0.08)*95);
-                c.lineTo(170+Math.cos(i*0.08)*(95+h), 170+Math.sin(i*0.08)*(95+h)); c.stroke();
+            requestAnimationFrame(draw);
+            if (this.activeMedia === this.video) return; 
+            const fbc = new Uint8Array(this.analyser.frequencyBinCount);
+            this.analyser.getByteFrequencyData(fbc);
+            c.clearRect(0, 0, 340, 340);
+            for (let i = 0; i < 80; i++) {
+                const h = fbc[i] * 0.45;
+                c.strokeStyle = '#00f2ff';
+                c.lineWidth = 3;
+                c.beginPath();
+                c.moveTo(170 + Math.cos(i * 0.08) * 95, 170 + Math.sin(i * 0.08) * 95);
+                c.lineTo(170 + Math.cos(i * 0.08) * (95 + h), 170 + Math.sin(i * 0.08) * (95 + h));
+                c.stroke();
             }
-        }; draw();
+        };
+        draw();
     }
 };
 
