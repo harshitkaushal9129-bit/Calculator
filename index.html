@@ -323,22 +323,25 @@
     </div>
 </div>
     <script>
-const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", authDomain: "calculator-by-kaushalji.firebaseapp.com", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com", projectId: "calculator-by-kaushalji", storageBucket: "calculator-by-kaushalji.firebasestorage.app", messagingSenderId: "156130281294", appId: "1:156130281294:web:73b80a5f344daeabdd001f" };
+   const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", authDomain: "calculator-by-kaushalji.firebaseapp.com", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com", projectId: "calculator-by-kaushalji", storageBucket: "calculator-by-kaushalji.firebasestorage.app", messagingSenderId: "156130281294", appId: "1:156130281294:web:73b80a5f344daeabdd001f" };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(), db_ref = firebase.database();
-let currentMode = 'login', userBase64 = "", captchaCode = "";
+let currentMode = 'login', userBase64 = "", captchaCode = "", playbackMode = 'next';
+
 function showToast(msg, type) {
     let toast = document.getElementById('toast') || document.createElement('div');
     toast.id = 'toast'; document.body.appendChild(toast);
     toast.innerText = msg; toast.className = `toast-${type} toast-show`;
     setTimeout(() => toast.classList.remove('toast-show'), 3000);
 }
+
 function generateCaptcha() {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     captchaCode = "";
     for(let i=0; i<6; i++) captchaCode += chars[Math.floor(Math.random()*chars.length)];
     document.getElementById('captcha-box').innerText = captchaCode;
 }
+
 function switchAuth(mode) {
     currentMode = mode;
     const regFields = document.getElementById('register-fields'), passField = document.getElementById('password-field-group'), mobileField = document.getElementById('mobile-field-group'), captchaSec = document.getElementById('captcha-section'), title = document.getElementById('auth-title'), btn = document.getElementById('auth-submit');
@@ -349,6 +352,7 @@ function switchAuth(mode) {
     else if(mode === 'forgot-user') { title.innerText = "Recover Username"; btn.innerText = "Find Username"; mobileField.style.display = 'block'; captchaSec.style.display = 'block'; passField.style.display = 'block'; generateCaptcha(); }
     else { title.innerText = "Login"; btn.innerText = "Sign In"; document.getElementById('toggle-login').style.display = 'none'; }
 }
+
 async function handleAuth() {
     const email = document.getElementById('user-email').value, pass = document.getElementById('user-pass').value, mobile = document.getElementById('user-mobile').value, captchaIn = document.getElementById('captcha-input').value, btn = document.getElementById('auth-submit');
     if(!email) return showToast("Email bhariye!", "error");
@@ -362,20 +366,9 @@ async function handleAuth() {
             await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: userBase64, mobile: mobile });
             showToast("Welcome!", "success");
         } else if(currentMode === 'login') { await auth.signInWithEmailAndPassword(email, pass); showToast("Logged In", "success"); setTimeout(toggleAuth, 1000); }
-        else if(currentMode === 'forgot-pass') {
-            const snapshot = await db_ref.ref('users').once('value'); let found = false;
-            snapshot.forEach(child => { if(child.val().mobile === mobile && child.val().email === email) found = true; });
-            if(!found) throw {message: "Mobile/Email match nahi hua!"};
-            await auth.sendPasswordResetEmail(email); showToast("Reset link bhej diya!", "success");
-        }
-        else if(currentMode === 'forgot-user') {
-            const snapshot = await db_ref.ref('users').once('value'); let usernameFound = "";
-            snapshot.forEach(child => { if(child.val().mobile === mobile && child.val().email === email) usernameFound = child.val().username; });
-            if(!usernameFound) throw {message: "Details galat hain!"};
-            alert("Aapka Username: " + usernameFound); showToast("Username mil gaya!", "success");
-        }
     } catch(err) { showToast(err.message, "error"); } finally { btn.innerText = "Done"; btn.disabled = false; }
 }
+
 function previewUserImage(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -383,6 +376,7 @@ function previewUserImage(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
 auth.onAuthStateChanged(user => {
     if(user) {
         document.getElementById('auth-content').style.display = 'none'; document.getElementById('user-profile').style.display = 'block'; document.getElementById('delete-zone').style.display = 'block';
@@ -395,24 +389,77 @@ auth.onAuthStateChanged(user => {
         });
     } else { document.getElementById('auth-content').style.display = 'block'; document.getElementById('user-profile').style.display = 'none'; document.getElementById('delete-zone').style.display = 'none'; document.getElementById('user-photo-box').style.display = 'none'; document.getElementById('auth-icon').style.display = 'block'; document.getElementById('track-art-img').style.display = 'none'; document.getElementById('headphone-icon').style.display = 'block'; }
 });
+
 function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
 function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
 function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
 function logout() { auth.signOut(); showToast("Logged Out", "success"); }
+
+function toggleAutoMode() {
+    const btn = document.getElementById('auto-mode-btn');
+    if (playbackMode === 'next') {
+        playbackMode = 'repeat';
+        btn.innerText = "AUTO-REPEAT: ON";
+    } else {
+        playbackMode = 'next';
+        btn.innerText = "AUTO-NEXT: ON";
+    }
+}
+
 const engine = {
     audio: new Audio(), video: document.getElementById('video-v'), activeMedia: null, playlist: [], index: 0, ctx: null, analyser: null,
-    init: function() { this.activeMedia = this.audio; this.listeners(); this.loadLocalData(); },
+    init: function() { 
+        this.activeMedia = this.audio; 
+        this.listeners(); 
+        this.loadLocalData(); 
+        this.setupSeparatePickers();
+    },
+    setupSeparatePickers: function() {
+        const side = document.getElementById('side-panel');
+        const container = side.querySelector('.social-list');
+        const oldPicker = document.getElementById('dir-picker').parentElement;
+        if(oldPicker) oldPicker.remove();
+
+        const audioLabel = document.createElement('label');
+        audioLabel.className = 'action-btn';
+        audioLabel.style.border = "1px dashed #00f2ff";
+        audioLabel.innerHTML = `<i class="fas fa-music"></i> <span>IMPORT AUDIO</span><input type="file" id="audio-picker" webkitdirectory directory multiple style="display:none">`;
+        
+        const videoLabel = document.createElement('label');
+        videoLabel.className = 'action-btn';
+        videoLabel.style.border = "1px dashed #ff4757";
+        videoLabel.style.marginTop = "10px";
+        videoLabel.innerHTML = `<i class="fas fa-video"></i> <span>IMPORT VIDEO</span><input type="file" id="video-picker" webkitdirectory directory multiple style="display:none">`;
+        
+        container.appendChild(audioLabel);
+        container.appendChild(videoLabel);
+
+        document.getElementById('audio-picker').onchange = (e) => this.handleFiles(e.target.files, 'audio/');
+        document.getElementById('video-picker').onchange = (e) => this.handleFiles(e.target.files, 'video/');
+    },
     listeners: function() {
         [this.audio, this.video].forEach(media => {
-            media.ontimeupdate = () => { if (this.activeMedia !== media) return; const cur = media.currentTime, dur = media.duration; document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%"; document.getElementById('current-time').innerText = this.formatTime(cur); if (!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur); };
-            media.onended = () => this.next();
+            media.ontimeupdate = () => { 
+                if (this.activeMedia !== media) return; 
+                const cur = media.currentTime, dur = media.duration; 
+                document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%"; 
+                document.getElementById('current-time').innerText = this.formatTime(cur); 
+                if (!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur); 
+            };
+            media.onended = () => {
+                if(playbackMode === 'repeat') {
+                    this.activeMedia.currentTime = 0;
+                    this.play();
+                } else {
+                    this.next();
+                }
+            };
         });
-        document.getElementById('dir-picker').onchange = (e) => this.handleFiles(e.target.files);
     },
     formatTime: (s) => { let m = Math.floor(s / 60), r = Math.floor(s % 60); return `${m < 10 ? '0' + m : m}:${r < 10 ? '0' + r : r}`; },
-    handleFiles: async function(files) {
+    handleFiles: async function(files, filter) {
         const db = await this.getDB(), tx = db.transaction("songs", "readwrite"), store = tx.objectStore("songs");
-        Array.from(files).filter(f => f.type.startsWith('audio/') || f.type.startsWith('video/')).forEach(f => { store.add({ name: f.name, data: f, type: f.type }); });
+        Array.from(files).filter(f => f.type.startsWith(filter)).forEach(f => { store.add({ name: f.name, data: f, type: f.type }); });
         tx.oncomplete = () => { showToast("Library Updated!", "success"); this.loadLocalData(); };
     },
     loadLocalData: async function() {
@@ -420,8 +467,26 @@ const engine = {
         db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { this.playlist = e.target.result; this.renderPlaylist(); if (this.playlist.length > 0 && !this.activeMedia.src) this.loadTrack(0, false); };
     },
     renderPlaylist: function() {
-        const container = document.getElementById('list-container'); container.innerHTML = "";
-        this.playlist.forEach((item, i) => { const isVid = item.type && item.type.startsWith('video/'), div = document.createElement('div'); div.className = `track-item ${i === this.index ? 'active' : ''}`; div.innerHTML = `${isVid ? '📹 ' : '🎵 '}${item.name.replace(/\.[^/.]+$/, "")}`; div.onclick = () => { this.loadTrack(i); togglePlaylist(); }; container.appendChild(div); });
+        const container = document.getElementById('list-container'); 
+        container.innerHTML = `<div style="color:var(--accent); font-size:12px; margin-bottom:10px; border-bottom:1px solid #333;">AUDIO TRACKS</div>`;
+        this.playlist.filter(t => t.type.startsWith('audio/')).forEach((item) => {
+            this.createItem(item, container);
+        });
+        const vDiv = document.createElement('div');
+        vDiv.style = "color:#ff4757; font-size:12px; margin:20px 0 10px; border-bottom:1px solid #333;";
+        vDiv.innerText = "VIDEO TRACKS";
+        container.appendChild(vDiv);
+        this.playlist.filter(t => t.type.startsWith('video/')).forEach((item) => {
+            this.createItem(item, container);
+        });
+    },
+    createItem: function(item, container) {
+        const idx = this.playlist.findIndex(x => x.id === item.id);
+        const div = document.createElement('div');
+        div.className = `track-item ${idx === this.index ? 'active' : ''}`;
+        div.innerHTML = `${item.type.startsWith('video/') ? '📹 ' : '🎵 '}${item.name.replace(/\.[^/.]+$/, "")}`;
+        div.onclick = () => { this.loadTrack(idx); togglePlaylist(); };
+        container.appendChild(div);
     },
     loadTrack: function(i, play = true) {
         if (!this.playlist[i]) return; this.index = i; const track = this.playlist[i], isVideo = track.type && track.type.startsWith('video/');
@@ -444,23 +509,33 @@ const engine = {
             for (let i = 0; i < 80; i++) { const h = fbc[i] * 0.45; c.strokeStyle = '#00f2ff'; c.lineWidth = 3; c.beginPath(); c.moveTo(170 + Math.cos(i * 0.08) * 95, 170 + Math.sin(i * 0.08) * 95); c.lineTo(170 + Math.cos(i * 0.08) * (95 + h), 170 + Math.sin(i * 0.08) * (95 + h)); c.stroke(); } }; draw();
     }
 };
+
 async function deleteAccountPermanent() {
     const u = auth.currentUser; if(!u) return; const p = prompt("Password confirm karein:");
     if(p) { try { await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p)); await db_ref.ref(`users/${u.uid}`).remove(); await u.delete(); showToast("Deleted.", "success"); location.reload(); } catch(e) { showToast(e.message, "error"); } }
 }
+
 function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); location.reload(); }
 window.shareApp = async () => { try { await navigator.share({title: 'Kaushal Player Pro', url: 'https://harshitkaushal9129-bit.github.io/Calculator/'}); } catch (err) { alert("Link Copied!"); } };
+
 engine.init();
+
 function toggleCalc() {
     const modal = document.getElementById('calc-modal'); if(!modal) return;
     if(modal.style.display === 'none' || modal.style.display === '') { modal.style.display = 'block'; renderHistory(); setTimeout(() => modal.style.transform = 'translate(-50%, -50%) scale(1)', 10); }
     else { modal.style.transform = 'translate(-50%, -50%) scale(0.9)'; setTimeout(() => modal.style.display = 'none', 200); }
 }
+
 const calcDisplay = document.getElementById('calc-display'), historyList = document.getElementById('calc-history-list');
+
 function renderHistory() { if(!historyList) return; const history = JSON.parse(localStorage.getItem('calc_history') || "[]"); historyList.innerHTML = history.map(item => `<div style="margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.02)">${item}</div>`).join(''); historyList.scrollTop = historyList.scrollHeight; }
+
 function saveToHistory(expression, result) { let history = JSON.parse(localStorage.getItem('calc_history') || "[]"); history.push(`${expression} = ${result}`); if(history.length > 20) history.shift(); localStorage.setItem('calc_history', JSON.stringify(history)); renderHistory(); }
+
 function clearCalcHistory() { if(confirm("Clear history?")) { localStorage.removeItem('calc_history'); renderHistory(); showToast("History Cleared", "success"); } }
+
 const calcButtons = ['C', '/', '*', 'DEL', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '=', '0', '.'], btnContainer = document.getElementById('calc-buttons');
+
 if(btnContainer) {
     calcButtons.forEach(btn => {
         const b = document.createElement('button'); b.innerText = btn; b.className = 'calc-btn';
@@ -470,7 +545,7 @@ if(btnContainer) {
         btnContainer.appendChild(b);
     });
 }
-    </script>
+            </script>             
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
