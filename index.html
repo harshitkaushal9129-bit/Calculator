@@ -173,11 +173,9 @@
         <span>💻</span>
         <label>Cyber Calc</label>
     </a>
-    
     <a href="#" class="nav-icon-link"><span>🛡️</span><label>Shadow OS</label></a>
     <a href="https://harshitkaushal9129-bit.github.io/neilet-mcqs/" class="nav-icon-link"><span>🛠️</span><label>neilet-mcqs</label></a>
 </div>
-
 
 <div class="app-container" id="player-ui">
     <header>
@@ -199,7 +197,6 @@
         <div style="cursor:pointer; margin-bottom: 20px;" onclick="toggleAuth()">⬅ Back</div>
         <div id="auth-content">
             <div class="auth-header"><span id="auth-emoji">🔑</span> <span id="auth-title">Login</span></div>
-            
             <div id="register-fields" style="display:none;">
                 <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 15px; margin-bottom: 15px; cursor: pointer; overflow: hidden;">
                     <img id="preview-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
@@ -208,12 +205,9 @@
                 </label>
                 <div class="input-group"><input type="text" id="user-name" placeholder="Full Name"></div>
             </div>
-
             <div class="input-group"><input type="email" id="user-email" placeholder="Email Address"></div>
-            
             <div id="password-field-group" class="input-group"><input type="password" id="user-pass" placeholder="Password"></div>
             <div id="mobile-field-group" class="input-group" style="display:none;"><input type="number" id="user-mobile" placeholder="Mobile Number"></div>
-
             <div id="captcha-section" style="display:none;">
                 <div class="captcha-container">
                     <div id="captcha-box"></div>
@@ -221,9 +215,7 @@
                 </div>
                 <div class="input-group"><input type="text" id="captcha-input" placeholder="Enter Captcha Code"></div>
             </div>
-
             <button class="auth-btn" id="auth-submit" onclick="handleAuth()">Sign In</button>
-            
             <div class="auth-links">
                 <span id="toggle-reg" onclick="switchAuth('register')">🆕 Don't have an account? Register</span>
                 <span id="toggle-pass" onclick="switchAuth('forgot-pass')">❓ Forgot Password?</span>
@@ -231,7 +223,6 @@
                 <span id="toggle-login" style="display:none;" onclick="switchAuth('login')">⬅ Back to Login</span>
             </div>
         </div>
-
         <div id="user-profile" style="display:none; text-align: center;">
             <div class="auth-header"><span>🚀</span> Welcome</div>
             <p id="display-user" style="color: var(--accent); margin-bottom: 5px; font-size: 18px;"></p>
@@ -249,57 +240,43 @@
             <div class="info-row"><span class="info-label">Powered By:</span> <span class="info-value">SNT Official</span></div>
             <button onclick="shareApp()" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:5px 15px; border-radius:10px; cursor:pointer;">Share App</button>
         </div>
-
-            <div class="social-list" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
-    <a href="https://wa.me/919129191898" target="_blank" class="connect-link"><i class="fab fa-whatsapp" style="color: #25D366;"></i> <span>WhatsApp Support</span> </a>
-    <a href="tel:919129191898" class="connect-link"><i class="fas fa-phone" style="color: #00acee;"></i> <span>Direct Call</span></a>
-    <a href="https://www.instagram.com/snt_computer_institute" target="_blank" class="connect-link"><i class="fab fa-instagram" style="color: #E1306C;"></i> <span>Instagram Feed</span></a>
-    <a href="https://youtube.com/@programmingby-kaushalji" target="_blank" class="connect-link"><i class="fab fa-youtube" style="color: #FF0000;"></i> <span>YouTube Tutorials</span></a>
-    <a href="https://www.facebook.com/share/r/18ZG6co1Gu/" target="_blank" class="connect-link"> <i class="fab fa-facebook" style="color: #1877F2;"></i> <span>Facebook Page</span></a>
-    <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="connect-link"><i>🌐</i> <span>Official Portal</span></a>
-    <div class="action-btn" onclick="clearData()"><i class="fas fa-trash-alt"></i> <span>Clear Local Library</span></div>
-    <div id="delete-zone" style="width: 100%;"><div class="action-btn" onclick="deleteAccountPermanent()"><i class="fas fa-exclamation-triangle" style="color: #ff4757;"></i> <span style="color: #ff4757;">DELETE ACCOUNT</span></div></div>
-    <label class="action-btn" style="border: 1px dashed var(--accent); margin-top: 10px; justify-content: center;"><i class="fas fa-folder-plus"></i> <span>IMPORT FOLDER</span><input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none"></label>
-</div>
-            
-
-
+        <div class="social-list" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
+            <a href="https://wa.me/919129191898" target="_blank" class="connect-link"><i class="fab fa-whatsapp" style="color: #25D366;"></i> <span>WhatsApp Support</span> </a>
+            <a href="tel:919129191898" class="connect-link"><i class="fas fa-phone" style="color: #00acee;"></i> <span>Direct Call</span></a>
+            <a href="https://www.instagram.com/snt_computer_institute" target="_blank" class="connect-link"><i class="fab fa-instagram" style="color: #E1306C;"></i> <span>Instagram Feed</span></a>
+            <a href="https://youtube.com/@programmingby-kaushalji" target="_blank" class="connect-link"><i class="fab fa-youtube" style="color: #FF0000;"></i> <span>YouTube Tutorials</span></a>
+            <a href="https://www.facebook.com/share/r/18ZG6co1Gu/" target="_blank" class="connect-link"> <i class="fab fa-facebook" style="color: #1877F2;"></i> <span>Facebook Page</span></a>
+            <a href="https://harshitkaushal9129-bit.github.io/Dashboard-of-snt/" target="_blank" class="connect-link"><i>🌐</i> <span>Official Portal</span></a>
+            <div class="action-btn" onclick="clearData()"><i class="fas fa-trash-alt"></i> <span>Clear Local Library</span></div>
+            <div id="delete-zone" style="width: 100%;"><div class="action-btn" onclick="deleteAccountPermanent()"><i class="fas fa-exclamation-triangle" style="color: #ff4757;"></i> <span style="color: #ff4757;">DELETE ACCOUNT</span></div></div>
+            <label class="action-btn" style="border: 1px dashed var(--accent); margin-top: 10px; justify-content: center;"><i class="fas fa-folder-plus"></i> <span>IMPORT FOLDER</span><input type="file" id="dir-picker" webkitdirectory directory multiple style="display:none"></label>
+        </div>
     </div>
 
     <div class="visualizer-orbit">
-    <video id="video-v" style="width: 100%; height: 100%; display: none; object-fit: contain; z-index: 5; position: absolute; background: #000;"></video>
-    
-    <canvas id="canvas-v"></canvas>
-    <div class="album-art-proxy" id="art-box">
-        <span id="headphone-icon" style="font-size: 50px; opacity:0.3;">🎧</span>
-        <img id="track-art-img" src="" alt="Album Art"> 
+        <video id="video-v" style="width: 100%; height: 100%; display: none; object-fit: contain; z-index: 5; position: absolute; background: #000;"></video>
+        <canvas id="canvas-v"></canvas>
+        <div class="album-art-proxy" id="art-box">
+            <span id="headphone-icon" style="font-size: 50px; opacity:0.3;">🎧</span>
+            <img id="track-art-img" src="" alt="Album Art"> 
+        </div>
     </div>
-</div>
-
 
     <div class="track-meta">
         <div class="track-title" id="title">MI Player Pro</div>
-
-
-<div id="calc-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 340px; background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--accent); border-radius: 25px; z-index: 1000; padding: 20px; display: none; transition: 0.3s; box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 2px;">CYBER CALC PRO</span>
-        <div style="display: flex; gap: 15px;">
-            <span onclick="clearCalcHistory()" title="Clear History" style="cursor: pointer; color: var(--text-dim); font-size: 14px;"><i class="fas fa-trash-alt"></i></span>
-            <span onclick="toggleCalc()" style="cursor: pointer; color: var(--error); font-size: 18px;">✕</span>
+        
+        <div id="calc-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 340px; background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--accent); border-radius: 25px; z-index: 1000; padding: 20px; display: none; transition: 0.3s; box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 2px;">CYBER CALC PRO</span>
+                <div style="display: flex; gap: 15px;">
+                    <span onclick="clearCalcHistory()" title="Clear History" style="cursor: pointer; color: var(--text-dim); font-size: 14px;"><i class="fas fa-trash-alt"></i></span>
+                    <span onclick="toggleCalc()" style="cursor: pointer; color: var(--error); font-size: 18px;">✕</span>
+                </div>
+            </div>
+            <input type="text" id="calc-display" readonly style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); text-align: right; padding: 15px; font-size: 26px; border-radius: 12px; margin-bottom: 5px; outline: none; font-family: 'Courier New', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+            <div id="calc-history-list" style="height: 60px; overflow-y: auto; font-size: 11px; color: var(--text-dim); margin-bottom: 15px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right;"></div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="calc-buttons"></div>
         </div>
-    </div>
-
-    <input type="text" id="calc-display" readonly style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); text-align: right; padding: 15px; font-size: 26px; border-radius: 12px; margin-bottom: 5px; outline: none; font-family: 'Courier New', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
-    
-    <div id="calc-history-list" style="height: 60px; overflow-y: auto; font-size: 11px; color: var(--text-dim); margin-bottom: 15px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: right;">
-        </div>
-
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;" id="calc-buttons">
-        </div>
-</div>
-            
         <div class="track-artist" id="artist" style="color:var(--accent); font-size:13px; opacity:0.8;">Ready to Play</div>
     </div>
 
@@ -309,244 +286,67 @@
             <span id="total-duration">00:00</span>
         </div>
         <div class="bar-bg" id="seek-bar" onclick="engine.seek(event)"><div class="bar-fill" id="fill"></div></div>
-        <div class="main-cmds">
-            <button class="btn-icon" onclick="engine.prev()" style="background:none; border:none; color:white; font-size:24px;">⏮</button>
-            <button class="play-trigger" id="play-btn" onclick="engine.toggle()">▶</button>
-            <button class="btn-icon" onclick="engine.next()" style="background:none; border:none; color:white; font-size:24px;">⏭</button>
+        
+        <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 15px;">
+            <button class="btn-icon" onclick="engine.skip(-10)" style="background:none; border:none; color:var(--accent); font-size:18px; cursor:pointer;">
+                <i class="fas fa-backward"></i> <span style="font-size: 10px; display:block;">-10s</span>
+            </button>
+
+            <select id="speed-ctrl" onchange="engine.setSpeed(this.value)" style="background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; font-size: 11px; padding: 4px; outline: none; cursor:pointer;">
+                <option value="0.5">0.5x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2.0">2.0x</option>
+            </select>
+
+            <button class="btn-icon" onclick="engine.skip(10)" style="background:none; border:none; color:var(--accent); font-size:18px; cursor:pointer;">
+                <i class="fas fa-forward"></i> <span style="font-size: 10px; display:block;">+10s</span>
+            </button>
         </div>
-        <div style="text-align: center; margin-bottom: 10px;">
-    <button id="auto-mode-btn" onclick="toggleAutoMode()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: 0.3s;">
-        AUTO-NEXT: ON
-    </button>
-</div>
 
+        <div class="main-cmds">
+            <button class="btn-icon" onclick="engine.prev()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">⏮</button>
+            <button class="play-trigger" id="play-btn" onclick="engine.toggle()">▶</button>
+            <button class="btn-icon" onclick="engine.next()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">⏭</button>
+        </div>
+
+        <div style="text-align: center; margin-top: 15px;">
+            <button id="auto-mode-btn" onclick="toggleAutoMode()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: 0.3s;">
+                AUTO-NEXT: ON
+            </button>
+        </div>
     </div>
-</div>
+
     <script>
-   const firebaseConfig = { apiKey: "AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg", authDomain: "calculator-by-kaushalji.firebaseapp.com", databaseURL: "https://calculator-by-kaushalji-default-rtdb.firebaseio.com", projectId: "calculator-by-kaushalji", storageBucket: "calculator-by-kaushalji.firebasestorage.app", messagingSenderId: "156130281294", appId: "1:156130281294:web:73b80a5f344daeabdd001f" };
+   const firebaseConfig={apiKey:"AIzaSyDQ0Y8M9OGSInOlUltuysgmKOYGKX8dQvg",authDomain:"calculator-by-kaushalji.firebaseapp.com",databaseURL:"https://calculator-by-kaushalji-default-rtdb.firebaseio.com",projectId:"calculator-by-kaushalji",storageBucket:"calculator-by-kaushalji.firebasestorage.app",messagingSenderId:"156130281294",appId:"1:156130281294:web:73b80a5f344daeabdd001f"};
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(), db_ref = firebase.database();
-let currentMode = 'login', userBase64 = "", captchaCode = "", playbackMode = 'next';
-
-function showToast(msg, type) {
-    let toast = document.getElementById('toast') || document.createElement('div');
-    toast.id = 'toast'; document.body.appendChild(toast);
-    toast.innerText = msg; toast.className = `toast-${type} toast-show`;
-    setTimeout(() => toast.classList.remove('toast-show'), 3000);
-}
-
-function generateCaptcha() {
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    captchaCode = "";
-    for(let i=0; i<6; i++) captchaCode += chars[Math.floor(Math.random()*chars.length)];
-    document.getElementById('captcha-box').innerText = captchaCode;
-}
-
-function switchAuth(mode) {
-    currentMode = mode;
-    const regFields = document.getElementById('register-fields'), passField = document.getElementById('password-field-group'), mobileField = document.getElementById('mobile-field-group'), captchaSec = document.getElementById('captcha-section'), title = document.getElementById('auth-title'), btn = document.getElementById('auth-submit');
-    regFields.style.display = 'none'; passField.style.display = 'block'; mobileField.style.display = 'none'; captchaSec.style.display = 'none';
-    document.getElementById('toggle-login').style.display = 'block';
-    if(mode === 'register') { title.innerText = "Create Account"; btn.innerText = "Register"; regFields.style.display = 'block'; mobileField.style.display = 'block'; }
-    else if(mode === 'forgot-pass') { title.innerText = "Reset Password"; btn.innerText = "Send Reset Link"; mobileField.style.display = 'block'; captchaSec.style.display = 'block'; passField.style.display = 'none'; generateCaptcha(); }
-    else if(mode === 'forgot-user') { title.innerText = "Recover Username"; btn.innerText = "Find Username"; mobileField.style.display = 'block'; captchaSec.style.display = 'block'; passField.style.display = 'block'; generateCaptcha(); }
-    else { title.innerText = "Login"; btn.innerText = "Sign In"; document.getElementById('toggle-login').style.display = 'none'; }
-}
-
-async function handleAuth() {
-    const email = document.getElementById('user-email').value, pass = document.getElementById('user-pass').value, mobile = document.getElementById('user-mobile').value, captchaIn = document.getElementById('captcha-input').value, btn = document.getElementById('auth-submit');
-    if(!email) return showToast("Email bhariye!", "error");
-    if((currentMode === 'forgot-pass' || currentMode === 'forgot-user') && captchaIn !== captchaCode) return showToast("Captcha Wrong!", "error");
-    btn.innerText = "Processing..."; btn.disabled = true;
-    try {
-        if(currentMode === 'register') {
-            const name = document.getElementById('user-name').value;
-            if(!mobile || !name || !userBase64) throw {message: "Saari details bhariye!"};
-            const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db_ref.ref(`users/${res.user.uid}`).set({ username: name, photoURL: userBase64, mobile: mobile });
-            showToast("Welcome!", "success");
-        } else if(currentMode === 'login') { await auth.signInWithEmailAndPassword(email, pass); showToast("Logged In", "success"); setTimeout(toggleAuth, 1000); }
-    } catch(err) { showToast(err.message, "error"); } finally { btn.innerText = "Done"; btn.disabled = false; }
-}
-
-function previewUserImage(input) {
-    if(input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => { userBase64 = e.target.result; const img = document.getElementById('preview-img'); img.src = userBase64; img.style.display = 'block'; document.getElementById('photo-placeholder').style.display = 'none'; };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-auth.onAuthStateChanged(user => {
-    if(user) {
-        document.getElementById('auth-content').style.display = 'none'; document.getElementById('user-profile').style.display = 'block'; document.getElementById('delete-zone').style.display = 'block';
-        db_ref.ref(`users/${user.uid}`).on('value', s => {
-            const data = s.val();
-            if(data) {
-                document.getElementById('display-user').innerText = `Hello, ${data.username}!`; document.getElementById('display-mobile').innerText = `Mobile: ${data.mobile || 'N/A'}`;
-                if(data.photoURL) { document.getElementById('user-photo').src = data.photoURL; document.getElementById('user-photo-box').style.display = 'block'; document.getElementById('auth-icon').style.display = 'none'; document.getElementById('track-art-img').src = data.photoURL; document.getElementById('track-art-img').style.display = 'block'; document.getElementById('headphone-icon').style.display = 'none'; }
-            }
-        });
-    } else { document.getElementById('auth-content').style.display = 'block'; document.getElementById('user-profile').style.display = 'none'; document.getElementById('delete-zone').style.display = 'none'; document.getElementById('user-photo-box').style.display = 'none'; document.getElementById('auth-icon').style.display = 'block'; document.getElementById('track-art-img').style.display = 'none'; document.getElementById('headphone-icon').style.display = 'block'; }
-});
-
-function toggleAuth() { document.getElementById('auth-panel').classList.toggle('auth-open'); }
-function toggleMenu() { document.getElementById('side-panel').classList.toggle('panel-open'); }
-function togglePlaylist() { document.getElementById('playlist-panel').classList.toggle('playlist-open'); }
-function logout() { auth.signOut(); showToast("Logged Out", "success"); }
-
-function toggleAutoMode() {
-    const btn = document.getElementById('auto-mode-btn');
-    if (playbackMode === 'next') {
-        playbackMode = 'repeat';
-        btn.innerText = "AUTO-REPEAT: ON";
-    } else {
-        playbackMode = 'next';
-        btn.innerText = "AUTO-NEXT: ON";
-    }
-}
-
-const engine = {
-    audio: new Audio(), video: document.getElementById('video-v'), activeMedia: null, playlist: [], index: 0, ctx: null, analyser: null,
-    init: function() { 
-        this.activeMedia = this.audio; 
-        this.listeners(); 
-        this.loadLocalData(); 
-        this.setupSeparatePickers();
-    },
-    setupSeparatePickers: function() {
-        const side = document.getElementById('side-panel');
-        const container = side.querySelector('.social-list');
-        const oldPicker = document.getElementById('dir-picker').parentElement;
-        if(oldPicker) oldPicker.remove();
-
-        const audioLabel = document.createElement('label');
-        audioLabel.className = 'action-btn';
-        audioLabel.style.border = "1px dashed #00f2ff";
-        audioLabel.innerHTML = `<i class="fas fa-music"></i> <span>IMPORT AUDIO</span><input type="file" id="audio-picker" webkitdirectory directory multiple style="display:none">`;
-        
-        const videoLabel = document.createElement('label');
-        videoLabel.className = 'action-btn';
-        videoLabel.style.border = "1px dashed #ff4757";
-        videoLabel.style.marginTop = "10px";
-        videoLabel.innerHTML = `<i class="fas fa-video"></i> <span>IMPORT VIDEO</span><input type="file" id="video-picker" webkitdirectory directory multiple style="display:none">`;
-        
-        container.appendChild(audioLabel);
-        container.appendChild(videoLabel);
-
-        document.getElementById('audio-picker').onchange = (e) => this.handleFiles(e.target.files, 'audio/');
-        document.getElementById('video-picker').onchange = (e) => this.handleFiles(e.target.files, 'video/');
-    },
-    listeners: function() {
-        [this.audio, this.video].forEach(media => {
-            media.ontimeupdate = () => { 
-                if (this.activeMedia !== media) return; 
-                const cur = media.currentTime, dur = media.duration; 
-                document.getElementById('fill').style.width = (cur / dur * 100 || 0) + "%"; 
-                document.getElementById('current-time').innerText = this.formatTime(cur); 
-                if (!isNaN(dur)) document.getElementById('total-duration').innerText = this.formatTime(dur); 
-            };
-            media.onended = () => {
-                if(playbackMode === 'repeat') {
-                    this.activeMedia.currentTime = 0;
-                    this.play();
-                } else {
-                    this.next();
-                }
-            };
-        });
-    },
-    formatTime: (s) => { let m = Math.floor(s / 60), r = Math.floor(s % 60); return `${m < 10 ? '0' + m : m}:${r < 10 ? '0' + r : r}`; },
-    handleFiles: async function(files, filter) {
-        const db = await this.getDB(), tx = db.transaction("songs", "readwrite"), store = tx.objectStore("songs");
-        Array.from(files).filter(f => f.type.startsWith(filter)).forEach(f => { store.add({ name: f.name, data: f, type: f.type }); });
-        tx.oncomplete = () => { showToast("Library Updated!", "success"); this.loadLocalData(); };
-    },
-    loadLocalData: async function() {
-        const db = await this.getDB();
-        db.transaction("songs").objectStore("songs").getAll().onsuccess = (e) => { this.playlist = e.target.result; this.renderPlaylist(); if (this.playlist.length > 0 && !this.activeMedia.src) this.loadTrack(0, false); };
-    },
-    renderPlaylist: function() {
-        const container = document.getElementById('list-container'); 
-        container.innerHTML = `<div style="color:var(--accent); font-size:12px; margin-bottom:10px; border-bottom:1px solid #333;">AUDIO TRACKS</div>`;
-        this.playlist.filter(t => t.type.startsWith('audio/')).forEach((item) => {
-            this.createItem(item, container);
-        });
-        const vDiv = document.createElement('div');
-        vDiv.style = "color:#ff4757; font-size:12px; margin:20px 0 10px; border-bottom:1px solid #333;";
-        vDiv.innerText = "VIDEO TRACKS";
-        container.appendChild(vDiv);
-        this.playlist.filter(t => t.type.startsWith('video/')).forEach((item) => {
-            this.createItem(item, container);
-        });
-    },
-    createItem: function(item, container) {
-        const idx = this.playlist.findIndex(x => x.id === item.id);
-        const div = document.createElement('div');
-        div.className = `track-item ${idx === this.index ? 'active' : ''}`;
-        div.innerHTML = `${item.type.startsWith('video/') ? '📹 ' : '🎵 '}${item.name.replace(/\.[^/.]+$/, "")}`;
-        div.onclick = () => { this.loadTrack(idx); togglePlaylist(); };
-        container.appendChild(div);
-    },
-    loadTrack: function(i, play = true) {
-        if (!this.playlist[i]) return; this.index = i; const track = this.playlist[i], isVideo = track.type && track.type.startsWith('video/');
-        this.audio.pause(); this.video.pause(); this.video.style.display = 'none'; document.getElementById('canvas-v').style.display = 'block'; document.getElementById('art-box').style.display = 'flex';
-        if (isVideo) { this.activeMedia = this.video; this.video.src = URL.createObjectURL(track.data); this.video.style.display = 'block'; document.getElementById('canvas-v').style.display = 'none'; document.getElementById('art-box').style.display = 'none'; }
-        else { this.activeMedia = this.audio; if (this.audio.src) URL.revokeObjectURL(this.audio.src); this.audio.src = URL.createObjectURL(track.data); }
-        document.getElementById('title').innerText = track.name.replace(/\.[^/.]+$/, ""); this.renderPlaylist(); if (play) this.play();
-    },
-    toggle: function() { if (!this.playlist.length) return showToast("Media load karein!", "error"); this.activeMedia.paused ? this.play() : this.pause(); },
-    play: function() { this.activeMedia.play().then(() => { document.getElementById('play-btn').innerText = "⏸"; if (this.activeMedia === this.audio) this.startVisuals(); }).catch(e => console.log("Playback failed", e)); },
-    pause: function() { this.activeMedia.pause(); document.getElementById('play-btn').innerText = "▶"; },
-    next: function() { if (this.playlist.length > 0) { this.index = (this.index + 1) % this.playlist.length; this.loadTrack(this.index, true); } },
-    prev: function() { if (this.playlist.length > 0) { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.loadTrack(this.index, true); } },
-    seek: function(e) { const b = document.getElementById('seek-bar'); this.activeMedia.currentTime = (e.offsetX / b.offsetWidth) * this.activeMedia.duration; },
-    getDB: () => new Promise(res => { const r = indexedDB.open("MI_PRO_DB", 1); r.onupgradeneeded = (e) => e.target.result.createObjectStore("songs", { keyPath: "id", autoIncrement: true }); r.onsuccess = () => res(r.result); }),
-    startVisuals: function() {
-        if (this.ctx) return; this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.analyser = this.ctx.createAnalyser(); const src = this.ctx.createMediaElementSource(this.audio); src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
-        const canvas = document.getElementById('canvas-v'), c = canvas.getContext('2d');
-        const draw = () => { requestAnimationFrame(draw); if (this.activeMedia === this.video) return; const fbc = new Uint8Array(this.analyser.frequencyBinCount); this.analyser.getByteFrequencyData(fbc); c.clearRect(0, 0, 340, 340);
-            for (let i = 0; i < 80; i++) { const h = fbc[i] * 0.45; c.strokeStyle = '#00f2ff'; c.lineWidth = 3; c.beginPath(); c.moveTo(170 + Math.cos(i * 0.08) * 95, 170 + Math.sin(i * 0.08) * 95); c.lineTo(170 + Math.cos(i * 0.08) * (95 + h), 170 + Math.sin(i * 0.08) * (95 + h)); c.stroke(); } }; draw();
-    }
-};
-
-async function deleteAccountPermanent() {
-    const u = auth.currentUser; if(!u) return; const p = prompt("Password confirm karein:");
-    if(p) { try { await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, p)); await db_ref.ref(`users/${u.uid}`).remove(); await u.delete(); showToast("Deleted.", "success"); location.reload(); } catch(e) { showToast(e.message, "error"); } }
-}
-
-function clearData() { indexedDB.deleteDatabase("MI_PRO_DB"); location.reload(); }
-window.shareApp = async () => { try { await navigator.share({title: 'Kaushal Player Pro', url: 'https://harshitkaushal9129-bit.github.io/Calculator/'}); } catch (err) { alert("Link Copied!"); } };
-
+const auth=firebase.auth(),db_ref=firebase.database();
+let currentMode='login',userBase64="",captchaCode="",playbackMode='next';
+function showToast(msg,type){let toast=document.getElementById('toast')||document.createElement('div');toast.id='toast';document.body.appendChild(toast);toast.innerText=msg;toast.className=`toast-${type} toast-show`;setTimeout(()=>toast.classList.remove('toast-show'),3000);}
+function generateCaptcha(){const chars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";captchaCode="";for(let i=0;i<6;i++)captchaCode+=chars[Math.floor(Math.random()*chars.length)];document.getElementById('captcha-box').innerText=captchaCode;}
+function switchAuth(mode){currentMode=mode;const regFields=document.getElementById('register-fields'),passField=document.getElementById('password-field-group'),mobileField=document.getElementById('mobile-field-group'),captchaSec=document.getElementById('captcha-section'),title=document.getElementById('auth-title'),btn=document.getElementById('auth-submit');regFields.style.display='none';passField.style.display='block';mobileField.style.display='none';captchaSec.style.display='none';document.getElementById('toggle-login').style.display='block';if(mode==='register'){title.innerText="Create Account";btn.innerText="Register";regFields.style.display='block';mobileField.style.display='block';}else if(mode==='forgot-pass'){title.innerText="Reset Password";btn.innerText="Send Reset Link";mobileField.style.display='block';captchaSec.style.display='block';passField.style.display='none';generateCaptcha();}else if(mode==='forgot-user'){title.innerText="Recover Username";btn.innerText="Find Username";mobileField.style.display='block';captchaSec.style.display='block';passField.style.display='block';generateCaptcha();}else{title.innerText="Login";btn.innerText="Sign In";document.getElementById('toggle-login').style.display='none';}}
+async function handleAuth(){const email=document.getElementById('user-email').value,pass=document.getElementById('user-pass').value,mobile=document.getElementById('user-mobile').value,captchaIn=document.getElementById('captcha-input').value,btn=document.getElementById('auth-submit');if(!email)return showToast("Email bhariye!","error");if((currentMode==='forgot-pass'||currentMode==='forgot-user')&&captchaIn!==captchaCode)return showToast("Captcha Wrong!","error");btn.innerText="Processing...";btn.disabled=true;try{if(currentMode==='register'){const name=document.getElementById('user-name').value;if(!mobile||!name||!userBase64)throw{message:"Saari details bhariye!"};const res=await auth.createUserWithEmailAndPassword(email,pass);await db_ref.ref(`users/${res.user.uid}`).set({username:name,photoURL:userBase64,mobile:mobile});showToast("Welcome!","success");}else if(currentMode==='login'){await auth.signInWithEmailAndPassword(email,pass);showToast("Logged In","success");setTimeout(toggleAuth,1000);}}catch(err){showToast(err.message,"error");}finally{btn.innerText="Done";btn.disabled=false;}}
+function previewUserImage(input){if(input.files&&input.files[0]){const reader=new FileReader();reader.onload=(e)=>{userBase64=e.target.result;const img=document.getElementById('preview-img');img.src=userBase64;img.style.display='block';document.getElementById('photo-placeholder').style.display='none';};reader.readAsDataURL(input.files[0]);}}
+auth.onAuthStateChanged(user=>{if(user){document.getElementById('auth-content').style.display='none';document.getElementById('user-profile').style.display='block';document.getElementById('delete-zone').style.display='block';db_ref.ref(`users/${user.uid}`).on('value',s=>{const data=s.val();if(data){document.getElementById('display-user').innerText=`Hello, ${data.username}!`;document.getElementById('display-mobile').innerText=`Mobile: ${data.mobile||'N/A'}`;if(data.photoURL){document.getElementById('user-photo').src=data.photoURL;document.getElementById('user-photo-box').style.display='block';document.getElementById('auth-icon').style.display='none';document.getElementById('track-art-img').src=data.photoURL;document.getElementById('track-art-img').style.display='block';document.getElementById('headphone-icon').style.display='none';}}});}else{document.getElementById('auth-content').style.display='block';document.getElementById('user-profile').style.display='none';document.getElementById('delete-zone').style.display='none';document.getElementById('user-photo-box').style.display='none';document.getElementById('auth-icon').style.display='block';document.getElementById('track-art-img').style.display='none';document.getElementById('headphone-icon').style.display='block';}});
+function toggleAuth(){document.getElementById('auth-panel').classList.toggle('auth-open');}
+function toggleMenu(){document.getElementById('side-panel').classList.toggle('panel-open');}
+function togglePlaylist(){document.getElementById('playlist-panel').classList.toggle('playlist-open');}
+function logout(){auth.signOut();showToast("Logged Out","success");}
+function toggleAutoMode(){const btn=document.getElementById('auto-mode-btn');if(playbackMode==='next'){playbackMode='repeat';btn.innerText="AUTO-REPEAT: ON";}else{playbackMode='next';btn.innerText="AUTO-NEXT: ON";}}
+const engine={audio:new Audio(),video:document.getElementById('video-v'),activeMedia:null,playlist:[],index:0,ctx:null,analyser:null,init:function(){this.activeMedia=this.audio;this.listeners();this.loadLocalData();this.setupSeparatePickers();},skip:function(s){if(this.activeMedia)this.activeMedia.currentTime+=s;},setSpeed:function(r){if(this.activeMedia){this.activeMedia.playbackRate=parseFloat(r);showToast(`Speed: ${r}x`,"success");}},setupSeparatePickers:function(){const side=document.getElementById('side-panel');const container=side.querySelector('.social-list');const oldPicker=document.getElementById('dir-picker').parentElement;if(oldPicker)oldPicker.remove();const audioLabel=document.createElement('label');audioLabel.className='action-btn';audioLabel.style.border="1px dashed #00f2ff";audioLabel.innerHTML=`<i class="fas fa-music"></i> <span>IMPORT AUDIO</span><input type="file" id="audio-picker" webkitdirectory directory multiple style="display:none">`;const videoLabel=document.createElement('label');videoLabel.className='action-btn';videoLabel.style.border="1px dashed #ff4757";videoLabel.style.marginTop="10px";videoLabel.innerHTML=`<i class="fas fa-video"></i> <span>IMPORT VIDEO</span><input type="file" id="video-picker" webkitdirectory directory multiple style="display:none">`;container.appendChild(audioLabel);container.appendChild(videoLabel);document.getElementById('audio-picker').onchange=(e)=>this.handleFiles(e.target.files,'audio/');document.getElementById('video-picker').onchange=(e)=>this.handleFiles(e.target.files,'video/');},listeners:function(){[this.audio,this.video].forEach(media=>{media.ontimeupdate=()=>{if(this.activeMedia!==media)return;const cur=media.currentTime,dur=media.duration;document.getElementById('fill').style.width=(cur/dur*100||0)+"%";document.getElementById('current-time').innerText=this.formatTime(cur);if(!isNaN(dur))document.getElementById('total-duration').innerText=this.formatTime(dur);};media.onended=()=>{if(playbackMode==='repeat'){this.activeMedia.currentTime=0;this.play();}else{this.next();}};});},formatTime:(s)=>{let m=Math.floor(s/60),r=Math.floor(s%60);return `${m<10?'0'+m:m}:${r<10?'0'+r:r}`;},handleFiles:async function(files,filter){const db=await this.getDB(),tx=db.transaction("songs","readwrite"),store=tx.objectStore("songs");Array.from(files).filter(f=>f.type.startsWith(filter)).forEach(f=>{store.add({name:f.name,data:f,type:f.type});});tx.oncomplete=()=>{showToast("Library Updated!","success");this.loadLocalData();};},loadLocalData:async function(){const db=await this.getDB();db.transaction("songs").objectStore("songs").getAll().onsuccess=(e)=>{this.playlist=e.target.result;this.renderPlaylist();if(this.playlist.length>0&&!this.activeMedia.src)this.loadTrack(0,false);};},renderPlaylist:function(){const container=document.getElementById('list-container');container.innerHTML=`<div style="color:var(--accent); font-size:12px; margin-bottom:10px; border-bottom:1px solid #333;">AUDIO TRACKS</div>`;this.playlist.filter(t=>t.type.startsWith('audio/')).forEach((item)=>{this.createItem(item,container);});const vDiv=document.createElement('div');vDiv.style="color:#ff4757; font-size:12px; margin:20px 0 10px; border-bottom:1px solid #333;";vDiv.innerText="VIDEO TRACKS";container.appendChild(vDiv);this.playlist.filter(t=>t.type.startsWith('video/')).forEach((item)=>{this.createItem(item,container);});},createItem:function(item,container){const idx=this.playlist.findIndex(x=>x.id===item.id);const div=document.createElement('div');div.className=`track-item ${idx===this.index?'active':''}`;div.innerHTML=`${item.type.startsWith('video/')?'📹 ':'🎵 '}${item.name.replace(/\.[^/.]+$/,"")}`;div.onclick=()=>{this.loadTrack(idx);togglePlaylist();};container.appendChild(div);},loadTrack:function(i,play=true){if(!this.playlist[i])return;this.index=i;const track=this.playlist[i],isVideo=track.type&&track.type.startsWith('video/');this.audio.pause();this.video.pause();this.video.style.display='none';document.getElementById('canvas-v').style.display='block';document.getElementById('art-box').style.display='flex';if(isVideo){this.activeMedia=this.video;this.video.src=URL.createObjectURL(track.data);this.video.style.display='block';document.getElementById('canvas-v').style.display='none';document.getElementById('art-box').style.display='none';}else{this.activeMedia=this.audio;if(this.audio.src)URL.revokeObjectURL(this.audio.src);this.audio.src=URL.createObjectURL(track.data);}const speedSelect=document.getElementById('speed-ctrl');if(speedSelect)this.activeMedia.playbackRate=parseFloat(speedSelect.value);document.getElementById('title').innerText=track.name.replace(/\.[^/.]+$/,"");this.renderPlaylist();if(play)this.play();},toggle:function(){if(!this.playlist.length)return showToast("Media load karein!","error");this.activeMedia.paused?this.play():this.pause();},play:function(){this.activeMedia.play().then(()=>{document.getElementById('play-btn').innerText="⏸";if(this.activeMedia===this.audio)this.startVisuals();}).catch(e=>console.log("Playback failed",e));},pause:function(){this.activeMedia.pause();document.getElementById('play-btn').innerText="▶";},next:function(){if(this.playlist.length>0){this.index=(this.index+1)%this.playlist.length;this.loadTrack(this.index,true);}},prev:function(){if(this.playlist.length>0){this.index=(this.index-1+this.playlist.length)%this.playlist.length;this.loadTrack(this.index,true);}},seek:function(e){const b=document.getElementById('seek-bar');this.activeMedia.currentTime=(e.offsetX/b.offsetWidth)*this.activeMedia.duration;},getDB:()=>new Promise(res=>{const r=indexedDB.open("MI_PRO_DB",1);r.onupgradeneeded=(e)=>e.target.result.createObjectStore("songs",{keyPath:"id",autoIncrement:true});r.onsuccess=()=>res(r.result);}),startVisuals:function(){if(this.ctx)return;this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.analyser=this.ctx.createAnalyser();const src=this.ctx.createMediaElementSource(this.audio);src.connect(this.analyser);this.analyser.connect(this.ctx.destination);const canvas=document.getElementById('canvas-v'),c=canvas.getContext('2d');const draw=()=>{requestAnimationFrame(draw);if(this.activeMedia===this.video)return;const fbc=new Uint8Array(this.analyser.frequencyBinCount);this.analyser.getByteFrequencyData(fbc);c.clearRect(0,0,340,340);for(let i=0;i<80;i++){const h=fbc[i]*0.45;c.strokeStyle='#00f2ff';c.lineWidth=3;c.beginPath();c.moveTo(170+Math.cos(i*0.08)*95,170+Math.sin(i*0.08)*95);c.lineTo(170+Math.cos(i*0.08)*(95+h),170+Math.sin(i*0.08)*(95+h));c.stroke();}};draw();}};
+async function deleteAccountPermanent(){const u=auth.currentUser;if(!u)return;const p=prompt("Password confirm karein:");if(p){try{await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,p));await db_ref.ref(`users/${u.uid}`).remove();await u.delete();showToast("Deleted.","success");location.reload();}catch(e){showToast(e.message,"error");}}}
+function clearData(){indexedDB.deleteDatabase("MI_PRO_DB");location.reload();}
+window.shareApp=async()=>{try{await navigator.share({title:'Kaushal Player Pro',url:'https://harshitkaushal9129-bit.github.io/Calculator/'});}catch(err){alert("Link Copied!");}};
 engine.init();
-
-function toggleCalc() {
-    const modal = document.getElementById('calc-modal'); if(!modal) return;
-    if(modal.style.display === 'none' || modal.style.display === '') { modal.style.display = 'block'; renderHistory(); setTimeout(() => modal.style.transform = 'translate(-50%, -50%) scale(1)', 10); }
-    else { modal.style.transform = 'translate(-50%, -50%) scale(0.9)'; setTimeout(() => modal.style.display = 'none', 200); }
-}
-
-const calcDisplay = document.getElementById('calc-display'), historyList = document.getElementById('calc-history-list');
-
-function renderHistory() { if(!historyList) return; const history = JSON.parse(localStorage.getItem('calc_history') || "[]"); historyList.innerHTML = history.map(item => `<div style="margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.02)">${item}</div>`).join(''); historyList.scrollTop = historyList.scrollHeight; }
-
-function saveToHistory(expression, result) { let history = JSON.parse(localStorage.getItem('calc_history') || "[]"); history.push(`${expression} = ${result}`); if(history.length > 20) history.shift(); localStorage.setItem('calc_history', JSON.stringify(history)); renderHistory(); }
-
-function clearCalcHistory() { if(confirm("Clear history?")) { localStorage.removeItem('calc_history'); renderHistory(); showToast("History Cleared", "success"); } }
-
-const calcButtons = ['C', '/', '*', 'DEL', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '=', '0', '.'], btnContainer = document.getElementById('calc-buttons');
-
-if(btnContainer) {
-    calcButtons.forEach(btn => {
-        const b = document.createElement('button'); b.innerText = btn; b.className = 'calc-btn';
-        if(['/','*','-','+','C','DEL'].includes(btn)) b.style.color = 'var(--accent)';
-        if(btn === '=') { b.style.background = 'var(--accent)'; b.style.color = '#000'; b.style.gridColumn = 'span 2'; }
-        b.onclick = () => { if(btn === 'C') calcDisplay.value = ''; else if(btn === 'DEL') calcDisplay.value = calcDisplay.value.slice(0, -1); else if(btn === '=') { try { let exp = calcDisplay.value, res = eval(exp); if(exp !== "" && exp !== res) { saveToHistory(exp, res); calcDisplay.value = res; } } catch { calcDisplay.value = 'Error'; setTimeout(() => calcDisplay.value = '', 1000); } } else { calcDisplay.value += btn; } };
-        btnContainer.appendChild(b);
-    });
-}
-            </script>             
-<script>
+function toggleCalc(){const modal=document.getElementById('calc-modal');if(!modal)return;if(modal.style.display==='none'||modal.style.display===''){modal.style.display='block';renderHistory();setTimeout(()=>modal.style.transform='translate(-50%, -50%) scale(1)',10);}else{modal.style.transform='translate(-50%, -50%) scale(0.9)';setTimeout(()=>modal.style.display='none',200);}}
+const calcDisplay=document.getElementById('calc-display'),historyList=document.getElementById('calc-history-list');
+function renderHistory(){if(!historyList)return;const history=JSON.parse(localStorage.getItem('calc_history')||"[]");historyList.innerHTML=history.map(item=>`<div style="margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.02)">${item}</div>`).join('');historyList.scrollTop=historyList.scrollHeight;}
+function saveToHistory(expression,result){let history=JSON.parse(localStorage.getItem('calc_history')||"[]");history.push(`${expression} = ${result}`);if(history.length>20)history.shift();localStorage.setItem('calc_history',JSON.stringify(history));renderHistory();}
+function clearCalcHistory(){if(confirm("Clear history?")){localStorage.removeItem('calc_history');renderHistory();showToast("History Cleared","success");}}
+const calcButtons=['C','/','*','DEL','7','8','9','-','4','5','6','+','1','2','3','=','0','.'],btnContainer=document.getElementById('calc-buttons');
+if(btnContainer){calcButtons.forEach(btn=>{const b=document.createElement('button');b.innerText=btn;b.className='calc-btn';if(['/','*','-','+','C','DEL'].includes(btn))b.style.color='var(--accent)';if(btn==='='){b.style.background='var(--accent)';b.style.color='#000';b.style.gridColumn='span 2';}b.onclick=()=>{if(btn==='C')calcDisplay.value='';else if(btn==='DEL')calcDisplay.value=calcDisplay.value.slice(0,-1);else if(btn==='='){try{let exp=calcDisplay.value,res=eval(exp);if(exp!==""&&exp!==res){saveToHistory(exp,res);calcDisplay.value=res;}}catch{calcDisplay.value='Error';setTimeout(()=>calcDisplay.value='',1000);}}else{calcDisplay.value+=btn;}};btnContainer.appendChild(b);});}```
+                   </script>
+    <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
             if ('sync' in reg) {
