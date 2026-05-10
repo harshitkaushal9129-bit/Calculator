@@ -154,6 +154,13 @@
 #video-v, #track-art-img {transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), object-fit 0.3s;}
 .visualizer-orbit {overflow: hidden;}
 
+.visualizer-orbit {transition: all 0.4s ease;}
+
+
+header, .track-meta, .player-core {position: relative;z-index: 10;background: transparent !important;}
+.player-core {background: linear-gradient(transparent, rgba(0,0,0,0.8)) !important;}
+header {background: linear-gradient(rgba(0,0,0,0.8), transparent) !important;}
+
 </style>
 
 </head>
@@ -296,12 +303,13 @@
             </button>
 
                 
-<select id="size-ctrl" onchange="engine.setSize(this.value)" style="background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; font-size: 11px; padding: 4px; outline: none; cursor:pointer; margin-left: 5px;">
-    <option value="contain">Fit (Default)</option>
-    <option value="cover">Fill Screen</option>
+<select id="size-ctrl" onchange="engine.setSize(this.value)" ...>
+    <option value="contain">Normal Fit</option>
+    <option value="cover">Full Screen (Stretch)</option>
     <option value="scale-1.5">Zoom 1.5x</option>
     <option value="scale-2">Zoom 2.0x</option>
 </select>
+
 
             <select id="speed-ctrl" onchange="engine.setSpeed(this.value)" style="background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; font-size: 11px; padding: 4px; outline: none; cursor:pointer;">
                 <option value="0.5">0.5x</option>
@@ -345,30 +353,52 @@ function openPlaylist(t){currentFilter=t;const p=document.getElementById('playli
 function logout(){auth.signOut();showToast("Logged Out","success");}
 function toggleAutoMode(){const b=document.getElementById('auto-mode-btn');if(playbackMode==='next'){playbackMode='repeat';b.innerText="AUTO-REPEAT: ON";}else{playbackMode='next';b.innerText="AUTO-NEXT: ON";}}
 const engine={audio:new Audio(),video:document.getElementById('video-v'),activeMedia:null,playlist:[],index:0,ctx:null,analyser:null,init:function(){this.activeMedia=this.audio;this.listeners();this.loadLocalData();this.setupSeparatePickers();},skip:function(s){if(this.activeMedia)this.activeMedia.currentTime+=s;},setSpeed:function(r){if(this.activeMedia){this.activeMedia.playbackRate=parseFloat(r);showToast(`Speed: ${r}x`,"success");}},
-              // engine object ke andar kahi bhi paste karein:
-setSize: function(val) {
+
+              setSize: function(val) {
     const v = this.video;
     const img = document.getElementById('track-art-img');
+    const orbit = document.querySelector('.visualizer-orbit');
+    const container = document.getElementById('player-ui');
     
-    // Reset transformations first
+    // Sab kuch reset karein
     [v, img].forEach(el => {
         el.style.transform = "scale(1)"; 
         el.style.objectFit = "contain"; 
+        el.style.position = "absolute";
+        el.style.height = "100%";
     });
+    container.style.background = "radial-gradient(circle at top right, #1a1a2e, #08080a)";
+    orbit.style.overflow = "hidden";
 
     if (val === "cover") {
+        // FULL SCREEN MODE: Video/Image ko poori screen par phaila dega
         v.style.objectFit = "cover";
         img.style.objectFit = "cover";
-        showToast("Mode: Fill Screen", "success");
+        
+        // Visualizer area ko poore background mein stretch karein
+        orbit.style.position = "absolute";
+        orbit.style.top = "0";
+        orbit.style.left = "0";
+        orbit.style.width = "100%";
+        orbit.style.height = "100%";
+        orbit.style.zIndex = "1"; // Tools ke niche rahega
+        
+        showToast("Full Screen Mode", "success");
     } 
     else if (val.startsWith("scale-")) {
         const scale = val.split("-")[1];
+        // Sirf media ko zoom karega, position center rahegi
         v.style.transform = `scale(${scale})`;
         img.style.transform = `scale(${scale})`;
         showToast(`Zoom: ${scale}x`, "success");
     } 
     else {
-        showToast("Mode: Fit to Screen", "success");
+        // Reset to Default Fit
+        orbit.style.position = "relative";
+        orbit.style.width = "100%";
+        orbit.style.height = "auto";
+        orbit.style.flex = "1";
+        showToast("Fit to Screen", "success");
     }
 },
 
