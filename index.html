@@ -156,6 +156,26 @@
     .nav-icon-link span { font-size: 20px; }
     .nav-icon-link label { font-size: 8px; }
 }
+/* Image Preview Overlay */
+#image-viewer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+#viewer-img {
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 10px;
+    box-shadow: 0 0 30px var(--accent-glow);
+    object-fit: contain;
+}
+.close-viewer {position: absolute;top: 30px;right: 30px;font-size: 30px;color: var(--accent);cursor: pointer;}
 
 </style>
 
